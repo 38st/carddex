@@ -1,17 +1,26 @@
 import SwiftUI
 
 struct RootView: View {
+    @State private var selection: Tab = .scan
+
     var body: some View {
-        TabView {
-            ScanView()
-                .tabItem { Label("Scan", systemImage: "camera.viewfinder") }
-            CollectionView()
-                .tabItem { Label("Collection", systemImage: "square.grid.2x2") }
-            PortfolioView()
-                .tabItem { Label("Portfolio", systemImage: "chart.line.uptrend.xyaxis") }
-            SettingsView()
-                .tabItem { Label("Settings", systemImage: "gearshape") }
+        ZStack(alignment: .bottom) {
+            VaultBackground()
+
+            Group {
+                switch selection {
+                case .scan: ScanView()
+                case .collection: CollectionView()
+                case .portfolio: PortfolioView()
+                case .settings: SettingsView()
+                }
+            }
+            .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 88) }
+
+            GlassTabBar(selection: $selection)
+                .padding(.bottom, 4)
         }
+        .preferredColorScheme(.dark)
         .tint(Theme.accent)
     }
 }

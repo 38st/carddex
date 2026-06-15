@@ -15,9 +15,19 @@ struct PrimaryButton: View {
                 Text(title).fontWeight(.semibold)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
+            .padding(.vertical, 15)
         }
-        .foregroundStyle(.white)
-        .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Radius.md))
+        .buttonStyle(PrimaryButtonStyle())
+    }
+}
+
+private struct PrimaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundStyle(.white)
+            .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Radius.md, style: .continuous))
+            .opacity(configuration.isPressed ? 0.85 : 1)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .animation(Theme.springTap, value: configuration.isPressed)
     }
 }

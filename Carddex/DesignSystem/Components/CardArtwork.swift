@@ -1,19 +1,29 @@
 import SwiftUI
 
-/// Placeholder card artwork. Once catalog image URLs are wired in (Phase 1),
-/// this swaps to an `AsyncImage` while keeping the same framing.
+/// Card artwork. Currently a game-tinted placeholder with a rarity-aware holo
+/// overlay; swaps to an `AsyncImage` once catalog `imageURL`s are wired in (Phase 1).
 struct CardArtwork: View {
     let game: CardGame
-    var cornerRadius: CGFloat = Theme.Radius.md
+    var rarity: String? = nil
+    var price: Money? = nil
+    var cornerRadius: CGFloat = Theme.Radius.card
 
     var body: some View {
+        let tier = Rarity.tier(rarityText: rarity, price: price)
         ZStack {
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .fill(game.accent.opacity(0.15))
+            LinearGradient(colors: game.artGradient, startPoint: .topLeading, endPoint: .bottomTrailing)
             Image(systemName: game.symbol)
-                .font(.largeTitle)
-                .foregroundStyle(game.accent.opacity(0.5))
+                .font(.system(size: 34))
+                .foregroundStyle(.white.opacity(0.42))
+            if tier != .none {
+                HolographicFoil(cornerRadius: cornerRadius, intensity: tier == .mythic ? 1.0 : 0.6)
+            }
         }
         .aspectRatio(Theme.cardAspectRatio, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.12))
+        )
     }
 }

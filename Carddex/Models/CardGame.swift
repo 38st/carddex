@@ -28,12 +28,23 @@ enum CardGame: String, CaseIterable, Codable, Identifiable, Hashable, Sendable {
         }
     }
 
+    /// Refined accent, tuned for the dark vault.
     var accent: Color {
         switch self {
-        case .pokemon: Color(red: 0.96, green: 0.76, blue: 0.13)
-        case .magic: Color(red: 0.45, green: 0.30, blue: 0.66)
-        case .yugioh: Color(red: 0.78, green: 0.40, blue: 0.13)
-        case .sports: Color(red: 0.16, green: 0.55, blue: 0.40)
+        case .pokemon: Color(hex: 0xFFD23F)
+        case .magic: Color(hex: 0x9B6BFF)
+        case .yugioh: Color(hex: 0xE8702A)
+        case .sports: Color(hex: 0x2DD4A7)
+        }
+    }
+
+    /// Placeholder card-art gradient until real catalog images load.
+    var artGradient: [Color] {
+        switch self {
+        case .pokemon: [Color(hex: 0x3A2A12), Color(hex: 0x7A5418), Color(hex: 0xD9AF3F)]
+        case .magic: [Color(hex: 0x241A3A), Color(hex: 0x4A357E), Color(hex: 0x9B6BFF)]
+        case .yugioh: [Color(hex: 0x3A2410), Color(hex: 0x7A4520), Color(hex: 0xE8853A)]
+        case .sports: [Color(hex: 0x10241A), Color(hex: 0x1E5A45), Color(hex: 0x2DD4A7)]
         }
     }
 }

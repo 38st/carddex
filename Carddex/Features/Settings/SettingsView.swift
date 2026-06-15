@@ -10,24 +10,23 @@ struct SettingsView: View {
                     HStack(spacing: Theme.Spacing.md) {
                         Image(systemName: "person.crop.circle.fill")
                             .font(.system(size: 40))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Theme.textSecondary)
                         VStack(alignment: .leading) {
                             Text("Not signed in")
                                 .font(.headline)
                             Text("Sign in to sync your collection across devices")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Theme.textSecondary)
                         }
                     }
                     Button("Sign in with Apple") {}
-                        .disabled(true)
                 }
 
                 Section("Marketplace") {
                     Label("Connect eBay", systemImage: "tag")
                     Text("Auto-list cards for sale — coming in Phase 3.")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.textSecondary)
                 }
 
                 Section("About") {
@@ -35,6 +34,7 @@ struct SettingsView: View {
                     LabeledContent("Backend", value: "Supabase")
                 }
             }
+            .scrollContentBackground(.hidden)
             .navigationTitle("Settings")
         }
     }
@@ -42,4 +42,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
+        .preferredColorScheme(.dark)
 }

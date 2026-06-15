@@ -59,7 +59,7 @@ private struct IdentifyResultSheet: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: Theme.Spacing.md) {
-                CardArtwork(game: card.game)
+                CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice)
                     .frame(maxWidth: 160)
                     .padding(.top)
                 GamePill(game: card.game)
@@ -85,6 +85,7 @@ private struct IdentifyResultSheet: View {
                 }
             }
             .presentationDetents([.medium, .large])
+            .presentationBackground(.regularMaterial)
         }
     }
 }
