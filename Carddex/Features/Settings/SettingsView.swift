@@ -4,10 +4,33 @@ import SwiftUI
 /// wired up in later phases.
 struct SettingsView: View {
     @Environment(AppEnvironment.self) private var env
+    @Environment(SubscriptionStore.self) private var subs
+    @State private var showPaywall = false
 
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    Button { showPaywall = true } label: {
+                        HStack(spacing: Theme.Spacing.md) {
+                            Image(systemName: "crown.fill")
+                                .font(.title3)
+                                .foregroundStyle(Theme.accent)
+                            VStack(alignment: .leading) {
+                                Text(subs.isPro ? "Carddex Pro" : "Upgrade to Carddex Pro")
+                                    .font(.headline)
+                                Text(subs.isPro ? "Thanks for supporting Carddex" : "Unlimited scans, analytics, and selling")
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.textSecondary)
+                            }
+                            Spacer()
+                            if !subs.isPro {
+                                Image(systemName: "chevron.right").foregroundStyle(Theme.textTertiary)
+                            }
+                        }
+                    }
+                }
+
                 Section("Account") {
                     HStack(spacing: Theme.Spacing.md) {
                         Image(systemName: "person.crop.circle.fill")
@@ -39,6 +62,9 @@ struct SettingsView: View {
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("Settings")
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
+            }
         }
     }
 }
@@ -46,5 +72,6 @@ struct SettingsView: View {
 #Preview {
     SettingsView()
         .environment(AppEnvironment(identification: FakeIdentificationService()))
+        .environment(SubscriptionStore())
         .preferredColorScheme(.dark)
 }

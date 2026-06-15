@@ -29,4 +29,5 @@ struct RootView: View {
     RootView()
         .environment(CollectionStore(items: SampleData.collection))
         .environment(AppEnvironment())
+        .environment(SubscriptionStore())
 }

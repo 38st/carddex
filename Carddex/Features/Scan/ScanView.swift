@@ -5,11 +5,13 @@ import SwiftUI
 struct ScanView: View {
     @Environment(CollectionStore.self) private var store
     @Environment(AppEnvironment.self) private var env
+    @Environment(SubscriptionStore.self) private var subs
 
     @State private var recognizedText: [String] = []
     @State private var isIdentifying = false
     @State private var outcome: IdentificationOutcome?
     @State private var showResult = false
+    @State private var showPaywall = false
 
     var body: some View {
         NavigationStack {
@@ -25,7 +27,11 @@ struct ScanView: View {
                     title: isIdentifying ? "Identifying…" : "Scan card",
                     systemImage: isIdentifying ? "sparkles" : "viewfinder"
                 ) {
-                    Task { await identify() }
+                    if subs.canScan {
+                        Task { await identify() }
+                    } else {
+                        showPaywall = true
+                    }
                 }
                 .disabled(isIdentifying)
                 Spacer(minLength: 0)
@@ -39,6 +45,9 @@ struct ScanView: View {
                         showResult = false
                     }
                 }
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
             }
         }
     }
@@ -75,6 +84,7 @@ struct ScanView: View {
 
     private var statusText: String {
         if isIdentifying { return "Reading the card…" }
+        if !subs.isPro { return "\(subs.remainingFreeScans) free scans left this month." }
         if CameraScanView.isSupported { return "Point at a card, then tap Scan." }
         return "Live camera + AI identification run on a real device."
     }
@@ -88,6 +98,7 @@ struct ScanView: View {
         } catch {
             outcome = .unidentified(ocrText: recognizedText)
         }
+        subs.recordScan()
         showResult = true
     }
 }
@@ -213,4 +224,5 @@ private struct IdentifyResultSheet: View {
     ScanView()
         .environment(CollectionStore(items: SampleData.collection))
         .environment(AppEnvironment())
+        .environment(SubscriptionStore())
 }
