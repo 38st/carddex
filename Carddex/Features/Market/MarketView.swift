@@ -110,10 +110,12 @@ struct MarketView: View {
     }
 
     private func sectionTitle(_ text: String) -> some View {
-        Text(text)
-            .font(.headline)
-            .foregroundStyle(Theme.textPrimary)
+        Text(text.uppercased())
+            .font(.caption.weight(.semibold))
+            .tracking(1.3)
+            .foregroundStyle(Theme.textSecondary)
             .padding(.horizontal)
+            .padding(.top, Theme.Spacing.xs)
     }
 
     private var categoryBar: some View {
@@ -138,24 +140,40 @@ struct MarketView: View {
     private var indexCard: some View {
         let index = SampleData.marketIndex
         let up = index.changeToday >= 0
-        return VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            Text("Case Index")
-                .font(.subheadline)
-                .foregroundStyle(Theme.textSecondary)
-            HStack(alignment: .firstTextBaseline, spacing: Theme.Spacing.sm) {
-                Text(index.value, format: .number.precision(.fractionLength(2)))
-                    .font(.system(size: 34, weight: .bold))
-                    .foregroundStyle(Theme.textPrimary)
-                    .monospacedDigit()
-                Text("\(up ? "▲ +" : "▼ ")\(String(format: "%.1f", index.changeToday))% today")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(up ? Theme.gain : Theme.loss)
+        let accent = up ? Theme.gain : Theme.loss
+        return VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            HStack {
+                Label("Case Index", systemImage: "chart.xyaxis.line")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Theme.textSecondary)
+                Spacer()
+                Text("\(up ? "+" : "")\(String(format: "%.1f", index.changeToday))% today")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(accent)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 4)
+                    .background(accent.opacity(0.16), in: Capsule())
             }
-            MiniAreaChart(values: index.series, tint: up ? Theme.gain : Theme.loss)
-                .frame(height: 80)
+            Text(index.value, format: .number.precision(.fractionLength(2)))
+                .font(.system(size: 46, weight: .bold, design: .rounded))
+                .foregroundStyle(Theme.textPrimary)
+                .monospacedDigit()
+            MiniAreaChart(values: index.series, tint: accent)
+                .frame(height: 96)
         }
-        .padding(Theme.Spacing.md)
-        .glassPanel(cornerRadius: Theme.Radius.lg)
+        .padding(Theme.Spacing.lg)
+        .background {
+            RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                        .fill(LinearGradient(colors: [accent.opacity(0.14), .clear], startPoint: .topTrailing, endPoint: .bottomLeading))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                        .strokeBorder(Theme.hairline)
+                )
+        }
         .padding(.horizontal)
     }
 }
@@ -256,7 +274,18 @@ private struct IndexTile: View {
         }
         .frame(width: 150)
         .padding(Theme.Spacing.md)
-        .glassPanel(cornerRadius: Theme.Radius.card)
+        .background {
+            RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
+                        .fill(LinearGradient(colors: [entry.accent.opacity(0.18), .clear], startPoint: .top, endPoint: .bottom))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
+                        .strokeBorder(Theme.hairline)
+                )
+        }
     }
 }
 
