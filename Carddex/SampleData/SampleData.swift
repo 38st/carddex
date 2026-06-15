@@ -48,16 +48,20 @@ enum SampleData {
                                imageURL: img("https://images.ygoprodeck.com/images/cards/89631139.jpg"),
                                marketPrice: Money(amount: 90))
 
-    // Sports cards — multiple sports, each its own category.
+    // Sports cards — multiple sports, each its own category. Sports has no free
+    // image catalog (unlike Pokémon/Yu-Gi-Oh), so these are temporary demo images
+    // hotlinked from editorial CDNs; production uses the user's own scan photo.
     static let jordan = Card(id: "sports-fleer86-57", game: .sports, name: "Michael Jordan RC",
                              setName: "1986 Fleer", number: "57", rarity: nil,
-                             imageURL: nil, marketPrice: Money(amount: 12000), sport: .basketball)
+                             imageURL: img("https://blog.justcollect.com/hs-fs/hubfs/Jordan-1.jpg?width=600&name=Jordan-1.jpg"),
+                             marketPrice: Money(amount: 12000), sport: .basketball)
     static let lebron = Card(id: "sports-topps03-111", game: .sports, name: "LeBron James RC",
                              setName: "2003 Topps Chrome", number: "111", rarity: "Refractor",
                              imageURL: nil, marketPrice: Money(amount: 3500), sport: .basketball)
     static let brady = Card(id: "sports-bowman00-236", game: .sports, name: "Tom Brady RC",
                             setName: "2000 Bowman", number: "236", rarity: nil,
-                            imageURL: nil, marketPrice: Money(amount: 2800), sport: .football)
+                            imageURL: img("https://www.joesalbums.com/cdn/shop/files/tom_brady_2000_bowman_rookie_football_card.jpg?v=1700085069&width=1500"),
+                            marketPrice: Money(amount: 2800), sport: .football)
     static let trout = Card(id: "sports-topps11-175", game: .sports, name: "Mike Trout RC",
                             setName: "2011 Topps Update", number: "US175", rarity: nil,
                             imageURL: nil, marketPrice: Money(amount: 900), sport: .baseball)
