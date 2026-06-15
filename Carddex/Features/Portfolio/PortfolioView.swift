@@ -1,11 +1,13 @@
 import SwiftUI
 import Charts
+import UIKit
 
 /// Portfolio: total value, a value-over-time chart, and a by-game breakdown.
 /// History is illustrative until real price snapshots land in Phase 2.
 struct PortfolioView: View {
     @Environment(CollectionStore.self) private var store
     @State private var range: Range = .month
+    @State private var shareImage: Image?
 
     enum Range: String, CaseIterable, Identifiable {
         case week = "1W", month = "1M", quarter = "3M", year = "1Y", all = "All"
@@ -37,7 +39,9 @@ struct PortfolioView: View {
                     hero
                     chart
                     rangePicker
+                    insightsRow
                     if !gamesWithValue.isEmpty { byGame }
+                    if !store.movers.isEmpty { moversSection }
                     Text("Value history is illustrative — live snapshots arrive in Phase 2.")
                         .font(.footnote)
                         .foregroundStyle(Theme.textTertiary)
@@ -45,6 +49,34 @@ struct PortfolioView: View {
                 .padding()
             }
             .navigationTitle("Portfolio")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if let shareImage {
+                        ShareLink(item: shareImage, preview: SharePreview("My Carddex collection", image: shareImage)) {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+                }
+            }
+            .onAppear(perform: renderShareImage)
+        }
+    }
+
+    @MainActor private func renderShareImage() {
+        var seen = Set<CardGame>()
+        let tiles = store.items.map(\.card.game).filter { seen.insert($0).inserted }
+        let poster = ShareableCollectionCard(
+            totalValue: store.totalValue.formatted,
+            gain: "\(allTimeGain >= 0 ? "▲ +" : "▼ −")\(money(abs(allTimeGain))) (\(String(format: "%.0f", abs(store.gainLossPercent)))%) all-time",
+            gainUp: allTimeGain >= 0,
+            cardCount: store.totalCards,
+            uniqueCount: store.items.count,
+            tiles: Array(tiles.prefix(4))
+        )
+        let renderer = ImageRenderer(content: poster)
+        renderer.scale = 3
+        if let uiImage = renderer.uiImage {
+            shareImage = Image(uiImage: uiImage)
         }
     }
 
@@ -98,6 +130,45 @@ struct PortfolioView: View {
             ForEach(Range.allCases) { Text($0.rawValue).tag($0) }
         }
         .pickerStyle(.segmented)
+    }
+
+    private var allTimeGain: Double { NSDecimalNumber(decimal: store.totalGainLoss.amount).doubleValue }
+
+    private var insightsRow: some View {
+        HStack(spacing: Theme.Spacing.md) {
+            StatTile(title: "Cost basis", value: store.totalCost.formatted)
+            StatTile(
+                title: "All-time gain",
+                value: "\(allTimeGain >= 0 ? "+" : "−")\(money(abs(allTimeGain))) (\(String(format: "%.0f", abs(store.gainLossPercent)))%)",
+                accent: allTimeGain >= 0 ? Theme.gain : Theme.loss
+            )
+        }
+    }
+
+    private var moversSection: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            Text("Movers")
+                .font(.headline)
+                .foregroundStyle(Theme.textPrimary)
+            ForEach(store.movers.prefix(4)) { item in
+                let gain = NSDecimalNumber(decimal: item.gainLoss.amount).doubleValue
+                HStack(spacing: Theme.Spacing.md) {
+                    CardArtwork(game: item.card.game, rarity: item.card.rarity, price: item.card.marketPrice, imageURL: item.card.imageURL, sport: item.card.sport)
+                        .frame(width: 38)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(item.card.name).font(.subheadline).foregroundStyle(Theme.textPrimary).lineLimit(1)
+                        Text(item.card.setName).font(.caption).foregroundStyle(Theme.textSecondary).lineLimit(1)
+                    }
+                    Spacer()
+                    Text("\(gain >= 0 ? "+" : "−")\(money(abs(gain)))")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(gain >= 0 ? Theme.gain : Theme.loss)
+                        .monospacedDigit()
+                }
+                .padding(Theme.Spacing.sm)
+                .glassPanel(cornerRadius: Theme.Radius.card)
+            }
+        }
     }
 
     private var byGame: some View {

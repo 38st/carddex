@@ -30,4 +30,16 @@ struct CollectionItem: Identifiable, Codable, Hashable, Sendable {
         let unit = card.marketPrice?.amount ?? 0
         return Money(amount: unit * Decimal(quantity))
     }
+
+    var hasCostBasis: Bool { purchasePrice != nil }
+
+    /// What the user paid: purchase price × quantity.
+    var costBasis: Money {
+        Money(amount: (purchasePrice?.amount ?? 0) * Decimal(quantity))
+    }
+
+    /// Current value minus cost basis.
+    var gainLoss: Money {
+        Money(amount: estimatedValue.amount - costBasis.amount)
+    }
 }

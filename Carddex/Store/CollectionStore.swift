@@ -19,6 +19,30 @@ final class CollectionStore {
         items.reduce(0) { $0 + $1.quantity }
     }
 
+    var totalCost: Money {
+        items.reduce(Money.zero) { $0 + $1.costBasis }
+    }
+
+    var totalGainLoss: Money {
+        Money(amount: totalValue.amount - totalCost.amount)
+    }
+
+    var gainLossPercent: Double {
+        let cost = NSDecimalNumber(decimal: totalCost.amount).doubleValue
+        guard cost > 0 else { return 0 }
+        return NSDecimalNumber(decimal: totalGainLoss.amount).doubleValue / cost * 100
+    }
+
+    /// Most valuable holdings first.
+    var topHoldings: [CollectionItem] {
+        items.sorted { $0.estimatedValue.amount > $1.estimatedValue.amount }
+    }
+
+    /// Biggest absolute gain/loss first (only items with a cost basis).
+    var movers: [CollectionItem] {
+        items.filter(\.hasCostBasis).sorted { abs($0.gainLoss.amount) > abs($1.gainLoss.amount) }
+    }
+
     func value(for game: CardGame) -> Money {
         items
             .filter { $0.card.game == game }

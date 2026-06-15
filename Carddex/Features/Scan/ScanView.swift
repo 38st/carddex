@@ -14,6 +14,7 @@ struct ScanView: View {
     @State private var outcome: IdentificationOutcome?
     @State private var showResult = false
     @State private var showPaywall = false
+    @State private var showBulk = false
     @State private var pickedPhoto: PhotosPickerItem?
 
     var body: some View {
@@ -49,6 +50,12 @@ struct ScanView: View {
             }
             .padding()
             .navigationTitle("Scan")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showBulk = true } label: { Image(systemName: "rectangle.stack") }
+                }
+            }
+            .sheet(isPresented: $showBulk) { BulkScanView() }
             .onChange(of: pickedPhoto) { _, item in
                 Task { await identifyPickedPhoto(item) }
             }

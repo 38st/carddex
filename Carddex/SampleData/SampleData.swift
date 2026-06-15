@@ -75,19 +75,19 @@ enum SampleData {
     ]
 
     static let collection: [CollectionItem] = [
-        CollectionItem(card: charizard, condition: .nearMint),
-        CollectionItem(card: blastoise, condition: .nearMint),
-        CollectionItem(card: venusaur, condition: .lightlyPlayed),
-        CollectionItem(card: mewtwo, condition: .nearMint),
-        CollectionItem(card: gyarados, quantity: 2, condition: .nearMint),
-        CollectionItem(card: machamp, condition: .moderatelyPlayed),
-        CollectionItem(card: pikachu, quantity: 4, condition: .mint),
-        CollectionItem(card: ragavan, quantity: 2, condition: .nearMint),
-        CollectionItem(card: blueEyes, condition: .lightlyPlayed),
-        CollectionItem(card: jordan, condition: .nearMint),
-        CollectionItem(card: lebron, condition: .mint),
-        CollectionItem(card: brady, condition: .nearMint),
-        CollectionItem(card: trout, condition: .nearMint),
+        CollectionItem(card: charizard, condition: .nearMint, purchasePrice: Money(amount: 190)),
+        CollectionItem(card: blastoise, condition: .nearMint, purchasePrice: Money(amount: 110)),
+        CollectionItem(card: venusaur, condition: .lightlyPlayed, purchasePrice: Money(amount: 140)),
+        CollectionItem(card: mewtwo, condition: .nearMint, purchasePrice: Money(amount: 30)),
+        CollectionItem(card: gyarados, quantity: 2, condition: .nearMint, purchasePrice: Money(amount: 35)),
+        CollectionItem(card: machamp, condition: .moderatelyPlayed, purchasePrice: Money(amount: 28)),
+        CollectionItem(card: pikachu, quantity: 4, condition: .mint, purchasePrice: Money(amount: 8)),
+        CollectionItem(card: ragavan, quantity: 2, condition: .nearMint, purchasePrice: Money(amount: 60)),
+        CollectionItem(card: blueEyes, condition: .lightlyPlayed, purchasePrice: Money(amount: 70)),
+        CollectionItem(card: jordan, condition: .nearMint, purchasePrice: Money(amount: 9000)),
+        CollectionItem(card: lebron, condition: .mint, purchasePrice: Money(amount: 4200)),
+        CollectionItem(card: brady, condition: .nearMint, purchasePrice: Money(amount: 2000)),
+        CollectionItem(card: trout, condition: .nearMint, purchasePrice: Money(amount: 1100)),
     ]
 
     // A set checklist with some owned (above) and some still missing.

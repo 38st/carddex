@@ -1,4 +1,5 @@
 import SwiftUI
+import AuthenticationServices
 
 /// Account, marketplace, and app info. Sign in with Apple + eBay connect are
 /// wired up in later phases.
@@ -6,6 +7,7 @@ struct SettingsView: View {
     @Environment(AppEnvironment.self) private var env
     @Environment(SubscriptionStore.self) private var subs
     @State private var showPaywall = false
+    @State private var showDeleteConfirm = false
 
     var body: some View {
         NavigationStack {
@@ -44,7 +46,15 @@ struct SettingsView: View {
                                 .foregroundStyle(Theme.textSecondary)
                         }
                     }
-                    Button("Sign in with Apple") {}
+                    SignInWithAppleButton(.signIn) { request in
+                        request.requestedScopes = [.fullName, .email]
+                    } onCompletion: { _ in
+                        // Phase 1: exchange the Apple identity token with Supabase
+                        // (supabase.auth.signInWithIdToken). Stubbed until backend is live.
+                    }
+                    .signInWithAppleButtonStyle(.white)
+                    .frame(height: 44)
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.md, style: .continuous))
                 }
 
                 Section("Marketplace") {
@@ -59,11 +69,25 @@ struct SettingsView: View {
                     LabeledContent("Backend", value: "Supabase")
                     LabeledContent("Identification", value: env.isLiveBackend ? "Live" : "Sample")
                 }
+
+                Section {
+                    Button("Delete account", role: .destructive) { showDeleteConfirm = true }
+                } footer: {
+                    Text("Permanently deletes your collection and account.")
+                }
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("Settings")
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
+            }
+            .alert("Delete account?", isPresented: $showDeleteConfirm) {
+                Button("Delete", role: .destructive) {
+                    // Phase 1: call the `account-delete` Edge Function.
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This permanently deletes your collection and account. This can't be undone.")
             }
         }
     }
