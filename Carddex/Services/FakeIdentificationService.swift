@@ -1,0 +1,14 @@
+import Foundation
+
+/// Deterministic-ish identification for the simulator, previews, and tests.
+/// Used until the Supabase `identify` Edge Function is deployed.
+struct FakeIdentificationService: IdentificationService {
+    func identify(_ input: ScanInput) async throws -> IdentificationOutcome {
+        try? await Task.sleep(for: .milliseconds(650))
+        let pool = input.gameHint.map { hint in
+            SampleData.cards.filter { $0.game == hint }
+        } ?? SampleData.cards
+        let card = pool.randomElement() ?? SampleData.cards[0]
+        return .confident(IdentificationCandidate(card: card, confidence: 0.95))
+    }
+}

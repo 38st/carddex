@@ -28,4 +28,5 @@ struct RootView: View {
 #Preview {
     RootView()
         .environment(CollectionStore(items: SampleData.collection))
+        .environment(AppEnvironment())
 }

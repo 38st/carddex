@@ -1,10 +1,16 @@
 import SwiftUI
 
-/// Detail screen for a single owned card — holo hero, stats, and actions.
+/// Detail screen for a single owned card — holo hero with gyroscope tilt,
+/// stats, and actions.
 struct CardDetailView: View {
     @Environment(CollectionStore.self) private var store
     @Environment(\.dismiss) private var dismiss
+    @State private var motion = MotionManager()
     let item: CollectionItem
+
+    private func clamp(_ value: Double, _ limit: Double) -> Double {
+        max(-limit, min(limit, value))
+    }
 
     var body: some View {
         ScrollView {
@@ -16,7 +22,8 @@ struct CardDetailView: View {
                     cornerRadius: Theme.Radius.lg
                 )
                 .frame(maxWidth: 220)
-                .rotation3DEffect(.degrees(6), axis: (x: 1, y: 0, z: 0))
+                .rotation3DEffect(.degrees(clamp(motion.pitch * 16, 8) + 3), axis: (x: 1, y: 0, z: 0))
+                .rotation3DEffect(.degrees(clamp(motion.roll * 16, 8)), axis: (x: 0, y: 1, z: 0))
                 .shadow(color: .black.opacity(0.5), radius: 18, y: 12)
                 .padding(.top, Theme.Spacing.sm)
 
@@ -66,6 +73,8 @@ struct CardDetailView: View {
         }
         .navigationTitle(item.card.name)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear { motion.start() }
+        .onDisappear { motion.stop() }
     }
 }
 
