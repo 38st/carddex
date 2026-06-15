@@ -33,6 +33,7 @@
 		938A45158E0AAD1E02933242 /* HolographicFoil.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92A2C1DE0913631EB1B570A /* HolographicFoil.swift */; };
 		93C3A061777CCC86563D16EF /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECFAD4285A3AD2FD2A804E1 /* MotionManager.swift */; };
 		980CB4AB3FAE27FE27C508AF /* CardGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBCC8AADADB125C30C59456 /* CardGame.swift */; };
+		9AA606E5AEA664FAF18457C1 /* CardPriceChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EDBC0F174AC957E35849E2 /* CardPriceChart.swift */; };
 		9B90F360258706B4F05E6608 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82D6DA06E9FD6F0F0ACAEA8 /* AppConfig.swift */; };
 		A2E4B0BC1C7C2C64AFBF1E9B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74C8D2528046D25BFBDDCD7C /* OnboardingView.swift */; };
 		A403AA6CB1EADC1D00A457B5 /* FakeIdentificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABACF0BBB51F47C38FE8FF6 /* FakeIdentificationService.swift */; };
@@ -70,6 +71,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		01EDBC0F174AC957E35849E2 /* CardPriceChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPriceChart.swift; sourceTree = "<group>"; };
 		12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		1FF03BD99BC1FF413B539467 /* CardArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardArtwork.swift; sourceTree = "<group>"; };
 		23805BAE2F7E272E06D51717 /* BulkScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkScanView.swift; sourceTree = "<group>"; };
@@ -188,6 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				985EF2F1A2F4BF585C51D827 /* CardDetailView.swift */,
+				01EDBC0F174AC957E35849E2 /* CardPriceChart.swift */,
 				F75D7BC2E7A21E4EBF139228 /* CollectionView.swift */,
 			);
 			path = Collection;
@@ -458,6 +461,7 @@
 				BC7FFE053211DA48861099C6 /* CardCondition.swift in Sources */,
 				848406F03B29B526068F8A5D /* CardDetailView.swift in Sources */,
 				980CB4AB3FAE27FE27C508AF /* CardGame.swift in Sources */,
+				9AA606E5AEA664FAF18457C1 /* CardPriceChart.swift in Sources */,
 				AA2E9C19D851F0BCF570521F /* CardSet.swift in Sources */,
 				08B8A308209E7BF1EE8901ED /* CardTextRecognizer.swift in Sources */,
 				153F104711530D0197A30B5C /* CarddexApp.swift in Sources */,

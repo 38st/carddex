@@ -16,12 +16,6 @@ struct CardDetailView: View {
         max(-limit, min(limit, value))
     }
 
-    private var priceHistory: [Double] {
-        let price = NSDecimalNumber(decimal: item.card.marketPrice?.amount ?? 0).doubleValue
-        let shape: [Double] = [0.72, 0.78, 0.75, 0.83, 0.80, 0.88, 0.92, 0.90, 0.96, 1.0]
-        return shape.map { $0 * price }
-    }
-
     var body: some View {
         ScrollView {
             VStack(spacing: Theme.Spacing.lg) {
@@ -73,16 +67,9 @@ struct CardDetailView: View {
                     }
                 }
 
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                    Text("Price trend")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Theme.textPrimary)
-                    MiniAreaChart(values: priceHistory)
-                        .frame(height: 70)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(Theme.Spacing.md)
-                .glassPanel(cornerRadius: Theme.Radius.card)
+                CardPriceChart(basePrice: NSDecimalNumber(decimal: item.card.marketPrice?.amount ?? 0).doubleValue)
+                    .padding(Theme.Spacing.md)
+                    .glassPanel(cornerRadius: Theme.Radius.card)
 
                 VStack(spacing: Theme.Spacing.sm) {
                     LabeledContent("Condition", value: item.condition.rawValue)

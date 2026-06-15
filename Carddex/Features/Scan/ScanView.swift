@@ -177,6 +177,9 @@ private struct IdentifyResultSheet: View {
     let outcome: IdentificationOutcome
     let onAdd: (Card) -> Void
     @Environment(\.dismiss) private var dismiss
+    @State private var revealScale: CGFloat = 0.85
+    @State private var revealOpacity: Double = 0
+    @State private var shownPrice: Double = 0
 
     var body: some View {
         NavigationStack {
@@ -206,9 +209,12 @@ private struct IdentifyResultSheet: View {
     }
 
     private func confirm(_ card: Card) -> some View {
-        VStack(spacing: Theme.Spacing.md) {
-            CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport)
+        let priceValue = NSDecimalNumber(decimal: card.marketPrice?.amount ?? 0).doubleValue
+        return VStack(spacing: Theme.Spacing.md) {
+            CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport, animatedFoil: true)
                 .frame(maxWidth: 150)
+                .scaleEffect(revealScale)
+                .opacity(revealOpacity)
                 .padding(.top)
             GamePill(game: card.game, sport: card.sport)
             Text(card.name)
@@ -217,16 +223,26 @@ private struct IdentifyResultSheet: View {
                 .multilineTextAlignment(.center)
             Text("\(card.setName) · \(card.number)")
                 .foregroundStyle(Theme.textSecondary)
-            if let price = card.marketPrice {
-                Text(price.formatted)
+            if card.marketPrice != nil {
+                Text(Money(amount: Decimal(shownPrice)).formatted)
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(Theme.accent)
                     .monospacedDigit()
+                    .contentTransition(.numericText(value: shownPrice))
             }
             Spacer()
             PrimaryButton(title: "Add to collection", systemImage: "plus") { onAdd(card) }
         }
         .padding()
+        .onAppear {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                revealScale = 1
+                revealOpacity = 1
+            }
+            withAnimation(.easeOut(duration: 0.7).delay(0.15)) {
+                shownPrice = priceValue
+            }
+        }
     }
 
     private func picker(_ candidates: [IdentificationCandidate]) -> some View {

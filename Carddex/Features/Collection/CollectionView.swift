@@ -7,6 +7,7 @@ struct CollectionView: View {
     @State private var selectedGame: CardGame?
     @State private var selectedSport: SportCategory?
     @State private var mode: Mode = .grid
+    @Namespace private var cardNamespace
 
     enum Mode: String, CaseIterable, Identifiable {
         case grid = "Grid"
@@ -44,6 +45,7 @@ struct CollectionView: View {
             .navigationTitle("Collection")
             .navigationDestination(for: CollectionItem.self) { item in
                 CardDetailView(item: item)
+                    .navigationTransition(.zoom(sourceID: item.id, in: cardNamespace))
             }
         }
     }
@@ -89,6 +91,7 @@ struct CollectionView: View {
                             CardCell(item: item)
                         }
                         .buttonStyle(.plain)
+                        .matchedTransitionSource(id: item.id, in: cardNamespace)
                     }
                 }
                 .padding()

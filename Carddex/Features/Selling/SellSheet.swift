@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// eBay listing composer. Pre-fills a title, price, and condition from the card,
-/// links to sold comps (affiliate), and publishes via the eBay Sell API once the
-/// user's eBay account is connected (Phase 3 — see docs/setup-runbook.md).
+/// estimates payout after fees, links to sold comps (affiliate), and publishes via
+/// the eBay Sell API once the user's eBay account is connected (Phase 3).
 struct SellSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
@@ -22,51 +22,61 @@ struct SellSheet: View {
         _quantity = State(initialValue: item.quantity)
     }
 
+    private var priceDouble: Double { Double(priceText) ?? 0 }
+    private var estimatedPayout: Double { max(0, priceDouble - priceDouble * 0.1325 - 1.0) }
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: Theme.Spacing.lg) {
-                    header
+            ZStack {
+                VaultBackground()
+                ScrollView {
+                    VStack(spacing: Theme.Spacing.lg) {
+                        header
 
-                    field("Listing title") {
-                        TextField("Title", text: $title, axis: .vertical)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    field("Price (USD)") {
-                        TextField("0.00", text: $priceText)
-                            .keyboardType(.decimalPad)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    field("Condition") {
-                        Picker("Condition", selection: $condition) {
-                            ForEach(CardCondition.allCases) { Text($0.rawValue).tag($0) }
+                        field("Listing title") {
+                            TextField("Title", text: $title, axis: .vertical)
+                                .textFieldStyle(.plain)
+                                .foregroundStyle(Theme.textPrimary)
                         }
-                        .pickerStyle(.menu)
-                        .tint(Theme.accent)
-                    }
-                    field("Quantity") {
-                        Stepper("\(quantity)", value: $quantity, in: 1...max(1, item.quantity))
-                    }
+                        field("Price (USD)") {
+                            TextField("0.00", text: $priceText)
+                                .keyboardType(.decimalPad)
+                                .textFieldStyle(.plain)
+                                .foregroundStyle(Theme.textPrimary)
+                        }
+                        field("Condition") {
+                            Picker("Condition", selection: $condition) {
+                                ForEach(CardCondition.allCases) { Text($0.rawValue).tag($0) }
+                            }
+                            .pickerStyle(.menu)
+                            .tint(Theme.accent)
+                        }
+                        field("Quantity") {
+                            Stepper("\(quantity)", value: $quantity, in: 1...max(1, item.quantity))
+                                .foregroundStyle(Theme.textPrimary)
+                        }
 
-                    PrimaryButton(title: "List on eBay", systemImage: "tag") {
-                        // Phase 3: ensure eBay is connected (OAuth) then call the
-                        // `ebay-list` Edge Function (Inventory → Offer → publish).
-                    }
+                        payoutRow
 
-                    Button {
-                        if let url = Marketplace.ebaySoldSearchURL(for: item.card) { openURL(url) }
-                    } label: {
-                        Label("See recent sold prices on eBay", systemImage: "chart.bar")
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(Theme.accent)
-                    }
+                        PrimaryButton(title: "List on eBay", systemImage: "tag") {
+                            // Phase 3: ensure eBay is connected (OAuth) then call `ebay-list`.
+                        }
 
-                    Text("Connect your eBay account in Settings to publish listings.")
-                        .font(.caption)
-                        .foregroundStyle(Theme.textTertiary)
-                        .multilineTextAlignment(.center)
+                        Button {
+                            if let url = Marketplace.ebaySoldSearchURL(for: item.card) { openURL(url) }
+                        } label: {
+                            Label("See recent sold prices on eBay", systemImage: "chart.bar")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(Theme.accent)
+                        }
+
+                        Text("Connect your eBay account in Settings to publish listings.")
+                            .font(.caption)
+                            .foregroundStyle(Theme.textTertiary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding()
                 }
-                .padding()
             }
             .navigationTitle("Sell")
             .navigationBarTitleDisplayMode(.inline)
@@ -97,14 +107,37 @@ struct SellSheet: View {
         }
     }
 
+    private var payoutRow: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Est. payout after fees")
+                    .font(.caption)
+                    .foregroundStyle(Theme.textSecondary)
+                Text("eBay ~13.25% + $1.00 shipping")
+                    .font(.caption2)
+                    .foregroundStyle(Theme.textTertiary)
+            }
+            Spacer()
+            Text(Money(amount: Decimal(estimatedPayout)).formatted)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(Theme.gain)
+                .monospacedDigit()
+                .contentTransition(.numericText(value: estimatedPayout))
+        }
+        .padding(Theme.Spacing.md)
+        .glassPanel(cornerRadius: Theme.Radius.card)
+    }
+
     @ViewBuilder private func field<Content: View>(_ label: String, @ViewBuilder _ content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
                 .font(.caption)
                 .foregroundStyle(Theme.textSecondary)
             content()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(Theme.Spacing.xms)
+                .glassPanel(cornerRadius: Theme.Radius.md)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
