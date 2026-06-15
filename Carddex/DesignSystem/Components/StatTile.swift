@@ -15,6 +15,7 @@ struct StatTile: View {
                 .font(.title3.weight(.bold))
                 .foregroundStyle(accent)
                 .monospacedDigit()
+                .contentTransition(.numericText())
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
         }

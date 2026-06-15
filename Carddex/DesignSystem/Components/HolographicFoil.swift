@@ -6,6 +6,9 @@ import SwiftUI
 struct HolographicFoil: View {
     var cornerRadius: CGFloat = Theme.Radius.card
     var intensity: Double = 1
+    /// When false, renders a single static foil sheen (no per-frame redraw) — use
+    /// in grids where many cards are on screen at once.
+    var isAnimated: Bool = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -17,7 +20,7 @@ struct HolographicFoil: View {
     var body: some View {
         GeometryReader { geo in
             Group {
-                if reduceMotion {
+                if reduceMotion || !isAnimated {
                     AngularGradient(gradient: Gradient(colors: foil), center: .center)
                         .blendMode(.overlay)
                         .opacity(0.22 * intensity)

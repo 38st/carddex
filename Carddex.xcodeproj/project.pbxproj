@@ -28,6 +28,7 @@
 		772602228544119EA49EE33F /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */; };
 		776D1012C007CA566A78CF37 /* GlassTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9FA29969F1BC99FB176AC7 /* GlassTabBar.swift */; };
 		848406F03B29B526068F8A5D /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 985EF2F1A2F4BF585C51D827 /* CardDetailView.swift */; };
+		8B6009926D20F84F3131CFF6 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E23565FFD3CD968B8F9515 /* Haptics.swift */; };
 		8FE56926EC900900F3BF4C7C /* CollectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C867666CD3C8B620FC2B2C /* CollectionItem.swift */; };
 		938A45158E0AAD1E02933242 /* HolographicFoil.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92A2C1DE0913631EB1B570A /* HolographicFoil.swift */; };
 		93C3A061777CCC86563D16EF /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECFAD4285A3AD2FD2A804E1 /* MotionManager.swift */; };
@@ -50,6 +51,7 @@
 		E889519F72241D7B7492D225 /* GamePill.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF19D95A1447D88D0B089130 /* GamePill.swift */; };
 		EBA8CDA2EBEC6876638E5EF7 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A3C2C21CF6D463F8F74C1 /* SampleData.swift */; };
 		EDD0CC12FD6C39EA5ACE18C7 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8F6CCD200180A066E994DE36 /* PrivacyInfo.xcprivacy */; };
+		EEC00DC6CE66295AE76A6647 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E313ED651E765ACFDC063ACB /* CachedAsyncImage.swift */; };
 		EFCDB9CAF184D6971C7E7657 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6641D60939CA82CD0B026D90 /* RootView.swift */; };
 		F2C24D494EB51785D53D0E89 /* BulkScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23805BAE2F7E272E06D51717 /* BulkScanView.swift */; };
 		F3FA1E33E259AEA47F86AA2C /* BinderPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3617587A04CE5CFE2223FA98 /* BinderPageView.swift */; };
@@ -86,6 +88,7 @@
 		6E61FDB4D59D4C62D3E4F3BC /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		6FC3794684572890D03F101E /* Carddex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Carddex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		74C8D2528046D25BFBDDCD7C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		83E23565FFD3CD968B8F9515 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		84BBBF0733DDB546EAAE7073 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
 		8F6CCD200180A066E994DE36 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		8F724DDD9B26E77DF91C0E01 /* EmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyState.swift; sourceTree = "<group>"; };
@@ -108,6 +111,7 @@
 		CB9FA29969F1BC99FB176AC7 /* GlassTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassTabBar.swift; sourceTree = "<group>"; };
 		D09449BE08055A2CCACDFCFB /* SportCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SportCategory.swift; sourceTree = "<group>"; };
 		DECFAD4285A3AD2FD2A804E1 /* MotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionManager.swift; sourceTree = "<group>"; };
+		E313ED651E765ACFDC063ACB /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
 		E45964136E933A7B84200BAD /* MiniAreaChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniAreaChart.swift; sourceTree = "<group>"; };
 		E4EBB65D08CC76601467891D /* StatTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatTile.swift; sourceTree = "<group>"; };
 		E92A2C1DE0913631EB1B570A /* HolographicFoil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HolographicFoil.swift; sourceTree = "<group>"; };
@@ -193,6 +197,7 @@
 			isa = PBXGroup;
 			children = (
 				3617587A04CE5CFE2223FA98 /* BinderPageView.swift */,
+				E313ED651E765ACFDC063ACB /* CachedAsyncImage.swift */,
 				1FF03BD99BC1FF413B539467 /* CardArtwork.swift */,
 				AA8F04774E0D43F60A439C60 /* CardCell.swift */,
 				8F724DDD9B26E77DF91C0E01 /* EmptyState.swift */,
@@ -282,6 +287,7 @@
 			isa = PBXGroup;
 			children = (
 				5CD721849A62838D4E72B51B /* Color+Hex.swift */,
+				83E23565FFD3CD968B8F9515 /* Haptics.swift */,
 				6E61FDB4D59D4C62D3E4F3BC /* Theme.swift */,
 				5B092E1888F4F29CBC18B4CE /* VaultBackground.swift */,
 				4F1296536807F6833B109E6F /* Components */,
@@ -444,6 +450,7 @@
 				FBE4AC16D042484B4DEFE566 /* AppEnvironment.swift in Sources */,
 				F3FA1E33E259AEA47F86AA2C /* BinderPageView.swift in Sources */,
 				F2C24D494EB51785D53D0E89 /* BulkScanView.swift in Sources */,
+				EEC00DC6CE66295AE76A6647 /* CachedAsyncImage.swift in Sources */,
 				0F21845C3A975132A40CFC40 /* CameraScanView.swift in Sources */,
 				B8685AEED4FD8338E81BDC48 /* Card.swift in Sources */,
 				AE18F7E53335D11C36F462FF /* CardArtwork.swift in Sources */,
@@ -462,6 +469,7 @@
 				A403AA6CB1EADC1D00A457B5 /* FakeIdentificationService.swift in Sources */,
 				E889519F72241D7B7492D225 /* GamePill.swift in Sources */,
 				776D1012C007CA566A78CF37 /* GlassTabBar.swift in Sources */,
+				8B6009926D20F84F3131CFF6 /* Haptics.swift in Sources */,
 				938A45158E0AAD1E02933242 /* HolographicFoil.swift in Sources */,
 				28C12E1BB0608052504E5B04 /* IdentificationService.swift in Sources */,
 				6EA8BB24CF8F79E84B21105B /* LiveIdentificationService.swift in Sources */,

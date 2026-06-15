@@ -12,13 +12,21 @@ struct BinderPageView: View {
         let progress = store.completion(for: set)
         let fraction = progress.total > 0 ? Double(progress.owned) / Double(progress.total) : 0
 
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        let isComplete = progress.total > 0 && progress.owned == progress.total
+
+        return VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(set.name)
                         .font(.headline)
                         .foregroundStyle(Theme.textPrimary)
-                    GamePill(game: set.game)
+                    if isComplete {
+                        Label("Set complete", systemImage: "checkmark.seal.fill")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Theme.gain)
+                    } else {
+                        GamePill(game: set.game)
+                    }
                 }
                 Spacer()
                 CompletionRing(fraction: fraction, label: "\(progress.owned)/\(progress.total)")
@@ -39,17 +47,18 @@ struct BinderPageView: View {
     }
 }
 
-/// Circular set-completion indicator.
+/// Circular set-completion indicator that fills in on appear.
 struct CompletionRing: View {
     var fraction: Double
     var label: String
+    @State private var animated: Double = 0
 
     var body: some View {
         ZStack {
             Circle().stroke(Color.white.opacity(0.1), lineWidth: 6)
             Circle()
-                .trim(from: 0, to: fraction)
-                .stroke(Theme.accent, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                .trim(from: 0, to: animated)
+                .stroke(fraction >= 1 ? Theme.gain : Theme.accent, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             Text(label)
                 .font(.caption.weight(.bold))
@@ -57,6 +66,11 @@ struct CompletionRing: View {
                 .monospacedDigit()
         }
         .frame(width: 56, height: 56)
+        .onAppear {
+            withAnimation(.spring(response: 0.8, dampingFraction: 0.85).delay(0.1)) {
+                animated = fraction
+            }
+        }
     }
 }
 

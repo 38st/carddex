@@ -63,6 +63,7 @@ struct ScanView: View {
                 if let outcome {
                     IdentifyResultSheet(outcome: outcome) { card in
                         store.add(card)
+                        Haptics.impact(.medium)
                         showResult = false
                     }
                 }
@@ -120,7 +121,16 @@ struct ScanView: View {
             outcome = .unidentified(ocrText: recognizedText)
         }
         subs.recordScan()
+        notifyOutcome()
         showResult = true
+    }
+
+    private func notifyOutcome() {
+        switch outcome {
+        case .confident: Haptics.success()
+        case .unidentified: Haptics.warning()
+        default: break
+        }
     }
 
     private func identifyPickedPhoto(_ item: PhotosPickerItem?) async {
@@ -142,6 +152,7 @@ struct ScanView: View {
             outcome = .unidentified(ocrText: ocr)
         }
         subs.recordScan()
+        notifyOutcome()
         showResult = true
         pickedPhoto = nil
     }

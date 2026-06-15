@@ -8,30 +8,20 @@ struct CardArtwork: View {
     var price: Money? = nil
     var imageURL: URL? = nil
     var sport: SportCategory? = nil
+    var animatedFoil: Bool = false
     var cornerRadius: CGFloat = Theme.Radius.card
 
     var body: some View {
         let tier = Rarity.tier(rarityText: rarity, price: price)
         ZStack {
             if let imageURL {
-                AsyncImage(url: imageURL, transaction: Transaction(animation: .easeOut(duration: 0.25))) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().scaledToFill()
-                    case .empty:
-                        placeholder.overlay(ProgressView().tint(.white))
-                    case .failure:
-                        placeholder
-                    @unknown default:
-                        placeholder
-                    }
-                }
+                CachedAsyncImage(url: imageURL) { placeholder }
             } else {
                 placeholder
             }
 
             if tier != .none {
-                HolographicFoil(cornerRadius: cornerRadius, intensity: tier == .mythic ? 1.0 : 0.6)
+                HolographicFoil(cornerRadius: cornerRadius, intensity: tier == .mythic ? 1.0 : 0.6, isAnimated: animatedFoil)
             }
         }
         .aspectRatio(Theme.cardAspectRatio, contentMode: .fit)

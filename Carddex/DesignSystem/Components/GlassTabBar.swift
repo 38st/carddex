@@ -31,6 +31,7 @@ struct GlassTabBar: View {
     private func tabButton(_ tab: Tab, _ icon: String, _ label: String) -> some View {
         let selected = selection == tab
         return Button {
+            if selection != tab { Haptics.selection() }
             withAnimation(Theme.springTap) { selection = tab }
         } label: {
             VStack(spacing: 3) {

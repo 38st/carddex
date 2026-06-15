@@ -8,6 +8,7 @@ struct CardDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var motion = MotionManager()
     @State private var showSell = false
+    @State private var showRemoveConfirm = false
     @State private var shareImage: Image?
     let item: CollectionItem
 
@@ -30,6 +31,7 @@ struct CardDetailView: View {
                     price: item.card.marketPrice,
                     imageURL: item.card.imageURL,
                     sport: item.card.sport,
+                    animatedFoil: true,
                     cornerRadius: Theme.Radius.lg
                 )
                 .frame(maxWidth: 220)
@@ -95,13 +97,20 @@ struct CardDetailView: View {
                 PrimaryButton(title: "List on eBay", systemImage: "tag") { showSell = true }
 
                 Button(role: .destructive) {
-                    store.remove(item)
-                    dismiss()
+                    showRemoveConfirm = true
                 } label: {
                     Label("Remove from collection", systemImage: "trash")
                 }
                 .tint(Theme.loss)
                 .padding(.top, Theme.Spacing.xs)
+                .confirmationDialog("Remove this card?", isPresented: $showRemoveConfirm, titleVisibility: .visible) {
+                    Button("Remove", role: .destructive) {
+                        Haptics.warning()
+                        store.remove(item)
+                        dismiss()
+                    }
+                    Button("Cancel", role: .cancel) {}
+                }
             }
             .padding()
         }

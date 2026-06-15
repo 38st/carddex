@@ -89,6 +89,7 @@ struct PortfolioView: View {
                 .font(.system(size: 40, weight: .bold))
                 .foregroundStyle(Theme.textPrimary)
                 .monospacedDigit()
+                .contentTransition(.numericText())
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
             HStack(spacing: 6) {

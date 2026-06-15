@@ -27,6 +27,8 @@ struct CollectionView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
+                header
+
                 Picker("View", selection: $mode) {
                     ForEach(Mode.allCases) { Text($0.rawValue).tag($0) }
                 }
@@ -46,6 +48,20 @@ struct CollectionView: View {
         }
     }
 
+    private var header: some View {
+        HStack {
+            Label("\(store.totalCards) cards", systemImage: "square.stack")
+            Spacer()
+            Text(store.totalValue.formatted)
+                .monospacedDigit()
+                .foregroundStyle(Theme.accent)
+        }
+        .font(.subheadline.weight(.medium))
+        .foregroundStyle(Theme.textSecondary)
+        .padding(.horizontal)
+        .padding(.top, Theme.Spacing.xs)
+    }
+
     @ViewBuilder private var gridContent: some View {
         if store.items.isEmpty {
             EmptyState(
@@ -59,15 +75,24 @@ struct CollectionView: View {
             if selectedGame == .sports {
                 sportFilterBar
             }
-            LazyVGrid(columns: columns, spacing: Theme.Spacing.lg) {
-                ForEach(filteredItems) { item in
-                    NavigationLink(value: item) {
-                        CardCell(item: item)
+            if filteredItems.isEmpty {
+                EmptyState(
+                    icon: "line.3.horizontal.decrease.circle",
+                    title: "Nothing here yet",
+                    message: "No cards match this filter — scan one to fill the gap."
+                )
+                .padding(.top, Theme.Spacing.xl)
+            } else {
+                LazyVGrid(columns: columns, spacing: Theme.Spacing.lg) {
+                    ForEach(filteredItems) { item in
+                        NavigationLink(value: item) {
+                            CardCell(item: item)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
+                .padding()
             }
-            .padding()
         }
     }
 
@@ -83,14 +108,12 @@ struct CollectionView: View {
     private var gameFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: Theme.Spacing.sm) {
-                FilterChip(title: "All", isSelected: selectedGame == nil) {
-                    selectedGame = nil
-                    selectedSport = nil
+                FilterChip(title: "All", count: store.items.count, isSelected: selectedGame == nil) {
+                    select(game: nil)
                 }
                 ForEach(CardGame.allCases) { game in
-                    FilterChip(title: game.displayName, isSelected: selectedGame == game) {
-                        selectedGame = game
-                        selectedSport = nil
+                    FilterChip(title: game.displayName, count: store.items(for: game).count, isSelected: selectedGame == game) {
+                        select(game: game)
                     }
                 }
             }
@@ -103,10 +126,13 @@ struct CollectionView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: Theme.Spacing.sm) {
                 FilterChip(title: "All sports", isSelected: selectedSport == nil) {
+                    Haptics.selection()
                     selectedSport = nil
                 }
                 ForEach(SportCategory.allCases) { sport in
-                    FilterChip(title: sport.displayName, isSelected: selectedSport == sport) {
+                    let count = store.items.filter { $0.card.sport == sport }.count
+                    FilterChip(title: sport.displayName, count: count, isSelected: selectedSport == sport) {
+                        Haptics.selection()
                         selectedSport = sport
                     }
                 }
@@ -114,25 +140,39 @@ struct CollectionView: View {
             .padding(.horizontal)
         }
     }
+
+    private func select(game: CardGame?) {
+        Haptics.selection()
+        selectedGame = game
+        selectedSport = nil
+    }
 }
 
 private struct FilterChip: View {
     let title: String
+    var count: Int? = nil
     let isSelected: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(.subheadline.weight(.medium))
-                .padding(.horizontal, 14)
-                .padding(.vertical, Theme.Spacing.sm)
-                .foregroundStyle(isSelected ? .white : Theme.textSecondary)
-                .background(
-                    isSelected ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(.ultraThinMaterial),
-                    in: Capsule()
-                )
-                .overlay(Capsule().strokeBorder(isSelected ? .clear : Theme.hairline))
+            HStack(spacing: 6) {
+                Text(title)
+                if let count {
+                    Text("\(count)")
+                        .opacity(isSelected ? 0.85 : 0.55)
+                }
+            }
+            .font(.subheadline.weight(.medium))
+            .monospacedDigit()
+            .padding(.horizontal, 14)
+            .padding(.vertical, Theme.Spacing.sm)
+            .foregroundStyle(isSelected ? .white : Theme.textSecondary)
+            .background(
+                isSelected ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(.ultraThinMaterial),
+                in: Capsule()
+            )
+            .overlay(Capsule().strokeBorder(isSelected ? .clear : Theme.hairline))
         }
     }
 }
