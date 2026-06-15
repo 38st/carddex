@@ -14,6 +14,35 @@ extension SampleData {
     /// Market-tracked cards, sports first.
     static let marketCards: [Card] = [jordan, lebron, brady, trout, messi, gretzky, charizard, blueEyes]
 
+    /// Per-category sub-indices (Card Ladder-style), sports first.
+    static let categoryIndices: [MarketIndexEntry] = [
+        MarketIndexEntry(id: "idx-basketball", name: "Basketball", symbolName: "basketball.fill", memberIDs: [jordan.id, lebron.id], accentHex: 0xEE6730),
+        MarketIndexEntry(id: "idx-football", name: "Football", symbolName: "football.fill", memberIDs: [brady.id], accentHex: 0x8B5E3C),
+        MarketIndexEntry(id: "idx-baseball", name: "Baseball", symbolName: "baseball.fill", memberIDs: [trout.id], accentHex: 0xC8102E),
+        MarketIndexEntry(id: "idx-soccer", name: "Soccer", symbolName: "soccerball", memberIDs: [messi.id], accentHex: 0x2FAE60),
+        MarketIndexEntry(id: "idx-hockey", name: "Hockey", symbolName: "hockey.puck.fill", memberIDs: [gretzky.id], accentHex: 0x4AA3DF),
+        MarketIndexEntry(id: "idx-pokemon", name: "Pokémon", symbolName: "bolt.fill", memberIDs: [charizard.id], accentHex: 0xFFD23F),
+    ]
+
+    /// Element-wise average of member price series (normalized 0…1).
+    static func indexSeries(_ memberIDs: [String]) -> [Double] {
+        let lists = memberIDs.compactMap { market[$0]?.priceSeries }
+        guard let first = lists.first else { return [] }
+        return (0..<first.count).map { i in
+            lists.map { $0[i] }.reduce(0, +) / Double(lists.count)
+        }
+    }
+
+    /// Average 30-day change of an index's members.
+    static func indexChange(_ memberIDs: [String]) -> Double {
+        let changes = memberIDs.compactMap { market[$0]?.change30d }
+        return changes.isEmpty ? 0 : changes.reduce(0, +) / Double(changes.count)
+    }
+
+    static func indexMembers(_ memberIDs: [String]) -> [Card] {
+        marketCards.filter { memberIDs.contains($0.id) }
+    }
+
     static let market: [String: CardMarket] = [
         jordan.id: CardMarket(
             cardId: jordan.id, change30d: 6.8,

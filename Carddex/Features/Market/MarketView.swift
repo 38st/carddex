@@ -43,6 +43,18 @@ struct MarketView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                     indexCard
+
+                    sectionTitle("Indices")
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: Theme.Spacing.md) {
+                            ForEach(SampleData.categoryIndices) { entry in
+                                NavigationLink(value: entry) { IndexTile(entry: entry) }
+                                    .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+
                     categoryBar
 
                     if search.isEmpty && !watched.isEmpty {
@@ -72,6 +84,9 @@ struct MarketView: View {
             .searchable(text: $search, prompt: "Search the market")
             .navigationDestination(for: Card.self) { card in
                 MarketCardView(card: card)
+            }
+            .navigationDestination(for: MarketIndexEntry.self) { entry in
+                IndexDetailView(entry: entry)
             }
         }
     }
@@ -157,7 +172,7 @@ private struct MarketChip: View {
     }
 }
 
-private struct MarketRow: View {
+struct MarketRow: View {
     let card: Card
 
     var body: some View {
@@ -211,6 +226,28 @@ private struct MoverCard: View {
         }
         .frame(width: 114)
         .padding(Theme.Spacing.sm)
+        .glassPanel(cornerRadius: Theme.Radius.card)
+    }
+}
+
+private struct IndexTile: View {
+    let entry: MarketIndexEntry
+    var body: some View {
+        let change = SampleData.indexChange(entry.memberIDs)
+        let up = change >= 0
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: entry.symbolName).font(.caption).foregroundStyle(entry.accent)
+                Text(entry.name).font(.subheadline.weight(.medium)).foregroundStyle(Theme.textPrimary)
+            }
+            MiniAreaChart(values: SampleData.indexSeries(entry.memberIDs), tint: up ? Theme.gain : Theme.loss)
+                .frame(height: 40)
+            Text("\(up ? "▲ +" : "▼ ")\(String(format: "%.1f", abs(change)))%")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(up ? Theme.gain : Theme.loss)
+        }
+        .frame(width: 150)
+        .padding(Theme.Spacing.md)
         .glassPanel(cornerRadius: Theme.Radius.card)
     }
 }

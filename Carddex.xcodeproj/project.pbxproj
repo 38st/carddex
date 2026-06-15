@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		055E63044CE8B668563152AD /* IndexDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF581996BE7C4DE18E7858C /* IndexDetailView.swift */; };
 		06F64BCB3523A9F41C133BAE /* MarketData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E91C38193031B0D40DEEBA3 /* MarketData.swift */; };
 		07E74E71986E8DC7E53882E9 /* EmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F724DDD9B26E77DF91C0E01 /* EmptyState.swift */; };
 		089E477FD84631DCFEE20706 /* MarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C504F1F6B870EC541D30495 /* MarketView.swift */; };
@@ -49,6 +50,7 @@
 		B2ED098BA66E0257B53E2C56 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920932ED4E4C0CA56E893E28 /* SettingsView.swift */; };
 		B8685AEED4FD8338E81BDC48 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651F0C5FCA4E4A93DC5DFA87 /* Card.swift */; };
 		BC7FFE053211DA48861099C6 /* CardCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2C9E8CC255BD14F8A0808E /* CardCondition.swift */; };
+		C6E2CBBB3B830D42C5246C4C /* MarketIndexEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B0B81F9276E47C30F3F9507 /* MarketIndexEntry.swift */; };
 		C7D3AE1DDEC6EDC0B41A1058 /* SportCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D09449BE08055A2CCACDFCFB /* SportCategory.swift */; };
 		CBAA3404D0BAC6A9EB1DDDD6 /* MarketCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DF9E30EF413E210833D0AF /* MarketCardView.swift */; };
 		CCBC8D58DE318ED40CC96F11 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14F4FB1E29E55D21AB1A0747 /* AppRouter.swift */; };
@@ -82,6 +84,7 @@
 		14F4FB1E29E55D21AB1A0747 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
 		1FF03BD99BC1FF413B539467 /* CardArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardArtwork.swift; sourceTree = "<group>"; };
 		23805BAE2F7E272E06D51717 /* BulkScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkScanView.swift; sourceTree = "<group>"; };
+		2B0B81F9276E47C30F3F9507 /* MarketIndexEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketIndexEntry.swift; sourceTree = "<group>"; };
 		2DBCC8AADADB125C30C59456 /* CardGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardGame.swift; sourceTree = "<group>"; };
 		33296CD9469A347C30B77CC2 /* CameraScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraScanView.swift; sourceTree = "<group>"; };
 		3617587A04CE5CFE2223FA98 /* BinderPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinderPageView.swift; sourceTree = "<group>"; };
@@ -120,6 +123,7 @@
 		BFD4A6606A9F78A0E683361D /* PortfolioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortfolioView.swift; sourceTree = "<group>"; };
 		C675E730028BCDA946961EA9 /* SharePosters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePosters.swift; sourceTree = "<group>"; };
 		C6C56B720E530A7D66C52FD1 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
+		CAF581996BE7C4DE18E7858C /* IndexDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexDetailView.swift; sourceTree = "<group>"; };
 		CB964D2472427C0D8EFC781C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CB9FA29969F1BC99FB176AC7 /* GlassTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassTabBar.swift; sourceTree = "<group>"; };
 		D09449BE08055A2CCACDFCFB /* SportCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SportCategory.swift; sourceTree = "<group>"; };
@@ -265,6 +269,7 @@
 		958F7E100E60BEC2256B575F /* Market */ = {
 			isa = PBXGroup;
 			children = (
+				CAF581996BE7C4DE18E7858C /* IndexDetailView.swift */,
 				F1DF9E30EF413E210833D0AF /* MarketCardView.swift */,
 				4C504F1F6B870EC541D30495 /* MarketView.swift */,
 			);
@@ -280,6 +285,7 @@
 				6C4DFC49D84E3195DE6FD8DF /* CardSet.swift */,
 				A0C867666CD3C8B620FC2B2C /* CollectionItem.swift */,
 				4E91C38193031B0D40DEEBA3 /* MarketData.swift */,
+				2B0B81F9276E47C30F3F9507 /* MarketIndexEntry.swift */,
 				A509AB568997A722F0896EC9 /* Money.swift */,
 				B87334A1E7485DC97242BA9E /* Rarity.swift */,
 				D09449BE08055A2CCACDFCFB /* SportCategory.swift */,
@@ -503,9 +509,11 @@
 				8B6009926D20F84F3131CFF6 /* Haptics.swift in Sources */,
 				938A45158E0AAD1E02933242 /* HolographicFoil.swift in Sources */,
 				28C12E1BB0608052504E5B04 /* IdentificationService.swift in Sources */,
+				055E63044CE8B668563152AD /* IndexDetailView.swift in Sources */,
 				6EA8BB24CF8F79E84B21105B /* LiveIdentificationService.swift in Sources */,
 				CBAA3404D0BAC6A9EB1DDDD6 /* MarketCardView.swift in Sources */,
 				06F64BCB3523A9F41C133BAE /* MarketData.swift in Sources */,
+				C6E2CBBB3B830D42C5246C4C /* MarketIndexEntry.swift in Sources */,
 				089E477FD84631DCFEE20706 /* MarketView.swift in Sources */,
 				0FBFEAF00D3690650EF3708D /* Marketplace.swift in Sources */,
 				D8A322320269648D53124204 /* MiniAreaChart.swift in Sources */,
