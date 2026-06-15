@@ -4,5 +4,5 @@ import SwiftUI
 /// "Scan your first card" button jumping to the Scan tab).
 @Observable
 final class AppRouter {
-    var selectedTab: Tab = .scan
+    var selectedTab: Tab = .market
 }

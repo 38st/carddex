@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum Tab: CaseIterable {
-    case scan, collection, portfolio, settings
+    case market, collection, scan, portfolio, settings
 }
 
 /// Floating bottom tab bar — four evenly-spaced tabs over an iOS 26 Liquid Glass
@@ -10,9 +10,10 @@ struct GlassTabBar: View {
     @Binding var selection: Tab
 
     private let items: [(tab: Tab, icon: String, label: String)] = [
-        (.scan, "viewfinder", "Scan"),
+        (.market, "chart.line.uptrend.xyaxis", "Market"),
         (.collection, "square.grid.2x2", "Collection"),
-        (.portfolio, "chart.line.uptrend.xyaxis", "Portfolio"),
+        (.scan, "viewfinder", "Scan"),
+        (.portfolio, "dollarsign.circle", "Portfolio"),
         (.settings, "gearshape", "Settings"),
     ]
 

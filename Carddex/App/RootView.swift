@@ -10,8 +10,9 @@ struct RootView: View {
 
             Group {
                 switch router.selectedTab {
-                case .scan: ScanView()
+                case .market: MarketView()
                 case .collection: CollectionView()
+                case .scan: ScanView()
                 case .portfolio: PortfolioView()
                 case .settings: SettingsView()
                 }

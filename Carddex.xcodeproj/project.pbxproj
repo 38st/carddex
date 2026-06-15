@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06F64BCB3523A9F41C133BAE /* MarketData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E91C38193031B0D40DEEBA3 /* MarketData.swift */; };
 		07E74E71986E8DC7E53882E9 /* EmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F724DDD9B26E77DF91C0E01 /* EmptyState.swift */; };
+		089E477FD84631DCFEE20706 /* MarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C504F1F6B870EC541D30495 /* MarketView.swift */; };
 		08B8A308209E7BF1EE8901ED /* CardTextRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF4D5A89AF79062C925BD0A /* CardTextRecognizer.swift */; };
 		0D72AA5EE1AA1070C91A8880 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BBBF0733DDB546EAAE7073 /* ScanView.swift */; };
 		0F21845C3A975132A40CFC40 /* CameraScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33296CD9469A347C30B77CC2 /* CameraScanView.swift */; };
@@ -21,6 +23,7 @@
 		3C9568D196C8FA751CC65759 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01A5F9065BE33CAFE70E85C /* PaywallView.swift */; };
 		475FB3EA40EC8575AE9720A3 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E61FDB4D59D4C62D3E4F3BC /* Theme.swift */; };
 		4EF66C024416274EA827ECFA /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD721849A62838D4E72B51B /* Color+Hex.swift */; };
+		50CB8020D544B5DF6B9725D0 /* SampleData+Market.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0CA5228B59BAD88970D085 /* SampleData+Market.swift */; };
 		581920CEC21F5FE832C48F3C /* VaultBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B092E1888F4F29CBC18B4CE /* VaultBackground.swift */; };
 		61700A1960A3138E997ED2E9 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75D7BC2E7A21E4EBF139228 /* CollectionView.swift */; };
 		67DBE634474BAEFF979AB1B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB964D2472427C0D8EFC781C /* Assets.xcassets */; };
@@ -46,6 +49,7 @@
 		B8685AEED4FD8338E81BDC48 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651F0C5FCA4E4A93DC5DFA87 /* Card.swift */; };
 		BC7FFE053211DA48861099C6 /* CardCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2C9E8CC255BD14F8A0808E /* CardCondition.swift */; };
 		C7D3AE1DDEC6EDC0B41A1058 /* SportCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D09449BE08055A2CCACDFCFB /* SportCategory.swift */; };
+		CBAA3404D0BAC6A9EB1DDDD6 /* MarketCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DF9E30EF413E210833D0AF /* MarketCardView.swift */; };
 		CCBC8D58DE318ED40CC96F11 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14F4FB1E29E55D21AB1A0747 /* AppRouter.swift */; };
 		D26B11A7C5B99E908BC8FCC5 /* PortfolioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD4A6606A9F78A0E683361D /* PortfolioView.swift */; };
 		D8A322320269648D53124204 /* MiniAreaChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45964136E933A7B84200BAD /* MiniAreaChart.swift */; };
@@ -83,6 +87,9 @@
 		3ABACF0BBB51F47C38FE8FF6 /* FakeIdentificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeIdentificationService.swift; sourceTree = "<group>"; };
 		3B35FE28728CFA6FD42628C2 /* SellSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SellSheet.swift; sourceTree = "<group>"; };
 		3D7A3C2C21CF6D463F8F74C1 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
+		4C504F1F6B870EC541D30495 /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
+		4E0CA5228B59BAD88970D085 /* SampleData+Market.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SampleData+Market.swift"; sourceTree = "<group>"; };
+		4E91C38193031B0D40DEEBA3 /* MarketData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketData.swift; sourceTree = "<group>"; };
 		5B092E1888F4F29CBC18B4CE /* VaultBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultBackground.swift; sourceTree = "<group>"; };
 		5CD721849A62838D4E72B51B /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		5D4A16F993AACB48ADD5A8F8 /* CollectionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionStoreTests.swift; sourceTree = "<group>"; };
@@ -122,6 +129,7 @@
 		EAF4D5A89AF79062C925BD0A /* CardTextRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTextRecognizer.swift; sourceTree = "<group>"; };
 		EEE0BEB1891490FBFA7F8559 /* CarddexTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CarddexTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F01A5F9065BE33CAFE70E85C /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		F1DF9E30EF413E210833D0AF /* MarketCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketCardView.swift; sourceTree = "<group>"; };
 		F75D7BC2E7A21E4EBF139228 /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
 		F82D6DA06E9FD6F0F0ACAEA8 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Marketplace.swift; sourceTree = "<group>"; };
@@ -251,6 +259,15 @@
 			path = Store;
 			sourceTree = "<group>";
 		};
+		958F7E100E60BEC2256B575F /* Market */ = {
+			isa = PBXGroup;
+			children = (
+				F1DF9E30EF413E210833D0AF /* MarketCardView.swift */,
+				4C504F1F6B870EC541D30495 /* MarketView.swift */,
+			);
+			path = Market;
+			sourceTree = "<group>";
+		};
 		A1748CCE05E0213556932CF9 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -259,6 +276,7 @@
 				2DBCC8AADADB125C30C59456 /* CardGame.swift */,
 				6C4DFC49D84E3195DE6FD8DF /* CardSet.swift */,
 				A0C867666CD3C8B620FC2B2C /* CollectionItem.swift */,
+				4E91C38193031B0D40DEEBA3 /* MarketData.swift */,
 				A509AB568997A722F0896EC9 /* Money.swift */,
 				B87334A1E7485DC97242BA9E /* Rarity.swift */,
 				D09449BE08055A2CCACDFCFB /* SportCategory.swift */,
@@ -305,6 +323,7 @@
 			isa = PBXGroup;
 			children = (
 				3B558D36CD7CC9632589EB80 /* Collection */,
+				958F7E100E60BEC2256B575F /* Market */,
 				6272CAA629700238739690DD /* Onboarding */,
 				16D633D3C8ED0F0D52B606BD /* Paywall */,
 				C32B98996FB9E80A1CE9BEAC /* Portfolio */,
@@ -336,6 +355,7 @@
 			isa = PBXGroup;
 			children = (
 				3D7A3C2C21CF6D463F8F74C1 /* SampleData.swift */,
+				4E0CA5228B59BAD88970D085 /* SampleData+Market.swift */,
 			);
 			path = SampleData;
 			sourceTree = "<group>";
@@ -481,6 +501,9 @@
 				938A45158E0AAD1E02933242 /* HolographicFoil.swift in Sources */,
 				28C12E1BB0608052504E5B04 /* IdentificationService.swift in Sources */,
 				6EA8BB24CF8F79E84B21105B /* LiveIdentificationService.swift in Sources */,
+				CBAA3404D0BAC6A9EB1DDDD6 /* MarketCardView.swift in Sources */,
+				06F64BCB3523A9F41C133BAE /* MarketData.swift in Sources */,
+				089E477FD84631DCFEE20706 /* MarketView.swift in Sources */,
 				0FBFEAF00D3690650EF3708D /* Marketplace.swift in Sources */,
 				D8A322320269648D53124204 /* MiniAreaChart.swift in Sources */,
 				1961FF26ECB359DE879A8B12 /* Money.swift in Sources */,
@@ -491,6 +514,7 @@
 				772602228544119EA49EE33F /* PrimaryButton.swift in Sources */,
 				AD8952B2E27796D75362BFA8 /* Rarity.swift in Sources */,
 				EFCDB9CAF184D6971C7E7657 /* RootView.swift in Sources */,
+				50CB8020D544B5DF6B9725D0 /* SampleData+Market.swift in Sources */,
 				EBA8CDA2EBEC6876638E5EF7 /* SampleData.swift in Sources */,
 				0D72AA5EE1AA1070C91A8880 /* ScanView.swift in Sources */,
 				2A5768557312C0E635387BD1 /* SellSheet.swift in Sources */,
