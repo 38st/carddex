@@ -11,4 +11,5 @@ struct Card: Identifiable, Codable, Hashable, Sendable {
     var rarity: String?
     var imageURL: URL?
     var marketPrice: Money?
+    var sport: SportCategory? = nil   // set only for `.sports` cards
 }

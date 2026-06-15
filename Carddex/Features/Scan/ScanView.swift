@@ -189,10 +189,10 @@ private struct IdentifyResultSheet: View {
 
     private func confirm(_ card: Card) -> some View {
         VStack(spacing: Theme.Spacing.md) {
-            CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL)
+            CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport)
                 .frame(maxWidth: 150)
                 .padding(.top)
-            GamePill(game: card.game)
+            GamePill(game: card.game, sport: card.sport)
             Text(card.name)
                 .font(.title2.weight(.bold))
                 .foregroundStyle(Theme.textPrimary)
@@ -217,7 +217,7 @@ private struct IdentifyResultSheet: View {
                 onAdd(candidate.card)
             } label: {
                 HStack(spacing: Theme.Spacing.md) {
-                    CardArtwork(game: candidate.card.game, rarity: candidate.card.rarity, price: candidate.card.marketPrice, imageURL: candidate.card.imageURL)
+                    CardArtwork(game: candidate.card.game, rarity: candidate.card.rarity, price: candidate.card.marketPrice, imageURL: candidate.card.imageURL, sport: candidate.card.sport)
                         .frame(width: 44)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(candidate.card.name).foregroundStyle(Theme.textPrimary)

@@ -2,10 +2,16 @@
 //
 // Turns a card photo (+ on-device OCR hints) into ranked, catalog-grounded
 // candidates, minimizing paid vision calls. Holds all secrets server-side.
-// See docs/backend-plan.md §3.1 and §5 for the full contract.
 //
-// Request:  { scanId, storagePath?, gameHint?, ocr: { lines, topToken?, numberGuess? }, imageBase64? }
-// Response: { scanId, usedVision, candidates: [{ card, confidence, matchReasons }], lowConfidence }
+// Cost guardrails (so one Anthropic key safely serves every user):
+//   - OCR-first fast path resolves clean scans for $0.
+//   - Result cache (scan_cache) → never re-bill the same photo.
+//   - Per-user DAILY vision cap → bounds any single account.
+//   - Global DAILY spend circuit-breaker → if today's spend exceeds the ceiling,
+//     stop calling the model and fall back to OCR-only.
+//
+// Request:  { scanId, gameHint?, ocr: { lines, topToken?, numberGuess? }, imageBase64? }
+// Response: { scanId, usedVision, cached?, candidates: [{ card, confidence, matchReasons }], lowConfidence }
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -16,48 +22,70 @@ const cors = {
 };
 
 const VISION_MODEL = Deno.env.get("VISION_MODEL") ?? "claude-haiku-4-5-20251001";
+const DAILY_VISION_CAP = Number(Deno.env.get("DAILY_VISION_CAP") ?? "8");
+const SPEND_CEILING_USD = Number(Deno.env.get("DAILY_SPEND_CEILING_USD") ?? "50");
+const VISION_COST_USD = Number(Deno.env.get("VISION_COST_USD") ?? "0.004");
+const CACHE_TTL_DAYS = Number(Deno.env.get("CACHE_TTL_DAYS") ?? "7");
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   try {
     const { scanId, gameHint, ocr, imageBase64 } = await req.json();
-    const supabase = createClient(
+    // deno-lint-ignore no-explicit-any
+    const supabase: any = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+    const userId = await getUserId(supabase, req);
 
-    // 1) OCR-first fast path (free): ground directly from on-device text.
+    // 0) Cache: same photo → cached result, no model call, no charge.
+    const cacheKey = await sha256(
+      `${imageBase64 ?? ""}|${(ocr?.lines ?? []).join("|")}|${gameHint ?? ""}`,
+    );
+    const cached = await getCached(supabase, cacheKey);
+    if (cached) return json({ scanId, usedVision: false, cached: true, ...cached });
+
+    // 1) OCR-first fast path (free).
     const ocrCandidates = await groundFromOCR(supabase, ocr, gameHint);
     if (ocrCandidates.length && ocrCandidates[0].confidence >= 0.92) {
-      return json({ scanId, usedVision: false, candidates: ocrCandidates.slice(0, 5), lowConfidence: false });
+      const payload = { candidates: ocrCandidates.slice(0, 5), lowConfidence: false };
+      await putCached(supabase, cacheKey, payload);
+      return json({ scanId, usedVision: false, ...payload });
     }
 
-    // 2) Vision path (paid): when OCR is ambiguous, ask the vision model to read
-    //    the card, then re-ground its structured output against the catalog.
+    // 2) Vision path (paid) — gated by the guardrails.
     if (imageBase64) {
-      const extracted = await callVisionModel(imageBase64, ocr?.lines ?? [], gameHint);
-      if (extracted) {
-        const visionCandidates = await groundFromExtraction(supabase, extracted);
-        if (visionCandidates.length) {
-          const top = visionCandidates[0];
-          return json({
-            scanId,
-            usedVision: true,
-            candidates: visionCandidates.slice(0, 5),
-            lowConfidence: top.confidence < 0.85,
-          });
+      const startOfToday = utcStartOfToday();
+      const overBudget = await isOverGlobalBudget(supabase, startOfToday);
+
+      if (!overBudget) {
+        if (userId) {
+          const used = await userVisionCountToday(supabase, userId, startOfToday);
+          if (used >= DAILY_VISION_CAP) {
+            return json({
+              error: { code: "QUOTA_EXCEEDED", message: "Daily scan limit reached", retryable: false },
+            }, 402);
+          }
+        }
+
+        const extracted = await callVisionModel(imageBase64, ocr?.lines ?? [], gameHint);
+        if (extracted) {
+          const visionCandidates = await groundFromExtraction(supabase, extracted);
+          if (visionCandidates.length) {
+            const top = visionCandidates[0];
+            const payload = { candidates: visionCandidates.slice(0, 5), lowConfidence: top.confidence < 0.85 };
+            await recordScan(supabase, scanId, userId, top.confidence, payload.candidates);
+            await putCached(supabase, cacheKey, payload);
+            return json({ scanId, usedVision: true, ...payload });
+          }
         }
       }
+      // Over budget or vision failed → fall back to OCR-only below.
     }
 
-    // 3) Fall back to whatever OCR grounding produced (low confidence → picker).
-    return json({
-      scanId,
-      usedVision: Boolean(imageBase64),
-      candidates: ocrCandidates.slice(0, 5),
-      lowConfidence: true,
-    });
+    // 3) OCR-only fallback (low confidence → the app shows a picker / manual search).
+    return json({ scanId, usedVision: false, candidates: ocrCandidates.slice(0, 5), lowConfidence: true });
   } catch (err) {
     return json({ error: { code: "INTERNAL", message: String(err), retryable: false } }, 500);
   }
@@ -68,6 +96,88 @@ function json(body: unknown, status = 200): Response {
     status,
     headers: { ...cors, "content-type": "application/json" },
   });
+}
+
+// ---- Guardrails -------------------------------------------------------------
+
+// deno-lint-ignore no-explicit-any
+async function getUserId(supabase: any, req: Request): Promise<string | null> {
+  const auth = req.headers.get("Authorization");
+  if (!auth?.startsWith("Bearer ")) return null;
+  try {
+    const { data } = await supabase.auth.getUser(auth.slice(7));
+    return data?.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function utcStartOfToday(): string {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString();
+}
+
+// deno-lint-ignore no-explicit-any
+async function isOverGlobalBudget(supabase: any, since: string): Promise<boolean> {
+  try {
+    const { data } = await supabase.from("scans").select("cost_usd").gte("created_at", since);
+    // deno-lint-ignore no-explicit-any
+    const spent = (data ?? []).reduce((sum: number, r: any) => sum + (Number(r.cost_usd) || 0), 0);
+    return spent >= SPEND_CEILING_USD;
+  } catch {
+    return false; // never block on a telemetry read failing
+  }
+}
+
+// deno-lint-ignore no-explicit-any
+async function userVisionCountToday(supabase: any, userId: string, since: string): Promise<number> {
+  try {
+    const { count } = await supabase.from("scans")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId).eq("used_vision", true).gte("created_at", since);
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+// deno-lint-ignore no-explicit-any
+async function recordScan(supabase: any, scanId: string, userId: string | null, confidence: number, result: unknown) {
+  try {
+    await supabase.from("scans").upsert({
+      id: scanId,
+      user_id: userId,
+      used_vision: true,
+      vision_provider: "anthropic",
+      confidence,
+      cost_usd: VISION_COST_USD,
+      result,
+    });
+  } catch { /* telemetry best-effort */ }
+}
+
+// deno-lint-ignore no-explicit-any
+async function getCached(supabase: any, hash: string) {
+  try {
+    const since = new Date(Date.now() - CACHE_TTL_DAYS * 86400_000).toISOString();
+    const { data } = await supabase.from("scan_cache")
+      .select("result").eq("content_hash", hash).gte("created_at", since).maybeSingle();
+    return data?.result ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// deno-lint-ignore no-explicit-any
+async function putCached(supabase: any, hash: string, result: unknown) {
+  try {
+    await supabase.from("scan_cache").upsert({ content_hash: hash, result, created_at: new Date().toISOString() });
+  } catch { /* best-effort */ }
+}
+
+async function sha256(input: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 // ---- Vision model -----------------------------------------------------------
@@ -91,14 +201,13 @@ async function callVisionModel(
   if (!apiKey) return null;
 
   const prompt = [
-    "You identify trading cards (Pokémon, Magic: The Gathering, Yu-Gi-Oh!).",
+    "You identify trading cards (Pokémon, Magic: The Gathering, Yu-Gi-Oh!, sports).",
     "Return ONLY a JSON object, no prose, with this exact shape:",
-    '{"game":"pokemon|magic|yugioh|unknown","name":string|null,"setName":string|null,',
+    '{"game":"pokemon|magic|yugioh|sports|unknown","name":string|null,"setName":string|null,',
     '"setCode":string|null,"number":string|null,"variantCues":string[],"confidence":number}',
-    "Read the card in the image. Use the OCR hints below to disambiguate; if the image",
+    "Read the card in the image. Use the OCR hints to disambiguate; if the image",
     "contradicts a hint, prefer the image. If unsure of a field, use null and lower the",
-    "confidence (0.0–1.0). variantCues are visible cues like 'holo','reverse holo',",
-    "'1st edition','full art','promo'.",
+    "confidence (0.0–1.0). variantCues are visible cues like 'holo','reverse holo','rookie'.",
     gameHint ? `The user thinks this is a ${gameHint} card.` : "",
     ocrLines.length ? `OCR hints: ${ocrLines.slice(0, 12).join(" | ")}` : "No OCR hints.",
   ].join("\n");
@@ -156,7 +265,6 @@ async function groundFromExtraction(supabase: any, e: Extraction) {
   if (!e.name && !e.number) return [];
   const game = e.game && e.game !== "unknown" ? e.game : undefined;
   const candidates = await queryCatalog(supabase, e.name, e.number, game);
-  // Blend the model's confidence with the catalog match score.
   // deno-lint-ignore no-explicit-any
   return candidates.map((c: any) => ({
     ...c,
@@ -201,8 +309,6 @@ function extractNumber(lines: string[]): string | null {
   return null;
 }
 
-// Shapes a `cards` row into the client's `Card` JSON. Prices come from
-// card_prices_latest in a fuller implementation; left null in this scaffold.
 // deno-lint-ignore no-explicit-any
 function toCard(row: any) {
   return {

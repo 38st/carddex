@@ -21,6 +21,7 @@ struct CardDetailView: View {
                     rarity: item.card.rarity,
                     price: item.card.marketPrice,
                     imageURL: item.card.imageURL,
+                    sport: item.card.sport,
                     cornerRadius: Theme.Radius.lg
                 )
                 .frame(maxWidth: 220)
@@ -30,7 +31,7 @@ struct CardDetailView: View {
                 .padding(.top, Theme.Spacing.sm)
 
                 VStack(spacing: Theme.Spacing.sm) {
-                    GamePill(game: item.card.game)
+                    GamePill(game: item.card.game, sport: item.card.sport)
                     Text(item.card.name)
                         .font(.title.weight(.bold))
                         .foregroundStyle(Theme.textPrimary)

@@ -48,13 +48,30 @@ enum SampleData {
                                imageURL: img("https://images.ygoprodeck.com/images/cards/89631139.jpg"),
                                marketPrice: Money(amount: 90))
 
+    // Sports cards — multiple sports, each its own category.
     static let jordan = Card(id: "sports-fleer86-57", game: .sports, name: "Michael Jordan RC",
                              setName: "1986 Fleer", number: "57", rarity: nil,
-                             imageURL: nil, marketPrice: Money(amount: 12000))
+                             imageURL: nil, marketPrice: Money(amount: 12000), sport: .basketball)
+    static let lebron = Card(id: "sports-topps03-111", game: .sports, name: "LeBron James RC",
+                             setName: "2003 Topps Chrome", number: "111", rarity: "Refractor",
+                             imageURL: nil, marketPrice: Money(amount: 3500), sport: .basketball)
+    static let brady = Card(id: "sports-bowman00-236", game: .sports, name: "Tom Brady RC",
+                            setName: "2000 Bowman", number: "236", rarity: nil,
+                            imageURL: nil, marketPrice: Money(amount: 2800), sport: .football)
+    static let trout = Card(id: "sports-topps11-175", game: .sports, name: "Mike Trout RC",
+                            setName: "2011 Topps Update", number: "US175", rarity: nil,
+                            imageURL: nil, marketPrice: Money(amount: 900), sport: .baseball)
+    static let messi = Card(id: "sports-mega04-71", game: .sports, name: "Lionel Messi RC",
+                            setName: "2004 Megacracks", number: "71", rarity: nil,
+                            imageURL: nil, marketPrice: Money(amount: 1200), sport: .soccer)
+    static let gretzky = Card(id: "sports-opc79-18", game: .sports, name: "Wayne Gretzky RC",
+                              setName: "1979 O-Pee-Chee", number: "18", rarity: nil,
+                              imageURL: nil, marketPrice: Money(amount: 5000), sport: .hockey)
 
     static let cards: [Card] = [
         charizard, blastoise, venusaur, mewtwo, gyarados, machamp,
-        pikachu, blackLotus, ragavan, blueEyes, jordan,
+        pikachu, blackLotus, ragavan, blueEyes,
+        jordan, lebron, brady, trout, messi, gretzky,
     ]
 
     static let collection: [CollectionItem] = [
@@ -67,6 +84,10 @@ enum SampleData {
         CollectionItem(card: pikachu, quantity: 4, condition: .mint),
         CollectionItem(card: ragavan, quantity: 2, condition: .nearMint),
         CollectionItem(card: blueEyes, condition: .lightlyPlayed),
+        CollectionItem(card: jordan, condition: .nearMint),
+        CollectionItem(card: lebron, condition: .mint),
+        CollectionItem(card: brady, condition: .nearMint),
+        CollectionItem(card: trout, condition: .nearMint),
     ]
 
     // A set checklist with some owned (above) and some still missing.

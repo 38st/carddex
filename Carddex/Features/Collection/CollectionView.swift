@@ -1,10 +1,11 @@
 import SwiftUI
 
-/// Grid of owned cards with a per-game filter, plus a Sets mode showing set
-/// completion as binder pages — the "Pokédex".
+/// Grid of owned cards with a per-game filter (and a sport sub-filter for sports
+/// cards), plus a Sets mode showing set completion as binder pages — the "Pokédex".
 struct CollectionView: View {
     @Environment(CollectionStore.self) private var store
     @State private var selectedGame: CardGame?
+    @State private var selectedSport: SportCategory?
     @State private var mode: Mode = .grid
 
     enum Mode: String, CaseIterable, Identifiable {
@@ -14,6 +15,14 @@ struct CollectionView: View {
     }
 
     private let columns = [GridItem(.adaptive(minimum: 108), spacing: Theme.Spacing.md)]
+
+    private var filteredItems: [CollectionItem] {
+        let base = store.items(for: selectedGame)
+        if selectedGame == .sports, let sport = selectedSport {
+            return base.filter { $0.card.sport == sport }
+        }
+        return base
+    }
 
     var body: some View {
         NavigationStack {
@@ -46,9 +55,12 @@ struct CollectionView: View {
             )
             .padding(.top, Theme.Spacing.xxxl)
         } else {
-            filterBar
+            gameFilterBar
+            if selectedGame == .sports {
+                sportFilterBar
+            }
             LazyVGrid(columns: columns, spacing: Theme.Spacing.lg) {
-                ForEach(store.items(for: selectedGame)) { item in
+                ForEach(filteredItems) { item in
                     NavigationLink(value: item) {
                         CardCell(item: item)
                     }
@@ -68,20 +80,38 @@ struct CollectionView: View {
         .padding()
     }
 
-    private var filterBar: some View {
+    private var gameFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: Theme.Spacing.sm) {
                 FilterChip(title: "All", isSelected: selectedGame == nil) {
                     selectedGame = nil
+                    selectedSport = nil
                 }
                 ForEach(CardGame.allCases) { game in
                     FilterChip(title: game.displayName, isSelected: selectedGame == game) {
                         selectedGame = game
+                        selectedSport = nil
                     }
                 }
             }
             .padding(.horizontal)
             .padding(.top, Theme.Spacing.sm)
+        }
+    }
+
+    private var sportFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: Theme.Spacing.sm) {
+                FilterChip(title: "All sports", isSelected: selectedSport == nil) {
+                    selectedSport = nil
+                }
+                ForEach(SportCategory.allCases) { sport in
+                    FilterChip(title: sport.displayName, isSelected: selectedSport == sport) {
+                        selectedSport = sport
+                    }
+                }
+            }
+            .padding(.horizontal)
         }
     }
 }

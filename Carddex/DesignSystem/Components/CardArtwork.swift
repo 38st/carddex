@@ -7,6 +7,7 @@ struct CardArtwork: View {
     var rarity: String? = nil
     var price: Money? = nil
     var imageURL: URL? = nil
+    var sport: SportCategory? = nil
     var cornerRadius: CGFloat = Theme.Radius.card
 
     var body: some View {
@@ -43,8 +44,8 @@ struct CardArtwork: View {
 
     private var placeholder: some View {
         ZStack {
-            LinearGradient(colors: game.artGradient, startPoint: .topLeading, endPoint: .bottomTrailing)
-            Image(systemName: game.symbol)
+            LinearGradient(colors: sport?.artGradient ?? game.artGradient, startPoint: .topLeading, endPoint: .bottomTrailing)
+            Image(systemName: sport?.symbol ?? game.symbol)
                 .font(.system(size: 34))
                 .foregroundStyle(.white.opacity(0.42))
         }

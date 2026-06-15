@@ -79,10 +79,10 @@ struct SellSheet: View {
 
     private var header: some View {
         HStack(spacing: Theme.Spacing.md) {
-            CardArtwork(game: item.card.game, rarity: item.card.rarity, price: item.card.marketPrice, imageURL: item.card.imageURL)
+            CardArtwork(game: item.card.game, rarity: item.card.rarity, price: item.card.marketPrice, imageURL: item.card.imageURL, sport: item.card.sport)
                 .frame(width: 84)
             VStack(alignment: .leading, spacing: 4) {
-                GamePill(game: item.card.game)
+                GamePill(game: item.card.game, sport: item.card.sport)
                 Text(item.card.name)
                     .font(.headline)
                     .foregroundStyle(Theme.textPrimary)
