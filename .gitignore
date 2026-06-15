@@ -5,4 +5,5 @@ build/
 DerivedData/
 .swiftpm/
 Secrets.xcconfig
+Carddex/Resources/Secrets.plist
 *.env

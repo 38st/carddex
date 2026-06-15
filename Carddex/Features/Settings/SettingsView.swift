@@ -3,6 +3,8 @@ import SwiftUI
 /// Account, marketplace, and app info. Sign in with Apple + eBay connect are
 /// wired up in later phases.
 struct SettingsView: View {
+    @Environment(AppEnvironment.self) private var env
+
     var body: some View {
         NavigationStack {
             List {
@@ -32,6 +34,7 @@ struct SettingsView: View {
                 Section("About") {
                     LabeledContent("Version", value: "0.1.0")
                     LabeledContent("Backend", value: "Supabase")
+                    LabeledContent("Identification", value: env.isLiveBackend ? "Live" : "Sample")
                 }
             }
             .scrollContentBackground(.hidden)
@@ -42,5 +45,6 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
+        .environment(AppEnvironment(identification: FakeIdentificationService()))
         .preferredColorScheme(.dark)
 }
