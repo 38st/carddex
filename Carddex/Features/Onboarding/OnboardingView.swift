@@ -72,7 +72,7 @@ struct OnboardingPage: Identifiable {
                        subtitle: "Collect Pokémon, Magic, and Yu-Gi-Oh! in one place — holos and all."),
         OnboardingPage(kind: .scan,
                        headline: "Snap to identify",
-                       subtitle: "Point your camera at any card and Carddex knows what it is and what it's worth."),
+                       subtitle: "Point your camera at any card and The Case knows what it is and what it's worth."),
         OnboardingPage(kind: .value,
                        headline: "Watch your collection grow",
                        subtitle: "Track each card's value, complete your sets, and see your portfolio over time."),

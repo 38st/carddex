@@ -21,6 +21,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.carddex.app
         GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: "The Case"
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_NSCameraUsageDescription: "Carddex uses the camera to scan and identify your trading cards."
         INFOPLIST_KEY_UILaunchScreen_Generation: YES

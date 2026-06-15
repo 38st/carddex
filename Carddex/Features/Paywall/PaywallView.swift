@@ -78,7 +78,7 @@ struct PaywallView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(Theme.accent)
                 .padding(.top, Theme.Spacing.lg)
-            Text("Carddex Pro")
+            Text("Case Pro")
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
                 .foregroundStyle(Theme.textPrimary)
             Text("Unlimited scans, full analytics, and one-tap selling.")

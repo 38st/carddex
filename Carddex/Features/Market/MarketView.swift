@@ -132,7 +132,7 @@ struct MarketView: View {
         let index = SampleData.marketIndex
         let up = index.changeToday >= 0
         return VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            Text("Carddex Index")
+            Text("Case Index")
                 .font(.subheadline)
                 .foregroundStyle(Theme.textSecondary)
             HStack(alignment: .firstTextBaseline, spacing: Theme.Spacing.sm) {

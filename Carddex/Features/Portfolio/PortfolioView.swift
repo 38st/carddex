@@ -53,7 +53,7 @@ struct PortfolioView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if let shareImage {
-                        ShareLink(item: shareImage, preview: SharePreview("My Carddex collection", image: shareImage)) {
+                        ShareLink(item: shareImage, preview: SharePreview("My collection · The Case", image: shareImage)) {
                             Image(systemName: "square.and.arrow.up")
                         }
                     }

@@ -13,7 +13,7 @@ struct ShareableCollectionCard: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Carddex")
+                Text("The Case")
                     .font(.system(size: 30, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
                 Spacer()
@@ -43,7 +43,7 @@ struct ShareableCollectionCard: View {
                 }
             }
             Spacer()
-            Text("Scan, value & track your cards with Carddex")
+            Text("Scan, value & track your cards with The Case")
                 .font(.footnote)
                 .foregroundStyle(.white.opacity(0.5))
         }
@@ -64,7 +64,7 @@ struct ShareableCardPoster: View {
     var body: some View {
         VStack(spacing: 14) {
             HStack {
-                Text("Carddex")
+                Text("The Case")
                     .font(.system(size: 26, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
                 Spacer()
@@ -87,7 +87,7 @@ struct ShareableCardPoster: View {
                 .foregroundStyle(Theme.accent)
                 .monospacedDigit()
             Spacer()
-            Text("Identified with Carddex")
+            Text("Identified with The Case")
                 .font(.footnote)
                 .foregroundStyle(.white.opacity(0.5))
         }

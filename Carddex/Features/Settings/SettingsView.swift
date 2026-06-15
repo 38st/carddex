@@ -19,9 +19,9 @@ struct SettingsView: View {
                                 .font(.title3)
                                 .foregroundStyle(Theme.accent)
                             VStack(alignment: .leading) {
-                                Text(subs.isPro ? "Carddex Pro" : "Upgrade to Carddex Pro")
+                                Text(subs.isPro ? "Case Pro" : "Upgrade to Case Pro")
                                     .font(.headline)
-                                Text(subs.isPro ? "Thanks for supporting Carddex" : "Unlimited scans, analytics, and selling")
+                                Text(subs.isPro ? "Thanks for supporting The Case" : "Unlimited scans, analytics, and selling")
                                     .font(.caption)
                                     .foregroundStyle(Theme.textSecondary)
                             }

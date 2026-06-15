@@ -64,7 +64,7 @@ struct BulkScanView: View {
                 Image(systemName: "rectangle.stack.badge.plus")
                     .font(.system(size: 44)).foregroundStyle(Theme.accent)
                 Text("Scan a whole stack").font(.headline).foregroundStyle(Theme.textPrimary)
-                Text("Pick several card photos and Carddex identifies them all at once.")
+                Text("Pick several card photos and The Case identifies them all at once.")
                     .font(.subheadline).foregroundStyle(Theme.textSecondary)
                     .multilineTextAlignment(.center)
                 PhotosPicker(selection: $picked, maxSelectionCount: 12, matching: .images) {
