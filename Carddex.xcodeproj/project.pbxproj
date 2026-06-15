@@ -33,6 +33,7 @@
 		772602228544119EA49EE33F /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */; };
 		776D1012C007CA566A78CF37 /* GlassTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9FA29969F1BC99FB176AC7 /* GlassTabBar.swift */; };
 		848406F03B29B526068F8A5D /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 985EF2F1A2F4BF585C51D827 /* CardDetailView.swift */; };
+		8A3E5B6B570104B48F718333 /* SalesChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF8BF4EE69D94346D674039 /* SalesChart.swift */; };
 		8B6009926D20F84F3131CFF6 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E23565FFD3CD968B8F9515 /* Haptics.swift */; };
 		8FE56926EC900900F3BF4C7C /* CollectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C867666CD3C8B620FC2B2C /* CollectionItem.swift */; };
 		938A45158E0AAD1E02933242 /* HolographicFoil.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92A2C1DE0913631EB1B570A /* HolographicFoil.swift */; };
@@ -64,6 +65,7 @@
 		EFCDB9CAF184D6971C7E7657 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6641D60939CA82CD0B026D90 /* RootView.swift */; };
 		F2C24D494EB51785D53D0E89 /* BulkScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23805BAE2F7E272E06D51717 /* BulkScanView.swift */; };
 		F3FA1E33E259AEA47F86AA2C /* BinderPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3617587A04CE5CFE2223FA98 /* BinderPageView.swift */; };
+		FACB30A7ECFCEF5E24832BAB /* ComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A526867D9D1C1B8D5FA6B6 /* ComparisonView.swift */; };
 		FBE4AC16D042484B4DEFE566 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913E5E48832603A6B4238A3D /* AppEnvironment.swift */; };
 		FF46375C1653EF69BFAFC5AB /* StatTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EBB65D08CC76601467891D /* StatTile.swift */; };
 /* End PBXBuildFile section */
@@ -94,6 +96,7 @@
 		4C504F1F6B870EC541D30495 /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
 		4E0CA5228B59BAD88970D085 /* SampleData+Market.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SampleData+Market.swift"; sourceTree = "<group>"; };
 		4E91C38193031B0D40DEEBA3 /* MarketData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketData.swift; sourceTree = "<group>"; };
+		58A526867D9D1C1B8D5FA6B6 /* ComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonView.swift; sourceTree = "<group>"; };
 		5B092E1888F4F29CBC18B4CE /* VaultBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultBackground.swift; sourceTree = "<group>"; };
 		5CD721849A62838D4E72B51B /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		5D4A16F993AACB48ADD5A8F8 /* CollectionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionStoreTests.swift; sourceTree = "<group>"; };
@@ -103,6 +106,7 @@
 		6E61FDB4D59D4C62D3E4F3BC /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		6FC3794684572890D03F101E /* Carddex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Carddex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		74C8D2528046D25BFBDDCD7C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		7CF8BF4EE69D94346D674039 /* SalesChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesChart.swift; sourceTree = "<group>"; };
 		83E23565FFD3CD968B8F9515 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		84BBBF0733DDB546EAAE7073 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
 		8F6CCD200180A066E994DE36 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -269,9 +273,11 @@
 		958F7E100E60BEC2256B575F /* Market */ = {
 			isa = PBXGroup;
 			children = (
+				58A526867D9D1C1B8D5FA6B6 /* ComparisonView.swift */,
 				CAF581996BE7C4DE18E7858C /* IndexDetailView.swift */,
 				F1DF9E30EF413E210833D0AF /* MarketCardView.swift */,
 				4C504F1F6B870EC541D30495 /* MarketView.swift */,
+				7CF8BF4EE69D94346D674039 /* SalesChart.swift */,
 			);
 			path = Market;
 			sourceTree = "<group>";
@@ -502,6 +508,7 @@
 				E01E45E112C6729462FE4981 /* CollectionStore.swift in Sources */,
 				61700A1960A3138E997ED2E9 /* CollectionView.swift in Sources */,
 				4EF66C024416274EA827ECFA /* Color+Hex.swift in Sources */,
+				FACB30A7ECFCEF5E24832BAB /* ComparisonView.swift in Sources */,
 				07E74E71986E8DC7E53882E9 /* EmptyState.swift in Sources */,
 				A403AA6CB1EADC1D00A457B5 /* FakeIdentificationService.swift in Sources */,
 				E889519F72241D7B7492D225 /* GamePill.swift in Sources */,
@@ -525,6 +532,7 @@
 				772602228544119EA49EE33F /* PrimaryButton.swift in Sources */,
 				AD8952B2E27796D75362BFA8 /* Rarity.swift in Sources */,
 				EFCDB9CAF184D6971C7E7657 /* RootView.swift in Sources */,
+				8A3E5B6B570104B48F718333 /* SalesChart.swift in Sources */,
 				50CB8020D544B5DF6B9725D0 /* SampleData+Market.swift in Sources */,
 				EBA8CDA2EBEC6876638E5EF7 /* SampleData.swift in Sources */,
 				0D72AA5EE1AA1070C91A8880 /* ScanView.swift in Sources */,

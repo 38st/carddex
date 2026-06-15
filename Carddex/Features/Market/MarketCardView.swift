@@ -35,9 +35,11 @@ struct MarketCardView: View {
                 value
                 gradeMatrix
                 gradingHint
-                CardPriceChart(basePrice: NSDecimalNumber(decimal: selectedPrice.amount).doubleValue)
-                    .padding(Theme.Spacing.md)
-                    .glassPanel(cornerRadius: Theme.Radius.card)
+                SalesChart(
+                    series: market?.priceSeries ?? [],
+                    topPrice: NSDecimalNumber(decimal: selectedPrice.amount).doubleValue,
+                    sales: market?.recentSales.filter { $0.grade == selectedGrade } ?? []
+                )
                 salesSection
                 if let population = market?.population {
                     LabeledContent("Population", value: "\(population.formatted())")

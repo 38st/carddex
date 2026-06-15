@@ -6,6 +6,7 @@ struct MarketView: View {
     @Environment(WatchlistStore.self) private var watchlist
     @State private var search = ""
     @State private var filter: MarketFilter?
+    @State private var showCompare = false
 
     enum MarketFilter: Hashable {
         case sport(SportCategory)
@@ -89,6 +90,12 @@ struct MarketView: View {
             .navigationDestination(for: MarketIndexEntry.self) { entry in
                 IndexDetailView(entry: entry)
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Compare") { showCompare = true }
+                }
+            }
+            .sheet(isPresented: $showCompare) { ComparisonView() }
         }
     }
 
