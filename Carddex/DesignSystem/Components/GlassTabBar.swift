@@ -4,58 +4,58 @@ enum Tab: CaseIterable {
     case scan, collection, portfolio, settings
 }
 
-/// Floating bottom bar with a raised center Scan action. Uses iOS 26 Liquid
-/// Glass where available, falling back to a translucent material.
+/// Floating bottom tab bar — four evenly-spaced tabs over an iOS 26 Liquid Glass
+/// capsule (tinted dark so it doesn't pick up the colors of the content behind it).
 struct GlassTabBar: View {
     @Binding var selection: Tab
 
+    private let items: [(tab: Tab, icon: String, label: String)] = [
+        (.scan, "viewfinder", "Scan"),
+        (.collection, "square.grid.2x2", "Collection"),
+        (.portfolio, "chart.line.uptrend.xyaxis", "Portfolio"),
+        (.settings, "gearshape", "Settings"),
+    ]
+
     var body: some View {
         HStack(spacing: 0) {
-            tab(.collection, "square.grid.2x2")
-            tab(.portfolio, "chart.line.uptrend.xyaxis")
-            scanButton
-            tab(.settings, "gearshape")
+            ForEach(items, id: \.tab) { item in
+                tabButton(item.tab, item.icon, item.label)
+            }
         }
-        .frame(height: 60)
+        .padding(.horizontal, 6)
+        .frame(height: 58)
         .modifier(BarGlass())
-        .padding(.horizontal, 26)
+        .padding(.horizontal, 22)
     }
 
-    private func tab(_ destination: Tab, _ symbol: String) -> some View {
-        Button {
-            selection = destination
+    private func tabButton(_ tab: Tab, _ icon: String, _ label: String) -> some View {
+        let selected = selection == tab
+        return Button {
+            withAnimation(Theme.springTap) { selection = tab }
         } label: {
-            Image(systemName: symbol)
-                .font(.system(size: 22))
-                .foregroundStyle(selection == destination ? Theme.accent : Theme.textTertiary)
-                .frame(width: 44, height: 44)
+            VStack(spacing: 3) {
+                Image(systemName: icon)
+                    .font(.system(size: 21, weight: selected ? .semibold : .regular))
+                Text(label)
+                    .font(.system(size: 10, weight: .medium))
+            }
+            .foregroundStyle(selected ? Theme.accent : Theme.textTertiary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 6)
         }
-        .frame(maxWidth: .infinity)
-    }
-
-    private var scanButton: some View {
-        Button {
-            selection = .scan
-        } label: {
-            Image(systemName: "viewfinder")
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(.white)
-                .frame(width: 56, height: 56)
-                .background(Theme.accent, in: Circle())
-                .overlay(Circle().strokeBorder(Theme.bg, lineWidth: 4))
-        }
-        .frame(maxWidth: .infinity)
-        .offset(y: -14)
+        .buttonStyle(.plain)
     }
 }
 
-/// Liquid Glass capsule for the bar, with a pre-iOS 26 material fallback.
+/// Liquid Glass capsule for the bar, tinted dark to tame color bleed, with a
+/// pre-iOS 26 material fallback.
 private struct BarGlass: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
-            content.glassEffect(.regular, in: Capsule())
+            content.glassEffect(.regular.tint(.black.opacity(0.28)), in: Capsule())
         } else {
             content
+                .background(Theme.bgRaised.opacity(0.8), in: Capsule())
                 .background(.ultraThinMaterial, in: Capsule())
                 .overlay(Capsule().strokeBorder(Theme.hairline))
         }
