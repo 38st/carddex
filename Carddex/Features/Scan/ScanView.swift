@@ -96,6 +96,18 @@ struct ScanView: View {
             }
 
             ScanReticle(active: isIdentifying)
+
+            if isIdentifying {
+                Color.black.opacity(0.4)
+                VStack(spacing: Theme.Spacing.sm) {
+                    ProgressView()
+                        .controlSize(.large)
+                        .tint(Theme.accent)
+                    Text("Reading the card…")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.white)
+                }
+            }
         }
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.lg))
         .overlay(
@@ -180,6 +192,10 @@ private struct IdentifyResultSheet: View {
     @State private var revealScale: CGFloat = 0.85
     @State private var revealOpacity: Double = 0
     @State private var shownPrice: Double = 0
+    @State private var manualName = ""
+    @State private var manualSet = ""
+    @State private var manualGame: CardGame = .pokemon
+    @State private var manualPrice = ""
 
     var body: some View {
         NavigationStack {
@@ -268,26 +284,56 @@ private struct IdentifyResultSheet: View {
     }
 
     private func manual(_ ocr: [String]) -> some View {
-        VStack(spacing: Theme.Spacing.md) {
-            Image(systemName: "questionmark.circle")
-                .font(.system(size: 44))
-                .foregroundStyle(Theme.textSecondary)
-            Text("Couldn't identify that card")
-                .font(.headline)
-                .foregroundStyle(Theme.textPrimary)
-            Text("Manual search arrives next.")
-                .font(.subheadline)
-                .foregroundStyle(Theme.textSecondary)
-            if !ocr.isEmpty {
-                Text(ocr.prefix(6).joined(separator: " · "))
-                    .font(.caption)
-                    .foregroundStyle(Theme.textTertiary)
-                    .multilineTextAlignment(.center)
+        ScrollView {
+            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                Text("Couldn't identify it — add it manually")
+                    .font(.headline)
+                    .foregroundStyle(Theme.textPrimary)
+
+                labeled("Card name") {
+                    TextField("e.g. Charizard", text: $manualName).textFieldStyle(.roundedBorder)
+                }
+                labeled("Set") {
+                    TextField("e.g. Base Set", text: $manualSet).textFieldStyle(.roundedBorder)
+                }
+                labeled("Game") {
+                    Picker("Game", selection: $manualGame) {
+                        ForEach(CardGame.allCases) { Text($0.displayName).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                labeled("Price (USD, optional)") {
+                    TextField("0.00", text: $manualPrice).keyboardType(.decimalPad).textFieldStyle(.roundedBorder)
+                }
+
+                PrimaryButton(title: "Add card", systemImage: "plus") {
+                    onAdd(manualCard())
+                }
+                .disabled(manualName.isEmpty)
+
+                Button("Try again") { dismiss() }
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.textSecondary)
+                    .frame(maxWidth: .infinity)
             }
-            Spacer()
-            PrimaryButton(title: "Try again", systemImage: "arrow.clockwise") { dismiss() }
+            .padding()
         }
-        .padding()
+        .onAppear {
+            if manualName.isEmpty, let first = ocr.first { manualName = first }
+        }
+    }
+
+    private func manualCard() -> Card {
+        let price = Double(manualPrice).map { Money(amount: Decimal($0)) }
+        return Card(id: "manual-\(UUID().uuidString)", game: manualGame, name: manualName,
+                    setName: manualSet, number: "", rarity: nil, imageURL: nil, marketPrice: price)
+    }
+
+    @ViewBuilder private func labeled<Content: View>(_ label: String, @ViewBuilder _ content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label).font(.caption).foregroundStyle(Theme.textSecondary)
+            content()
+        }
     }
 }
 

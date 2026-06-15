@@ -6,6 +6,7 @@ struct CarddexApp: App {
     @State private var store = CollectionStore(items: SampleData.collection)
     @State private var environment = AppEnvironment()
     @State private var subscriptions = SubscriptionStore()
+    @State private var router = AppRouter()
 
     var body: some Scene {
         WindowGroup {
@@ -13,6 +14,7 @@ struct CarddexApp: App {
                 .environment(store)
                 .environment(environment)
                 .environment(subscriptions)
+                .environment(router)
                 .fullScreenCover(isPresented: Binding(
                     get: { !hasOnboarded },
                     set: { presented in if !presented { hasOnboarded = true } }

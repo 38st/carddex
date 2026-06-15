@@ -25,7 +25,7 @@ struct HolographicFoil: View {
                         .blendMode(.overlay)
                         .opacity(0.22 * intensity)
                 } else {
-                    TimelineView(.animation) { context in
+                    TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { context in
                         let t = context.date.timeIntervalSinceReferenceDate
                         let angle = Angle.degrees((t * 36).truncatingRemainder(dividingBy: 360))
                         let sweep = CGFloat(sin(t * 1.1))

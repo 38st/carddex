@@ -12,8 +12,10 @@ final class ImageCache: @unchecked Sendable {
     func image(for url: URL, maxPixel: CGFloat) async -> UIImage? {
         let key = "\(url.absoluteString)|\(Int(maxPixel))" as NSString
         if let cached = cache.object(forKey: key) { return cached }
-        guard let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
-        guard let image = Self.downsample(data: data, maxPixel: maxPixel) else { return nil }
+        guard let (data, response) = try? await URLSession.shared.data(from: url),
+              (response as? HTTPURLResponse)?.statusCode == 200,
+              let image = Self.downsample(data: data, maxPixel: maxPixel)
+        else { return nil }
         cache.setObject(image, forKey: key)
         return image
     }
@@ -56,6 +58,7 @@ struct CachedAsyncImage<Placeholder: View>: View {
             uiImage = nil
             guard let url else { return }
             let loaded = await ImageCache.shared.image(for: url, maxPixel: maxPixel)
+            if Task.isCancelled { return }
             withAnimation(.easeOut(duration: 0.25)) { uiImage = loaded }
         }
     }

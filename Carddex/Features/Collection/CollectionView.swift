@@ -1,12 +1,15 @@
 import SwiftUI
 
-/// Grid of owned cards with a per-game filter (and a sport sub-filter for sports
-/// cards), plus a Sets mode showing set completion as binder pages — the "Pokédex".
+/// Grid of owned cards with search, sort, a per-game/sport filter, and a Sets mode
+/// showing set completion as binder pages — the "Pokédex".
 struct CollectionView: View {
     @Environment(CollectionStore.self) private var store
+    @Environment(AppRouter.self) private var router
     @State private var selectedGame: CardGame?
     @State private var selectedSport: SportCategory?
     @State private var mode: Mode = .grid
+    @State private var searchText = ""
+    @State private var sort: SortOption = .recent
     @Namespace private var cardNamespace
 
     enum Mode: String, CaseIterable, Identifiable {
@@ -15,14 +18,35 @@ struct CollectionView: View {
         var id: String { rawValue }
     }
 
+    enum SortOption: String, CaseIterable, Identifiable {
+        case recent = "Recent", value = "Value", name = "Name", set = "Set"
+        var id: String { rawValue }
+        var comparator: (CollectionItem, CollectionItem) -> Bool {
+            switch self {
+            case .recent: { $0.dateAdded > $1.dateAdded }
+            case .value: { $0.estimatedValue.amount > $1.estimatedValue.amount }
+            case .name: { $0.card.name < $1.card.name }
+            case .set: { $0.card.setName < $1.card.setName }
+            }
+        }
+    }
+
     private let columns = [GridItem(.adaptive(minimum: 108), spacing: Theme.Spacing.md)]
 
     private var filteredItems: [CollectionItem] {
-        let base = store.items(for: selectedGame)
+        var items = store.items(for: selectedGame)
         if selectedGame == .sports, let sport = selectedSport {
-            return base.filter { $0.card.sport == sport }
+            items = items.filter { $0.card.sport == sport }
         }
-        return base
+        if !searchText.isEmpty {
+            let q = searchText.lowercased()
+            items = items.filter {
+                $0.card.name.lowercased().contains(q)
+                    || $0.card.setName.lowercased().contains(q)
+                    || $0.card.number.lowercased().contains(q)
+            }
+        }
+        return items.sorted(by: sort.comparator)
     }
 
     var body: some View {
@@ -43,6 +67,18 @@ struct CollectionView: View {
                 }
             }
             .navigationTitle("Collection")
+            .searchable(text: $searchText, prompt: "Search cards")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Picker("Sort", selection: $sort) {
+                            ForEach(SortOption.allCases) { Text($0.rawValue).tag($0) }
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down")
+                    }
+                }
+            }
             .navigationDestination(for: CollectionItem.self) { item in
                 CardDetailView(item: item)
                     .navigationTransition(.zoom(sourceID: item.id, in: cardNamespace))
@@ -69,7 +105,10 @@ struct CollectionView: View {
             EmptyState(
                 icon: "square.grid.2x2",
                 title: "No cards yet",
-                message: "Scan a card to start your collection."
+                message: "Scan a card to start your collection.",
+                actionTitle: "Scan your first card",
+                actionIcon: "viewfinder",
+                action: { router.selectedTab = .scan }
             )
             .padding(.top, Theme.Spacing.xxxl)
         } else {
@@ -79,9 +118,9 @@ struct CollectionView: View {
             }
             if filteredItems.isEmpty {
                 EmptyState(
-                    icon: "line.3.horizontal.decrease.circle",
-                    title: "Nothing here yet",
-                    message: "No cards match this filter — scan one to fill the gap."
+                    icon: "magnifyingglass",
+                    title: "No matches",
+                    message: "No cards match this filter or search."
                 )
                 .padding(.top, Theme.Spacing.xl)
             } else {
@@ -183,5 +222,6 @@ private struct FilterChip: View {
 #Preview {
     CollectionView()
         .environment(CollectionStore(items: SampleData.collection))
+        .environment(AppRouter())
         .preferredColorScheme(.dark)
 }

@@ -37,8 +37,8 @@ struct PortfolioView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                     hero
-                    chart
                     rangePicker
+                    chart
                     insightsRow
                     if !gamesWithValue.isEmpty { byGame }
                     if !store.movers.isEmpty { moversSection }
@@ -124,6 +124,14 @@ struct PortfolioView: View {
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
         .frame(height: 150)
+        .overlay(alignment: .topLeading) {
+            Text("Sample")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(Theme.textTertiary)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(.ultraThinMaterial, in: Capsule())
+        }
     }
 
     private var rangePicker: some View {

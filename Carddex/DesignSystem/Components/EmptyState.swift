@@ -5,6 +5,9 @@ struct EmptyState: View {
     let icon: String
     let title: String
     let message: String
+    var actionTitle: String? = nil
+    var actionIcon: String? = nil
+    var action: (() -> Void)? = nil
 
     var body: some View {
         VStack(spacing: Theme.Spacing.md) {
@@ -21,6 +24,11 @@ struct EmptyState: View {
                 .font(.subheadline)
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
+            if let actionTitle, let action {
+                PrimaryButton(title: actionTitle, systemImage: actionIcon, action: action)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .padding(.top, Theme.Spacing.xs)
+            }
         }
         .padding()
     }

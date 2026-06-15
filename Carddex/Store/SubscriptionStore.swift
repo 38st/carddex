@@ -6,7 +6,7 @@ import SwiftUI
 final class SubscriptionStore {
     var isPro: Bool = false
     var scansThisMonth: Int = 0
-    let freeScanLimit = 15
+    let freeScanLimit = 25
 
     var remainingFreeScans: Int { max(0, freeScanLimit - scansThisMonth) }
     var canScan: Bool { isPro || scansThisMonth < freeScanLimit }

@@ -1,14 +1,15 @@
 import SwiftUI
 
 struct RootView: View {
-    @State private var selection: Tab = .scan
+    @Environment(AppRouter.self) private var router
 
     var body: some View {
+        @Bindable var router = router
         ZStack(alignment: .bottom) {
             VaultBackground()
 
             Group {
-                switch selection {
+                switch router.selectedTab {
                 case .scan: ScanView()
                 case .collection: CollectionView()
                 case .portfolio: PortfolioView()
@@ -17,7 +18,7 @@ struct RootView: View {
             }
             .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 88) }
 
-            GlassTabBar(selection: $selection)
+            GlassTabBar(selection: $router.selectedTab)
                 .padding(.bottom, 4)
         }
         .preferredColorScheme(.dark)
@@ -30,4 +31,5 @@ struct RootView: View {
         .environment(CollectionStore(items: SampleData.collection))
         .environment(AppEnvironment())
         .environment(SubscriptionStore())
+        .environment(AppRouter())
 }
