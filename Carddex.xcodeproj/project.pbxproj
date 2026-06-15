@@ -11,10 +11,12 @@
 		08B8A308209E7BF1EE8901ED /* CardTextRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF4D5A89AF79062C925BD0A /* CardTextRecognizer.swift */; };
 		0D72AA5EE1AA1070C91A8880 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BBBF0733DDB546EAAE7073 /* ScanView.swift */; };
 		0F21845C3A975132A40CFC40 /* CameraScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33296CD9469A347C30B77CC2 /* CameraScanView.swift */; };
+		0FBFEAF00D3690650EF3708D /* Marketplace.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */; };
 		153F104711530D0197A30B5C /* CarddexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A108D336F75F134A6B6521FA /* CarddexApp.swift */; };
 		1961FF26ECB359DE879A8B12 /* Money.swift in Sources */ = {isa = PBXBuildFile; fileRef = A509AB568997A722F0896EC9 /* Money.swift */; };
 		27BE6EEBAE1195423B00565B /* SubscriptionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6C56B720E530A7D66C52FD1 /* SubscriptionStore.swift */; };
 		28C12E1BB0608052504E5B04 /* IdentificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958BBB2331B3227EC56ABA59 /* IdentificationService.swift */; };
+		2A5768557312C0E635387BD1 /* SellSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B35FE28728CFA6FD42628C2 /* SellSheet.swift */; };
 		3C9568D196C8FA751CC65759 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01A5F9065BE33CAFE70E85C /* PaywallView.swift */; };
 		475FB3EA40EC8575AE9720A3 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E61FDB4D59D4C62D3E4F3BC /* Theme.swift */; };
 		4EF66C024416274EA827ECFA /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD721849A62838D4E72B51B /* Color+Hex.swift */; };
@@ -57,6 +59,7 @@
 		33296CD9469A347C30B77CC2 /* CameraScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraScanView.swift; sourceTree = "<group>"; };
 		3617587A04CE5CFE2223FA98 /* BinderPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinderPageView.swift; sourceTree = "<group>"; };
 		3ABACF0BBB51F47C38FE8FF6 /* FakeIdentificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeIdentificationService.swift; sourceTree = "<group>"; };
+		3B35FE28728CFA6FD42628C2 /* SellSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SellSheet.swift; sourceTree = "<group>"; };
 		3D7A3C2C21CF6D463F8F74C1 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
 		5B092E1888F4F29CBC18B4CE /* VaultBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultBackground.swift; sourceTree = "<group>"; };
 		5CD721849A62838D4E72B51B /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
@@ -92,6 +95,7 @@
 		F01A5F9065BE33CAFE70E85C /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		F75D7BC2E7A21E4EBF139228 /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
 		F82D6DA06E9FD6F0F0ACAEA8 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Marketplace.swift; sourceTree = "<group>"; };
 		FE9CC3A66CA9ED81A958412F /* CollectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -187,6 +191,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		7BE2C8473DF72D70D753DE3D /* Selling */ = {
+			isa = PBXGroup;
+			children = (
+				3B35FE28728CFA6FD42628C2 /* SellSheet.swift */,
+			);
+			path = Selling;
+			sourceTree = "<group>";
+		};
 		92AB2A1A896E636B2C86045C /* Store */ = {
 			isa = PBXGroup;
 			children = (
@@ -219,6 +231,7 @@
 				3ABACF0BBB51F47C38FE8FF6 /* FakeIdentificationService.swift */,
 				958BBB2331B3227EC56ABA59 /* IdentificationService.swift */,
 				9E614259B52E7A8AE90DDCEA /* LiveIdentificationService.swift */,
+				FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */,
 				DECFAD4285A3AD2FD2A804E1 /* MotionManager.swift */,
 			);
 			path = Services;
@@ -251,6 +264,7 @@
 				16D633D3C8ED0F0D52B606BD /* Paywall */,
 				C32B98996FB9E80A1CE9BEAC /* Portfolio */,
 				30CF2E042559D751658FEBD0 /* Scan */,
+				7BE2C8473DF72D70D753DE3D /* Selling */,
 				E70DFD868343583542F6035F /* Settings */,
 			);
 			path = Features;
@@ -375,6 +389,7 @@
 				938A45158E0AAD1E02933242 /* HolographicFoil.swift in Sources */,
 				28C12E1BB0608052504E5B04 /* IdentificationService.swift in Sources */,
 				6EA8BB24CF8F79E84B21105B /* LiveIdentificationService.swift in Sources */,
+				0FBFEAF00D3690650EF3708D /* Marketplace.swift in Sources */,
 				D8A322320269648D53124204 /* MiniAreaChart.swift in Sources */,
 				1961FF26ECB359DE879A8B12 /* Money.swift in Sources */,
 				93C3A061777CCC86563D16EF /* MotionManager.swift in Sources */,
@@ -386,6 +401,7 @@
 				EFCDB9CAF184D6971C7E7657 /* RootView.swift in Sources */,
 				EBA8CDA2EBEC6876638E5EF7 /* SampleData.swift in Sources */,
 				0D72AA5EE1AA1070C91A8880 /* ScanView.swift in Sources */,
+				2A5768557312C0E635387BD1 /* SellSheet.swift in Sources */,
 				B2ED098BA66E0257B53E2C56 /* SettingsView.swift in Sources */,
 				FF46375C1653EF69BFAFC5AB /* StatTile.swift in Sources */,
 				27BE6EEBAE1195423B00565B /* SubscriptionStore.swift in Sources */,

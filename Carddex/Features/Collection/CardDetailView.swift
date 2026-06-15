@@ -6,6 +6,7 @@ struct CardDetailView: View {
     @Environment(CollectionStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var motion = MotionManager()
+    @State private var showSell = false
     let item: CollectionItem
 
     private func clamp(_ value: Double, _ limit: Double) -> Double {
@@ -59,7 +60,7 @@ struct CardDetailView: View {
                 .padding(Theme.Spacing.md)
                 .glassPanel(cornerRadius: Theme.Radius.card)
 
-                PrimaryButton(title: "List on eBay", systemImage: "tag") {}
+                PrimaryButton(title: "List on eBay", systemImage: "tag") { showSell = true }
 
                 Button(role: .destructive) {
                     store.remove(item)
@@ -74,6 +75,7 @@ struct CardDetailView: View {
         }
         .navigationTitle(item.card.name)
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showSell) { SellSheet(item: item) }
         .onAppear { motion.start() }
         .onDisappear { motion.stop() }
     }

@@ -1,4 +1,6 @@
 import SwiftUI
+import PhotosUI
+import UIKit
 
 /// The scan screen: live on-device text scanning on a real device (simulator
 /// falls back to a simulated scan), then identify → confirm / pick / manual.
@@ -12,6 +14,7 @@ struct ScanView: View {
     @State private var outcome: IdentificationOutcome?
     @State private var showResult = false
     @State private var showPaywall = false
+    @State private var pickedPhoto: PhotosPickerItem?
 
     var body: some View {
         NavigationStack {
@@ -34,10 +37,21 @@ struct ScanView: View {
                     }
                 }
                 .disabled(isIdentifying)
+
+                PhotosPicker(selection: $pickedPhoto, matching: .images) {
+                    Label("Choose from photos", systemImage: "photo.on.rectangle")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(Theme.accent)
+                }
+                .disabled(isIdentifying)
+
                 Spacer(minLength: 0)
             }
             .padding()
             .navigationTitle("Scan")
+            .onChange(of: pickedPhoto) { _, item in
+                Task { await identifyPickedPhoto(item) }
+            }
             .sheet(isPresented: $showResult) {
                 if let outcome {
                     IdentifyResultSheet(outcome: outcome) { card in
@@ -100,6 +114,29 @@ struct ScanView: View {
         }
         subs.recordScan()
         showResult = true
+    }
+
+    private func identifyPickedPhoto(_ item: PhotosPickerItem?) async {
+        guard let item else { return }
+        guard subs.canScan else { showPaywall = true; return }
+        isIdentifying = true
+        defer { isIdentifying = false }
+        guard
+            let data = try? await item.loadTransferable(type: Data.self),
+            let image = UIImage(data: data),
+            let cgImage = image.cgImage
+        else { return }
+        let ocr = await CardTextRecognizer.recognize(cgImage)
+        let jpeg = image.jpegData(compressionQuality: 0.8) ?? data
+        let input = ScanInput(imageData: jpeg, ocrText: ocr, gameHint: nil)
+        do {
+            outcome = try await env.identification.identify(input)
+        } catch {
+            outcome = .unidentified(ocrText: ocr)
+        }
+        subs.recordScan()
+        showResult = true
+        pickedPhoto = nil
     }
 }
 
