@@ -12,14 +12,10 @@ struct GlassTabBar: View {
     var body: some View {
         HStack(spacing: 0) {
             tab(.collection, "square.grid.2x2")
-            Spacer(minLength: 0)
             tab(.portfolio, "chart.line.uptrend.xyaxis")
-            Spacer(minLength: 0)
             scanButton
-            Spacer(minLength: 0)
             tab(.settings, "gearshape")
         }
-        .padding(.horizontal, 30)
         .frame(height: 60)
         .modifier(BarGlass())
         .padding(.horizontal, 26)
@@ -34,6 +30,7 @@ struct GlassTabBar: View {
                 .foregroundStyle(selection == destination ? Theme.accent : Theme.textTertiary)
                 .frame(width: 44, height: 44)
         }
+        .frame(maxWidth: .infinity)
     }
 
     private var scanButton: some View {
@@ -47,6 +44,7 @@ struct GlassTabBar: View {
                 .background(Theme.accent, in: Circle())
                 .overlay(Circle().strokeBorder(Theme.bg, lineWidth: 4))
         }
+        .frame(maxWidth: .infinity)
         .offset(y: -14)
     }
 }
