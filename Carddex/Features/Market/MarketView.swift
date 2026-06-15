@@ -1,22 +1,41 @@
 import SwiftUI
 
 /// The Market — a Card Ladder-style view of the card market: the Carddex Index,
-/// movers, and a searchable, sports-first card database.
+/// your watchlist, movers, category filters, and a searchable, sports-first database.
 struct MarketView: View {
+    @Environment(WatchlistStore.self) private var watchlist
     @State private var search = ""
+    @State private var filter: MarketFilter?
+
+    enum MarketFilter: Hashable {
+        case sport(SportCategory)
+        case game(CardGame)
+    }
 
     private func change(_ card: Card) -> Double { SampleData.market[card.id]?.change30d ?? 0 }
 
+    private func matches(_ card: Card) -> Bool {
+        guard let filter else { return true }
+        switch filter {
+        case .sport(let sport): return card.game == .sports && card.sport == sport
+        case .game(let game): return card.game == game
+        }
+    }
+
     private var results: [Card] {
-        guard !search.isEmpty else { return SampleData.marketCards }
-        let q = search.lowercased()
-        return SampleData.marketCards.filter {
-            $0.name.lowercased().contains(q) || $0.setName.lowercased().contains(q)
+        SampleData.marketCards.filter { card in
+            matches(card) && (search.isEmpty
+                || card.name.lowercased().contains(search.lowercased())
+                || card.setName.lowercased().contains(search.lowercased()))
         }
     }
 
     private var movers: [Card] {
-        SampleData.marketCards.sorted { abs(change($0)) > abs(change($1)) }
+        SampleData.marketCards.filter(matches).sorted { abs(change($0)) > abs(change($1)) }
+    }
+
+    private var watched: [Card] {
+        SampleData.marketCards.filter { watchlist.isFollowing($0.id) }
     }
 
     var body: some View {
@@ -24,8 +43,14 @@ struct MarketView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                     indexCard
+                    categoryBar
 
-                    if search.isEmpty {
+                    if search.isEmpty && !watched.isEmpty {
+                        sectionTitle("Watchlist")
+                        cardList(watched)
+                    }
+
+                    if search.isEmpty && !movers.isEmpty {
                         sectionTitle("Movers")
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: Theme.Spacing.md) {
@@ -39,13 +64,7 @@ struct MarketView: View {
                     }
 
                     sectionTitle(search.isEmpty ? "Top cards" : "Results")
-                    VStack(spacing: Theme.Spacing.sm) {
-                        ForEach(results) { card in
-                            NavigationLink(value: card) { MarketRow(card: card) }
-                                .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.horizontal)
+                    cardList(results)
                 }
                 .padding(.vertical)
             }
@@ -57,11 +76,40 @@ struct MarketView: View {
         }
     }
 
+    private func cardList(_ cards: [Card]) -> some View {
+        VStack(spacing: Theme.Spacing.sm) {
+            ForEach(cards) { card in
+                NavigationLink(value: card) { MarketRow(card: card) }
+                    .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal)
+    }
+
     private func sectionTitle(_ text: String) -> some View {
         Text(text)
             .font(.headline)
             .foregroundStyle(Theme.textPrimary)
             .padding(.horizontal)
+    }
+
+    private var categoryBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: Theme.Spacing.sm) {
+                MarketChip(title: "All", isSelected: filter == nil) { filter = nil }
+                ForEach(SportCategory.allCases) { sport in
+                    MarketChip(title: sport.displayName, isSelected: filter == .sport(sport)) {
+                        filter = .sport(sport)
+                    }
+                }
+                ForEach([CardGame.pokemon, .magic, .yugioh]) { game in
+                    MarketChip(title: game.displayName, isSelected: filter == .game(game)) {
+                        filter = .game(game)
+                    }
+                }
+            }
+            .padding(.horizontal)
+        }
     }
 
     private var indexCard: some View {
@@ -86,6 +134,26 @@ struct MarketView: View {
         .padding(Theme.Spacing.md)
         .glassPanel(cornerRadius: Theme.Radius.lg)
         .padding(.horizontal)
+    }
+}
+
+private struct MarketChip: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    var body: some View {
+        Button {
+            Haptics.selection()
+            action()
+        } label: {
+            Text(title)
+                .font(.subheadline.weight(.medium))
+                .padding(.horizontal, 14)
+                .padding(.vertical, Theme.Spacing.sm)
+                .foregroundStyle(isSelected ? .white : Theme.textSecondary)
+                .background(isSelected ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(.ultraThinMaterial), in: Capsule())
+                .overlay(Capsule().strokeBorder(isSelected ? .clear : Theme.hairline))
+        }
     }
 }
 
@@ -150,5 +218,6 @@ private struct MoverCard: View {
 #Preview {
     MarketView()
         .environment(CollectionStore(items: SampleData.collection))
+        .environment(WatchlistStore(followed: [SampleData.jordan.id]))
         .preferredColorScheme(.dark)
 }

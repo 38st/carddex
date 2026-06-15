@@ -10,22 +10,24 @@ export const meta = {
 
 const REPO = '/Users/armanruzgar/carddex'
 
+const CONTEXT = `Carddex has pivoted to a Card Ladder-style (cardladder.com) SPORTS-FIRST card market & investment tracker. The new Market tab (Carddex/Features/Market/*) has a market index, movers, graded PSA values, recent sales, and a searchable database; there's also Scan, Collection, Portfolio (cost-basis/ROI). Card Ladder's core is: market index, searchable card database with real sales history, graded values + population, portfolio ROI, price alerts, per-category/player indices. Focus every recommendation on building out this Card Ladder direction, sports-first.`
+
 const ROLES = [
   {
     key: 'design',
-    prompt: `You are a senior product/UX designer. Review the SwiftUI screens in ${REPO}/Carddex/Features/* and ${REPO}/Carddex/DesignSystem/*. Return the 5 highest-impact UI/UX improvements not yet done, each as: screen · concrete change · why. Be specific and ranked. Structured markdown, not conversational.`,
+    prompt: `${CONTEXT}\n\nYou are a senior product/UX designer. Review the SwiftUI screens in ${REPO}/Carddex/Features/* (especially Market/*) and ${REPO}/Carddex/DesignSystem/*. Return the 5 highest-impact UI/UX features to build next for the Card Ladder direction (e.g. category/player indices, watchlist, price alerts, graded matrix), each as: screen · concrete change · why. Ranked. Structured markdown.`,
   },
   {
     key: 'ios',
-    prompt: `You are a senior iOS engineer. Review ${REPO}/Carddex/* for correctness, Swift 6 concurrency, performance (image loading, list/grid, holo redraws), and architecture. Return the 5 highest-impact engineering improvements with specific files/changes. Structured markdown.`,
+    prompt: `${CONTEXT}\n\nYou are a senior iOS engineer. Review ${REPO}/Carddex/* for correctness, Swift 6 concurrency, performance, and architecture as the app scales to a market-data app. Return the 5 highest-impact engineering improvements/features with specific files/changes. Structured markdown.`,
   },
   {
     key: 'backend',
-    prompt: `You are a backend/infra architect. Review ${REPO}/supabase/* and ${REPO}/docs/*. Return the 5 highest-priority backend tasks to make the app production-real (catalog ingestion, image pipeline, auth/sync, deploy), ranked, with rationale. Structured markdown.`,
+    prompt: `${CONTEXT}\n\nYou are a backend/infra architect. Review ${REPO}/supabase/* and ${REPO}/docs/*. Card Ladder lives on real SPORTS sales data (eBay sold comps, auction houses) + graded values + population. Return the 5 highest-priority backend tasks to power this (sports catalog + sales/price pipeline, indices, alerts, deploy), ranked. Structured markdown.`,
   },
   {
     key: 'product',
-    prompt: `You are a product strategist. Review ${REPO}/docs/launch-plan.md and the feature set. Return the 5 highest-leverage product moves toward an App Store launch (scope, monetization, growth, retention), ranked. Structured markdown.`,
+    prompt: `${CONTEXT}\n\nYou are a product strategist. Return the 5 highest-leverage product moves to win as a sports-card-first Card Ladder competitor (data moat, monetization, growth, retention, what to build vs cut), ranked. Structured markdown.`,
   },
 ]
 

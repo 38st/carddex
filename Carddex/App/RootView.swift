@@ -33,4 +33,5 @@ struct RootView: View {
         .environment(AppEnvironment())
         .environment(SubscriptionStore())
         .environment(AppRouter())
+        .environment(WatchlistStore())
 }

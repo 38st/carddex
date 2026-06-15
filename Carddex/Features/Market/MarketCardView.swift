@@ -4,6 +4,7 @@ import SwiftUI
 /// the selected grade, recent sales, and population.
 struct MarketCardView: View {
     @Environment(CollectionStore.self) private var store
+    @Environment(WatchlistStore.self) private var watchlist
     let card: Card
     @State private var selectedGrade: String
     @State private var added = false
@@ -32,7 +33,8 @@ struct MarketCardView: View {
                 }
 
                 value
-                gradeSelector
+                gradeMatrix
+                gradingHint
                 CardPriceChart(basePrice: NSDecimalNumber(decimal: selectedPrice.amount).doubleValue)
                     .padding(Theme.Spacing.md)
                     .glassPanel(cornerRadius: Theme.Radius.card)
@@ -56,6 +58,28 @@ struct MarketCardView: View {
         }
         .navigationTitle(card.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    if watchlist.hasAlert(card.id) {
+                        watchlist.removeAlert(card.id)
+                    } else {
+                        watchlist.setAlert(cardID: card.id, target: selectedPrice)
+                        Haptics.success()
+                    }
+                } label: {
+                    Image(systemName: watchlist.hasAlert(card.id) ? "bell.fill" : "bell")
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    Haptics.selection()
+                    watchlist.toggleFollow(card.id)
+                } label: {
+                    Image(systemName: watchlist.isFollowing(card.id) ? "star.fill" : "star")
+                }
+            }
+        }
     }
 
     private var value: some View {
@@ -74,12 +98,48 @@ struct MarketCardView: View {
         }
     }
 
-    @ViewBuilder private var gradeSelector: some View {
+    @ViewBuilder private var gradeMatrix: some View {
         if let grades = market?.gradedPrices, !grades.isEmpty {
-            Picker("Grade", selection: $selectedGrade) {
-                ForEach(grades) { Text($0.grade).tag($0.grade) }
+            VStack(spacing: 0) {
+                ForEach(grades) { graded in
+                    Button {
+                        Haptics.selection()
+                        selectedGrade = graded.grade
+                    } label: {
+                        HStack {
+                            Text(graded.grade)
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(Theme.textPrimary)
+                            Spacer()
+                            Text(graded.price.formatted)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(selectedGrade == graded.grade ? Theme.accent : Theme.textPrimary)
+                                .monospacedDigit()
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, Theme.Spacing.md)
+                        .background(selectedGrade == graded.grade ? Theme.accent.opacity(0.14) : .clear)
+                    }
+                    .buttonStyle(.plain)
+                    if graded.id != grades.last?.id {
+                        Divider().overlay(Theme.hairline)
+                    }
+                }
             }
-            .pickerStyle(.segmented)
+            .glassPanel(cornerRadius: Theme.Radius.card)
+        }
+    }
+
+    @ViewBuilder private var gradingHint: some View {
+        if let grades = market?.gradedPrices,
+           let raw = grades.first(where: { $0.grade == "Raw" }),
+           let psa10 = grades.first(where: { $0.grade == "PSA 10" }) {
+            let rawValue = NSDecimalNumber(decimal: raw.price.amount).doubleValue
+            let topValue = NSDecimalNumber(decimal: psa10.price.amount).doubleValue
+            let multiple = rawValue > 0 ? Int((topValue / rawValue).rounded()) : 0
+            Label("Grading upside: Raw → PSA 10 is \(multiple)×", systemImage: "arrow.up.right.circle")
+                .font(.caption)
+                .foregroundStyle(Theme.gain)
         }
     }
 
@@ -117,6 +177,7 @@ struct MarketCardView: View {
     NavigationStack {
         MarketCardView(card: SampleData.jordan)
             .environment(CollectionStore(items: SampleData.collection))
+            .environment(WatchlistStore())
     }
     .preferredColorScheme(.dark)
 }
