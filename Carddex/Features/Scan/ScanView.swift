@@ -50,6 +50,7 @@ struct ScanView: View {
             }
             .padding()
             .navigationTitle("Scan")
+            .tabBarSafeArea()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showBulk = true } label: { Image(systemName: "rectangle.stack") }

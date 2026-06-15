@@ -78,6 +78,7 @@ struct SettingsView: View {
             }
             .scrollContentBackground(.hidden)
             .navigationTitle("Settings")
+            .tabBarSafeArea()
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
             }

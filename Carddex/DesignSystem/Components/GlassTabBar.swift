@@ -4,6 +4,14 @@ enum Tab: CaseIterable {
     case market, collection, scan, portfolio, settings
 }
 
+extension View {
+    /// Reserves space at the bottom of a scroll view for the floating tab bar so
+    /// content (and search results) stop above it instead of sliding under.
+    func tabBarSafeArea() -> some View {
+        safeAreaInset(edge: .bottom, spacing: 0) { Color.clear.frame(height: 80) }
+    }
+}
+
 /// Floating bottom tab bar — four evenly-spaced tabs over an iOS 26 Liquid Glass
 /// capsule (tinted dark so it doesn't pick up the colors of the content behind it).
 struct GlassTabBar: View {
@@ -53,13 +61,9 @@ struct GlassTabBar: View {
 /// pre-iOS 26 material fallback.
 private struct BarGlass: ViewModifier {
     func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            content.glassEffect(.regular.tint(.black.opacity(0.28)), in: Capsule())
-        } else {
-            content
-                .background(Theme.bgRaised.opacity(0.8), in: Capsule())
-                .background(.ultraThinMaterial, in: Capsule())
-                .overlay(Capsule().strokeBorder(Theme.hairline))
-        }
+        content
+            .background(Theme.surface, in: Capsule())
+            .overlay(Capsule().strokeBorder(Theme.hairline))
+            .shadow(color: .black.opacity(0.4), radius: 14, y: 6)
     }
 }

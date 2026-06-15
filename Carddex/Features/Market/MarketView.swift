@@ -81,6 +81,7 @@ struct MarketView: View {
                 .padding(.vertical)
             }
             .navigationTitle("Market")
+            .tabBarSafeArea()
             .searchable(text: $search, prompt: "Search the market")
             .navigationDestination(for: Card.self) { card in
                 MarketCardView(card: card)

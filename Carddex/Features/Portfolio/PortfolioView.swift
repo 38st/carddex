@@ -49,6 +49,7 @@ struct PortfolioView: View {
                 .padding()
             }
             .navigationTitle("Portfolio")
+            .tabBarSafeArea()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if let shareImage {

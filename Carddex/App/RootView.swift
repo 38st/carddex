@@ -17,7 +17,13 @@ struct RootView: View {
                 case .settings: SettingsView()
                 }
             }
-            .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 88) }
+
+            // Bottom fade so content dissolves into the dark before the floating bar.
+            LinearGradient(colors: [.clear, Theme.bg], startPoint: .top, endPoint: .bottom)
+                .frame(height: 150)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
 
             GlassTabBar(selection: $router.selectedTab)
                 .padding(.bottom, 4)

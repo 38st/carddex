@@ -67,6 +67,7 @@ struct CollectionView: View {
                 }
             }
             .navigationTitle("Collection")
+            .tabBarSafeArea()
             .searchable(text: $searchText, prompt: "Search cards")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
