@@ -28,6 +28,7 @@
 		93C3A061777CCC86563D16EF /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECFAD4285A3AD2FD2A804E1 /* MotionManager.swift */; };
 		980CB4AB3FAE27FE27C508AF /* CardGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBCC8AADADB125C30C59456 /* CardGame.swift */; };
 		A403AA6CB1EADC1D00A457B5 /* FakeIdentificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABACF0BBB51F47C38FE8FF6 /* FakeIdentificationService.swift */; };
+		AA2E9C19D851F0BCF570521F /* CardSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4DFC49D84E3195DE6FD8DF /* CardSet.swift */; };
 		AD8952B2E27796D75362BFA8 /* Rarity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87334A1E7485DC97242BA9E /* Rarity.swift */; };
 		AE18F7E53335D11C36F462FF /* CardArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF03BD99BC1FF413B539467 /* CardArtwork.swift */; };
 		AE41BDC851115C7890AADBB2 /* CardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8F04774E0D43F60A439C60 /* CardCell.swift */; };
@@ -39,6 +40,7 @@
 		E889519F72241D7B7492D225 /* GamePill.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF19D95A1447D88D0B089130 /* GamePill.swift */; };
 		EBA8CDA2EBEC6876638E5EF7 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A3C2C21CF6D463F8F74C1 /* SampleData.swift */; };
 		EFCDB9CAF184D6971C7E7657 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6641D60939CA82CD0B026D90 /* RootView.swift */; };
+		F3FA1E33E259AEA47F86AA2C /* BinderPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3617587A04CE5CFE2223FA98 /* BinderPageView.swift */; };
 		FBE4AC16D042484B4DEFE566 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913E5E48832603A6B4238A3D /* AppEnvironment.swift */; };
 		FF46375C1653EF69BFAFC5AB /* StatTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EBB65D08CC76601467891D /* StatTile.swift */; };
 /* End PBXBuildFile section */
@@ -48,12 +50,14 @@
 		1FF03BD99BC1FF413B539467 /* CardArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardArtwork.swift; sourceTree = "<group>"; };
 		2DBCC8AADADB125C30C59456 /* CardGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardGame.swift; sourceTree = "<group>"; };
 		33296CD9469A347C30B77CC2 /* CameraScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraScanView.swift; sourceTree = "<group>"; };
+		3617587A04CE5CFE2223FA98 /* BinderPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinderPageView.swift; sourceTree = "<group>"; };
 		3ABACF0BBB51F47C38FE8FF6 /* FakeIdentificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeIdentificationService.swift; sourceTree = "<group>"; };
 		3D7A3C2C21CF6D463F8F74C1 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
 		5B092E1888F4F29CBC18B4CE /* VaultBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultBackground.swift; sourceTree = "<group>"; };
 		5CD721849A62838D4E72B51B /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		651F0C5FCA4E4A93DC5DFA87 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		6641D60939CA82CD0B026D90 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		6C4DFC49D84E3195DE6FD8DF /* CardSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardSet.swift; sourceTree = "<group>"; };
 		6E61FDB4D59D4C62D3E4F3BC /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		6FC3794684572890D03F101E /* Carddex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Carddex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84BBBF0733DDB546EAAE7073 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
@@ -135,6 +139,7 @@
 		4F1296536807F6833B109E6F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				3617587A04CE5CFE2223FA98 /* BinderPageView.swift */,
 				1FF03BD99BC1FF413B539467 /* CardArtwork.swift */,
 				AA8F04774E0D43F60A439C60 /* CardCell.swift */,
 				8F724DDD9B26E77DF91C0E01 /* EmptyState.swift */,
@@ -169,6 +174,7 @@
 				651F0C5FCA4E4A93DC5DFA87 /* Card.swift */,
 				BB2C9E8CC255BD14F8A0808E /* CardCondition.swift */,
 				2DBCC8AADADB125C30C59456 /* CardGame.swift */,
+				6C4DFC49D84E3195DE6FD8DF /* CardSet.swift */,
 				A0C867666CD3C8B620FC2B2C /* CollectionItem.swift */,
 				A509AB568997A722F0896EC9 /* Money.swift */,
 				B87334A1E7485DC97242BA9E /* Rarity.swift */,
@@ -315,6 +321,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBE4AC16D042484B4DEFE566 /* AppEnvironment.swift in Sources */,
+				F3FA1E33E259AEA47F86AA2C /* BinderPageView.swift in Sources */,
 				0F21845C3A975132A40CFC40 /* CameraScanView.swift in Sources */,
 				B8685AEED4FD8338E81BDC48 /* Card.swift in Sources */,
 				AE18F7E53335D11C36F462FF /* CardArtwork.swift in Sources */,
@@ -322,6 +329,7 @@
 				BC7FFE053211DA48861099C6 /* CardCondition.swift in Sources */,
 				848406F03B29B526068F8A5D /* CardDetailView.swift in Sources */,
 				980CB4AB3FAE27FE27C508AF /* CardGame.swift in Sources */,
+				AA2E9C19D851F0BCF570521F /* CardSet.swift in Sources */,
 				08B8A308209E7BF1EE8901ED /* CardTextRecognizer.swift in Sources */,
 				153F104711530D0197A30B5C /* CarddexApp.swift in Sources */,
 				8FE56926EC900900F3BF4C7C /* CollectionItem.swift in Sources */,

@@ -42,4 +42,15 @@ final class CollectionStore {
     func remove(_ item: CollectionItem) {
         items.removeAll { $0.id == item.id }
     }
+
+    /// The owned card filling a given set slot, if any.
+    func ownedCard(setName: String, number: String) -> Card? {
+        items.first { $0.card.setName == setName && $0.card.number == number }?.card
+    }
+
+    /// How many checklist slots in a set the user owns.
+    func completion(for set: CardSet) -> (owned: Int, total: Int) {
+        let owned = set.slots.filter { ownedCard(setName: set.name, number: $0.number) != nil }.count
+        return (owned, set.slots.count)
+    }
 }
