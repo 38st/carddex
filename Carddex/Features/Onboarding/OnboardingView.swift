@@ -103,7 +103,8 @@ private struct OnboardingPageView: View {
     @ViewBuilder private var hero: some View {
         switch page.kind {
         case .holo:
-            CardArtwork(game: .pokemon, rarity: "Holo Rare", price: Money(amount: 320))
+            CardArtwork(game: .pokemon, rarity: "Holo Rare", price: Money(amount: 320),
+                        imageURL: URL(string: "https://images.pokemontcg.io/base1/4_hires.png"))
                 .frame(width: 184)
                 .rotation3DEffect(.degrees(8), axis: (x: 1, y: 0, z: 0))
                 .rotation3DEffect(.degrees(-8), axis: (x: 0, y: 1, z: 0))

@@ -19,6 +19,7 @@ struct CardDetailView: View {
                     game: item.card.game,
                     rarity: item.card.rarity,
                     price: item.card.marketPrice,
+                    imageURL: item.card.imageURL,
                     cornerRadius: Theme.Radius.lg
                 )
                 .frame(maxWidth: 220)

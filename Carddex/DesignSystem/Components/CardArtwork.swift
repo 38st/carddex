@@ -1,20 +1,34 @@
 import SwiftUI
 
-/// Card artwork. Currently a game-tinted placeholder with a rarity-aware holo
-/// overlay; swaps to an `AsyncImage` once catalog `imageURL`s are wired in (Phase 1).
+/// Card artwork: real catalog image when available (with a game-tinted gradient
+/// placeholder while it loads / when absent), plus a rarity-aware holo overlay.
 struct CardArtwork: View {
     let game: CardGame
     var rarity: String? = nil
     var price: Money? = nil
+    var imageURL: URL? = nil
     var cornerRadius: CGFloat = Theme.Radius.card
 
     var body: some View {
         let tier = Rarity.tier(rarityText: rarity, price: price)
         ZStack {
-            LinearGradient(colors: game.artGradient, startPoint: .topLeading, endPoint: .bottomTrailing)
-            Image(systemName: game.symbol)
-                .font(.system(size: 34))
-                .foregroundStyle(.white.opacity(0.42))
+            if let imageURL {
+                AsyncImage(url: imageURL, transaction: Transaction(animation: .easeOut(duration: 0.25))) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().scaledToFill()
+                    case .empty:
+                        placeholder.overlay(ProgressView().tint(.white))
+                    case .failure:
+                        placeholder
+                    @unknown default:
+                        placeholder
+                    }
+                }
+            } else {
+                placeholder
+            }
+
             if tier != .none {
                 HolographicFoil(cornerRadius: cornerRadius, intensity: tier == .mythic ? 1.0 : 0.6)
             }
@@ -25,5 +39,14 @@ struct CardArtwork: View {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .strokeBorder(Color.white.opacity(0.12))
         )
+    }
+
+    private var placeholder: some View {
+        ZStack {
+            LinearGradient(colors: game.artGradient, startPoint: .topLeading, endPoint: .bottomTrailing)
+            Image(systemName: game.symbol)
+                .font(.system(size: 34))
+                .foregroundStyle(.white.opacity(0.42))
+        }
     }
 }

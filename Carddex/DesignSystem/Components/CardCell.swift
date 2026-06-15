@@ -6,7 +6,7 @@ struct CardCell: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            CardArtwork(game: item.card.game, rarity: item.card.rarity, price: item.card.marketPrice)
+            CardArtwork(game: item.card.game, rarity: item.card.rarity, price: item.card.marketPrice, imageURL: item.card.imageURL)
                 .overlay(alignment: .topTrailing) {
                     if item.quantity > 1 {
                         Text("×\(item.quantity)")

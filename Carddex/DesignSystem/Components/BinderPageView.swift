@@ -27,7 +27,7 @@ struct BinderPageView: View {
             LazyVGrid(columns: columns, spacing: Theme.Spacing.sm) {
                 ForEach(set.slots) { slot in
                     if let card = store.ownedCard(setName: set.name, number: slot.number) {
-                        CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice)
+                        CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL)
                     } else {
                         GhostSlot(number: slot.number)
                     }

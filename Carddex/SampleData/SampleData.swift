@@ -1,31 +1,40 @@
 import Foundation
 
 /// Placeholder data so the UI is populated before the catalog APIs are wired in.
+/// Image URLs are real public catalog images (pokemontcg.io, ygoprodeck.com).
 /// Removed once real identification + Supabase sync land in Phase 1.
 enum SampleData {
+    private static func img(_ string: String) -> URL? { URL(string: string) }
+
     // Base Set (Pokémon) — a partially-complete set for the binder view.
     static let charizard = Card(id: "pkm-base-4", game: .pokemon, name: "Charizard",
                                 setName: "Base Set", number: "4/102", rarity: "Holo Rare",
-                                imageURL: nil, marketPrice: Money(amount: 320))
+                                imageURL: img("https://images.pokemontcg.io/base1/4_hires.png"),
+                                marketPrice: Money(amount: 320))
     static let blastoise = Card(id: "pkm-base-2", game: .pokemon, name: "Blastoise",
                                 setName: "Base Set", number: "2/102", rarity: "Holo Rare",
-                                imageURL: nil, marketPrice: Money(amount: 150))
+                                imageURL: img("https://images.pokemontcg.io/base1/2_hires.png"),
+                                marketPrice: Money(amount: 150))
     static let venusaur = Card(id: "pkm-base-15", game: .pokemon, name: "Venusaur",
                                setName: "Base Set", number: "15/102", rarity: "Holo Rare",
-                               imageURL: nil, marketPrice: Money(amount: 120))
+                               imageURL: img("https://images.pokemontcg.io/base1/15_hires.png"),
+                               marketPrice: Money(amount: 120))
     static let mewtwo = Card(id: "pkm-base-10", game: .pokemon, name: "Mewtwo",
                              setName: "Base Set", number: "10/102", rarity: "Holo Rare",
-                             imageURL: nil, marketPrice: Money(amount: 45))
+                             imageURL: img("https://images.pokemontcg.io/base1/10_hires.png"),
+                             marketPrice: Money(amount: 45))
     static let gyarados = Card(id: "pkm-base-6", game: .pokemon, name: "Gyarados",
                                setName: "Base Set", number: "6/102", rarity: "Holo Rare",
-                               imageURL: nil, marketPrice: Money(amount: 40))
+                               imageURL: img("https://images.pokemontcg.io/base1/6_hires.png"),
+                               marketPrice: Money(amount: 40))
     static let machamp = Card(id: "pkm-base-8", game: .pokemon, name: "Machamp",
                               setName: "Base Set", number: "8/102", rarity: "Holo Rare",
-                              imageURL: nil, marketPrice: Money(amount: 25))
-
-    static let pikachu = Card(id: "pkm-sv-025", game: .pokemon, name: "Pikachu",
-                              setName: "Scarlet & Violet", number: "025/198", rarity: "Common",
-                              imageURL: nil, marketPrice: Money(amount: 4.50))
+                              imageURL: img("https://images.pokemontcg.io/base1/8_hires.png"),
+                              marketPrice: Money(amount: 25))
+    static let pikachu = Card(id: "pkm-base-58", game: .pokemon, name: "Pikachu",
+                              setName: "Base Set", number: "58/102", rarity: "Common",
+                              imageURL: img("https://images.pokemontcg.io/base1/58_hires.png"),
+                              marketPrice: Money(amount: 12))
 
     static let blackLotus = Card(id: "mtg-alpha-blacklotus", game: .magic, name: "Black Lotus",
                                  setName: "Alpha", number: "232", rarity: "Rare",
@@ -36,7 +45,8 @@ enum SampleData {
 
     static let blueEyes = Card(id: "ygo-lob-001", game: .yugioh, name: "Blue-Eyes White Dragon",
                                setName: "Legend of Blue Eyes", number: "LOB-001", rarity: "Ultra Rare",
-                               imageURL: nil, marketPrice: Money(amount: 90))
+                               imageURL: img("https://images.ygoprodeck.com/images/cards/89631139.jpg"),
+                               marketPrice: Money(amount: 90))
 
     static let jordan = Card(id: "sports-fleer86-57", game: .sports, name: "Michael Jordan RC",
                              setName: "1986 Fleer", number: "57", rarity: nil,
