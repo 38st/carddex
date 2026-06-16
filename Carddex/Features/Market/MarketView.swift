@@ -138,7 +138,7 @@ struct MarketView: View {
                         Spacer()
                         sortMenu.padding(.trailing)
                     }
-                    cardList(results)
+                    cardList(results, ranked: true)
 
                     if search.isEmpty {
                         sectionTitle("Recent sales")
@@ -176,10 +176,10 @@ struct MarketView: View {
         }
     }
 
-    private func cardList(_ cards: [Card]) -> some View {
+    private func cardList(_ cards: [Card], ranked: Bool = false) -> some View {
         VStack(spacing: Theme.Spacing.sm) {
-            ForEach(cards) { card in
-                NavigationLink(value: card) { MarketRow(card: card) }
+            ForEach(Array(cards.enumerated()), id: \.element.id) { index, card in
+                NavigationLink(value: card) { MarketRow(card: card, rank: ranked ? index + 1 : nil) }
                     .buttonStyle(.plain)
             }
         }
@@ -187,12 +187,17 @@ struct MarketView: View {
     }
 
     private func sectionTitle(_ text: String) -> some View {
-        Text(text.uppercased())
-            .font(.caption.weight(.semibold))
-            .tracking(1.3)
-            .foregroundStyle(Theme.textSecondary)
-            .padding(.horizontal)
-            .padding(.top, Theme.Spacing.xs)
+        HStack(spacing: 7) {
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .fill(Theme.accent)
+                .frame(width: 3, height: 13)
+            Text(text.uppercased())
+                .font(.caption.weight(.semibold))
+                .tracking(1.3)
+                .foregroundStyle(Theme.textSecondary)
+        }
+        .padding(.horizontal)
+        .padding(.top, Theme.Spacing.xs)
     }
 
     private var categoryBar: some View {
@@ -333,28 +338,46 @@ private struct MarketChip: View {
 struct MarketRow: View {
     @Environment(MarketStore.self) private var marketStore
     let card: Card
+    var rank: Int? = nil
 
     var body: some View {
         let market = marketStore.market[card.id]
-        HStack(spacing: Theme.Spacing.md) {
+        let change = market?.change30d ?? 0
+        let up = change >= 0
+        HStack(spacing: Theme.Spacing.sm) {
+            if let rank {
+                Text("\(rank)")
+                    .font(.caption.weight(.bold))
+                    .monospacedDigit()
+                    .foregroundStyle(Theme.textTertiary)
+                    .frame(width: 18, alignment: .center)
+            }
             CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport)
                 .frame(width: 40)
             VStack(alignment: .leading, spacing: 2) {
                 Text(card.name).foregroundStyle(Theme.textPrimary).lineLimit(1)
                 Text(card.setName).font(.caption).foregroundStyle(Theme.textSecondary).lineLimit(1)
             }
-            Spacer()
+            Spacer(minLength: Theme.Spacing.sm)
+            if market != nil {
+                MiniAreaChart(values: SampleData.priceSeries(change30d: change, range: .month, seed: card.id),
+                              tint: up ? Theme.gain : Theme.loss)
+                    .frame(width: 50, height: 26)
+                    .opacity(0.9)
+            }
             VStack(alignment: .trailing, spacing: 2) {
                 Text((market?.topPrice ?? card.marketPrice ?? .zero).formatted)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Theme.textPrimary)
                     .monospacedDigit()
-                if let change = market?.change30d {
-                    Text("\(change >= 0 ? "+" : "")\(String(format: "%.1f", change))%")
+                if market != nil {
+                    Text("\(up ? "+" : "")\(String(format: "%.1f", change))%")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(change >= 0 ? Theme.gain : Theme.loss)
+                        .foregroundStyle(up ? Theme.gain : Theme.loss)
+                        .monospacedDigit()
                 }
             }
+            .frame(minWidth: 64, alignment: .trailing)
         }
         .padding(Theme.Spacing.sm)
         .glassPanel(cornerRadius: Theme.Radius.card)
