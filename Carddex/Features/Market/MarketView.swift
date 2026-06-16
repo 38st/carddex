@@ -7,6 +7,7 @@ struct MarketView: View {
     @State private var search = ""
     @State private var filter: MarketFilter?
     @State private var showCompare = false
+    @State private var showAlerts = false
     @State private var indexRange: IndexRange = .month
     @State private var moverSide: MoverSide = .gainers
 
@@ -138,10 +139,16 @@ struct MarketView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
+                    Button { showAlerts = true } label: {
+                        Image(systemName: watchlist.alerts.isEmpty ? "bell" : "bell.badge.fill")
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
                     Button("Compare") { showCompare = true }
                 }
             }
             .sheet(isPresented: $showCompare) { ComparisonView() }
+            .sheet(isPresented: $showAlerts) { AlertsView() }
         }
     }
 

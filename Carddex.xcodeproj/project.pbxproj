@@ -33,6 +33,7 @@
 		772602228544119EA49EE33F /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */; };
 		776D1012C007CA566A78CF37 /* GlassTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9FA29969F1BC99FB176AC7 /* GlassTabBar.swift */; };
 		848406F03B29B526068F8A5D /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 985EF2F1A2F4BF585C51D827 /* CardDetailView.swift */; };
+		85B68CEC13C14A398DA11557 /* AlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCBC7C41558503CFFD5D191 /* AlertsView.swift */; };
 		8A3E5B6B570104B48F718333 /* SalesChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF8BF4EE69D94346D674039 /* SalesChart.swift */; };
 		8B6009926D20F84F3131CFF6 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E23565FFD3CD968B8F9515 /* Haptics.swift */; };
 		8FE56926EC900900F3BF4C7C /* CollectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C867666CD3C8B620FC2B2C /* CollectionItem.swift */; };
@@ -123,6 +124,7 @@
 		A108D336F75F134A6B6521FA /* CarddexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarddexApp.swift; sourceTree = "<group>"; };
 		A509AB568997A722F0896EC9 /* Money.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Money.swift; sourceTree = "<group>"; };
 		AA8F04774E0D43F60A439C60 /* CardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCell.swift; sourceTree = "<group>"; };
+		ABCBC7C41558503CFFD5D191 /* AlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsView.swift; sourceTree = "<group>"; };
 		B87334A1E7485DC97242BA9E /* Rarity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rarity.swift; sourceTree = "<group>"; };
 		BB2C9E8CC255BD14F8A0808E /* CardCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCondition.swift; sourceTree = "<group>"; };
 		BF19D95A1447D88D0B089130 /* GamePill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePill.swift; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 		958F7E100E60BEC2256B575F /* Market */ = {
 			isa = PBXGroup;
 			children = (
+				ABCBC7C41558503CFFD5D191 /* AlertsView.swift */,
 				58A526867D9D1C1B8D5FA6B6 /* ComparisonView.swift */,
 				CAF581996BE7C4DE18E7858C /* IndexDetailView.swift */,
 				F1DF9E30EF413E210833D0AF /* MarketCardView.swift */,
@@ -490,6 +493,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85B68CEC13C14A398DA11557 /* AlertsView.swift in Sources */,
 				9B90F360258706B4F05E6608 /* AppConfig.swift in Sources */,
 				FBE4AC16D042484B4DEFE566 /* AppEnvironment.swift in Sources */,
 				CCBC8D58DE318ED40CC96F11 /* AppRouter.swift in Sources */,
