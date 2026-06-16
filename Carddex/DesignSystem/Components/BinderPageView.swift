@@ -21,9 +21,9 @@ struct BinderPageView: View {
                         .font(.headline)
                         .foregroundStyle(Theme.textPrimary)
                     if isComplete {
-                        Label("Set complete", systemImage: "checkmark.seal.fill")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Theme.gain)
+                        Label("Set complete · 100%", systemImage: "checkmark.seal.fill")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(Theme.warning)
                     } else {
                         GamePill(game: set.game)
                     }
@@ -44,6 +44,17 @@ struct BinderPageView: View {
         }
         .padding(Theme.Spacing.md)
         .glassPanel(cornerRadius: Theme.Radius.lg)
+        .overlay {
+            if isComplete {
+                RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
+                    .strokeBorder(
+                        LinearGradient(colors: [Theme.warning, Theme.gain, Theme.warning],
+                                       startPoint: .topLeading, endPoint: .bottomTrailing),
+                        lineWidth: 1.5
+                    )
+            }
+        }
+        .shadow(color: isComplete ? Theme.gain.opacity(0.22) : .clear, radius: 18)
     }
 }
 
