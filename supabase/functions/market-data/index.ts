@@ -35,11 +35,12 @@ Deno.serve(async (req) => {
 
     if (url.searchParams.has("index")) {
       const category = url.searchParams.get("index") || null; // "" → overall
-      const { data, error } = await supabase
+      let q = supabase
         .from("market_index_points")
         .select("as_of, value")
-        .is("category", category)
         .order("as_of", { ascending: true });
+      q = category === null ? q.is("category", null) : q.eq("category", category);
+      const { data, error } = await q;
       if (error) throw error;
       return json({
         category,
@@ -90,7 +91,9 @@ Deno.serve(async (req) => {
       })),
     });
   } catch (err) {
-    return json({ error: String(err) }, 500);
+    // deno-lint-ignore no-explicit-any
+    const e = err as any;
+    return json({ error: e?.message ?? e?.hint ?? JSON.stringify(e) }, 500);
   }
 });
 
