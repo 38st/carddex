@@ -10,6 +10,7 @@ struct MarketView: View {
     @State private var showAlerts = false
     @State private var indexRange: IndexRange = .month
     @State private var moverSide: MoverSide = .gainers
+    @State private var sortKey: SortKey = .topMovers
 
     enum MarketFilter: Hashable {
         case sport(SportCategory)
@@ -21,7 +22,19 @@ struct MarketView: View {
         var id: String { rawValue }
     }
 
+    enum SortKey: String, CaseIterable, Identifiable {
+        case topMovers = "Top movers"
+        case priceHigh = "Price: high → low"
+        case priceLow = "Price: low → high"
+        case alpha = "Name: A–Z"
+        var id: String { rawValue }
+    }
+
     private func change(_ card: Card) -> Double { SampleData.market[card.id]?.change30d ?? 0 }
+
+    private func price(_ card: Card) -> Double {
+        NSDecimalNumber(decimal: (SampleData.market[card.id]?.topPrice ?? card.marketPrice ?? .zero).amount).doubleValue
+    }
 
     private func matches(_ card: Card) -> Bool {
         guard let filter else { return true }
@@ -32,10 +45,16 @@ struct MarketView: View {
     }
 
     private var results: [Card] {
-        SampleData.marketCards.filter { card in
+        let filtered = SampleData.marketCards.filter { card in
             matches(card) && (search.isEmpty
                 || card.name.lowercased().contains(search.lowercased())
                 || card.setName.lowercased().contains(search.lowercased()))
+        }
+        switch sortKey {
+        case .topMovers: return filtered.sorted { abs(change($0)) > abs(change($1)) }
+        case .priceHigh: return filtered.sorted { price($0) > price($1) }
+        case .priceLow: return filtered.sorted { price($0) < price($1) }
+        case .alpha: return filtered.sorted { $0.name < $1.name }
         }
     }
 
@@ -113,7 +132,11 @@ struct MarketView: View {
                         }
                     }
 
-                    sectionTitle(search.isEmpty ? "Top cards" : "Results")
+                    HStack {
+                        sectionTitle(search.isEmpty ? "Top cards" : "Results")
+                        Spacer()
+                        sortMenu.padding(.trailing)
+                    }
                     cardList(results)
 
                     if search.isEmpty {
@@ -232,6 +255,30 @@ struct MarketView: View {
                 )
         }
         .padding(.horizontal)
+    }
+
+    private var sortMenu: some View {
+        Menu {
+            ForEach(SortKey.allCases) { key in
+                Button {
+                    Haptics.selection()
+                    sortKey = key
+                } label: {
+                    if sortKey == key {
+                        Label(key.rawValue, systemImage: "checkmark")
+                    } else {
+                        Text(key.rawValue)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: "arrow.up.arrow.down")
+                Text("Sort")
+            }
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(Theme.textSecondary)
+        }
     }
 
     private var moverToggle: some View {
