@@ -4,6 +4,7 @@ import SwiftUI
 /// your watchlist, movers, category filters, and a searchable, sports-first database.
 struct MarketView: View {
     @Environment(WatchlistStore.self) private var watchlist
+    @Environment(MarketStore.self) private var marketStore
     @State private var search = ""
     @State private var filter: MarketFilter?
     @State private var showCompare = false
@@ -30,10 +31,10 @@ struct MarketView: View {
         var id: String { rawValue }
     }
 
-    private func change(_ card: Card) -> Double { SampleData.market[card.id]?.change30d ?? 0 }
+    private func change(_ card: Card) -> Double { marketStore.market[card.id]?.change30d ?? 0 }
 
     private func price(_ card: Card) -> Double {
-        NSDecimalNumber(decimal: (SampleData.market[card.id]?.topPrice ?? card.marketPrice ?? .zero).amount).doubleValue
+        NSDecimalNumber(decimal: (marketStore.market[card.id]?.topPrice ?? card.marketPrice ?? .zero).amount).doubleValue
     }
 
     private func matches(_ card: Card) -> Bool {
@@ -80,7 +81,7 @@ struct MarketView: View {
 
     private var recentSales: [SaleEntry] {
         SampleData.marketCards
-            .flatMap { card in (SampleData.market[card.id]?.recentSales ?? []).map { SaleEntry(card: card, sale: $0) } }
+            .flatMap { card in (marketStore.market[card.id]?.recentSales ?? []).map { SaleEntry(card: card, sale: $0) } }
             .sorted { $0.sale.date > $1.sale.date }
     }
 
@@ -214,7 +215,7 @@ struct MarketView: View {
     }
 
     private var indexCard: some View {
-        let index = SampleData.marketIndex
+        let index = marketStore.index
         let change = index.change(for: indexRange)
         let up = change >= 0
         let accent = up ? Theme.gain : Theme.loss
@@ -330,10 +331,11 @@ private struct MarketChip: View {
 }
 
 struct MarketRow: View {
+    @Environment(MarketStore.self) private var marketStore
     let card: Card
 
     var body: some View {
-        let market = SampleData.market[card.id]
+        let market = marketStore.market[card.id]
         HStack(spacing: Theme.Spacing.md) {
             CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport)
                 .frame(width: 40)
@@ -360,10 +362,11 @@ struct MarketRow: View {
 }
 
 private struct MoverCard: View {
+    @Environment(MarketStore.self) private var marketStore
     let card: Card
 
     var body: some View {
-        let market = SampleData.market[card.id]
+        let market = marketStore.market[card.id]
         VStack(alignment: .leading, spacing: 8) {
             CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport)
                 .frame(width: 94)
@@ -452,5 +455,6 @@ private struct IndexTile: View {
     MarketView()
         .environment(CollectionStore(items: SampleData.collection))
         .environment(WatchlistStore(followed: [SampleData.jordan.id]))
+        .environment(MarketStore())
         .preferredColorScheme(.dark)
 }

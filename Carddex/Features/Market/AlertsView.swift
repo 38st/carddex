@@ -60,12 +60,13 @@ struct AlertsView: View {
 }
 
 private struct AlertRow: View {
+    @Environment(MarketStore.self) private var marketStore
     let card: Card
     let alert: PriceAlert
     let onRemove: () -> Void
 
     private var current: Money {
-        SampleData.market[card.id]?.topPrice ?? card.marketPrice ?? .zero
+        marketStore.market[card.id]?.topPrice ?? card.marketPrice ?? .zero
     }
 
     var body: some View {
@@ -119,5 +120,6 @@ private struct AlertRow: View {
             PriceAlert(cardID: SampleData.jordan.id, target: Money(amount: 90000)),
             PriceAlert(cardID: SampleData.brady.id, target: Money(amount: 60000)),
         ]))
+        .environment(MarketStore())
         .preferredColorScheme(.dark)
 }

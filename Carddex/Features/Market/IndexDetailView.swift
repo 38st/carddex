@@ -2,6 +2,7 @@ import SwiftUI
 
 /// A market sub-index detail (Card Ladder-style): the index trend + its constituents.
 struct IndexDetailView: View {
+    @Environment(MarketStore.self) private var marketStore
     let entry: MarketIndexEntry
     @State private var range: IndexRange = .month
 
@@ -10,7 +11,7 @@ struct IndexDetailView: View {
     private var members: [Card] { SampleData.indexMembers(entry.memberIDs) }
 
     private var totalValue: Decimal {
-        members.reduce(Decimal(0)) { $0 + (SampleData.market[$1.id]?.topPrice ?? $1.marketPrice ?? .zero).amount }
+        members.reduce(Decimal(0)) { $0 + (marketStore.market[$1.id]?.topPrice ?? $1.marketPrice ?? .zero).amount }
     }
 
     var body: some View {

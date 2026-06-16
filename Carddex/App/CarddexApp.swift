@@ -7,6 +7,7 @@ struct CarddexApp: App {
     @State private var environment = AppEnvironment()
     @State private var subscriptions = SubscriptionStore()
     @State private var router = AppRouter()
+    @State private var marketStore = MarketStore(service: AppConfig.marketService)
     @State private var watchlist = WatchlistStore(
         followed: [SampleData.jordan.id, SampleData.brady.id],
         alerts: [
@@ -23,6 +24,8 @@ struct CarddexApp: App {
                 .environment(subscriptions)
                 .environment(router)
                 .environment(watchlist)
+                .environment(marketStore)
+                .task { await marketStore.refresh() }
                 .fullScreenCover(isPresented: Binding(
                     get: { !hasOnboarded },
                     set: { presented in if !presented { hasOnboarded = true } }

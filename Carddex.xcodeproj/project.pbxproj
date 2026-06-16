@@ -57,7 +57,9 @@
 		C7D3AE1DDEC6EDC0B41A1058 /* SportCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D09449BE08055A2CCACDFCFB /* SportCategory.swift */; };
 		CBAA3404D0BAC6A9EB1DDDD6 /* MarketCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DF9E30EF413E210833D0AF /* MarketCardView.swift */; };
 		CCBC8D58DE318ED40CC96F11 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14F4FB1E29E55D21AB1A0747 /* AppRouter.swift */; };
+		CE270D64BDF6DCF2DD12E013 /* MarketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A43A7A1CAF3FC080F4F724 /* MarketService.swift */; };
 		D26B11A7C5B99E908BC8FCC5 /* PortfolioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD4A6606A9F78A0E683361D /* PortfolioView.swift */; };
+		D786440A7204C35A701C2785 /* MarketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F320E332617D5983FF7747 /* MarketStore.swift */; };
 		D8A322320269648D53124204 /* MiniAreaChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45964136E933A7B84200BAD /* MiniAreaChart.swift */; };
 		E01E45E112C6729462FE4981 /* CollectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9CC3A66CA9ED81A958412F /* CollectionStore.swift */; };
 		E889519F72241D7B7492D225 /* GamePill.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF19D95A1447D88D0B089130 /* GamePill.swift */; };
@@ -142,6 +144,7 @@
 		E313ED651E765ACFDC063ACB /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
 		E45964136E933A7B84200BAD /* MiniAreaChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniAreaChart.swift; sourceTree = "<group>"; };
 		E4EBB65D08CC76601467891D /* StatTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatTile.swift; sourceTree = "<group>"; };
+		E7F320E332617D5983FF7747 /* MarketStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketStore.swift; sourceTree = "<group>"; };
 		E92A2C1DE0913631EB1B570A /* HolographicFoil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HolographicFoil.swift; sourceTree = "<group>"; };
 		EAF4D5A89AF79062C925BD0A /* CardTextRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTextRecognizer.swift; sourceTree = "<group>"; };
 		EEE0BEB1891490FBFA7F8559 /* CarddexTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CarddexTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -149,6 +152,7 @@
 		F1DF9E30EF413E210833D0AF /* MarketCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketCardView.swift; sourceTree = "<group>"; };
 		F75D7BC2E7A21E4EBF139228 /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
 		F82D6DA06E9FD6F0F0ACAEA8 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		F8A43A7A1CAF3FC080F4F724 /* MarketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketService.swift; sourceTree = "<group>"; };
 		FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Marketplace.swift; sourceTree = "<group>"; };
 		FE9CC3A66CA9ED81A958412F /* CollectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -273,6 +277,7 @@
 			isa = PBXGroup;
 			children = (
 				FE9CC3A66CA9ED81A958412F /* CollectionStore.swift */,
+				E7F320E332617D5983FF7747 /* MarketStore.swift */,
 				C6C56B720E530A7D66C52FD1 /* SubscriptionStore.swift */,
 				93BF1FF7E1FE050C253B0756 /* WatchlistStore.swift */,
 			);
@@ -320,6 +325,7 @@
 				958BBB2331B3227EC56ABA59 /* IdentificationService.swift */,
 				9E614259B52E7A8AE90DDCEA /* LiveIdentificationService.swift */,
 				FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */,
+				F8A43A7A1CAF3FC080F4F724 /* MarketService.swift */,
 				DECFAD4285A3AD2FD2A804E1 /* MotionManager.swift */,
 			);
 			path = Services;
@@ -534,6 +540,8 @@
 				CBAA3404D0BAC6A9EB1DDDD6 /* MarketCardView.swift in Sources */,
 				06F64BCB3523A9F41C133BAE /* MarketData.swift in Sources */,
 				C6E2CBBB3B830D42C5246C4C /* MarketIndexEntry.swift in Sources */,
+				CE270D64BDF6DCF2DD12E013 /* MarketService.swift in Sources */,
+				D786440A7204C35A701C2785 /* MarketStore.swift in Sources */,
 				089E477FD84631DCFEE20706 /* MarketView.swift in Sources */,
 				0FBFEAF00D3690650EF3708D /* Marketplace.swift in Sources */,
 				D8A322320269648D53124204 /* MiniAreaChart.swift in Sources */,

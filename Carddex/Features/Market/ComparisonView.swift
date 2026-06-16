@@ -5,6 +5,7 @@ import Charts
 /// a Card Ladder power-user staple.
 struct ComparisonView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(MarketStore.self) private var marketStore
     @State private var selected: [String] = []
 
     private let palette: [Color] = [Theme.accent, Theme.gain, Color(hex: 0xF0997B)]
@@ -56,7 +57,7 @@ struct ComparisonView: View {
     }
 
     private func pctSeries(_ card: Card) -> [Double] {
-        guard let series = SampleData.market[card.id]?.priceSeries, let first = series.first, first != 0 else { return [] }
+        guard let series = marketStore.market[card.id]?.priceSeries, let first = series.first, first != 0 else { return [] }
         return series.map { ($0 / first - 1) * 100 }
     }
 
@@ -92,7 +93,7 @@ struct ComparisonView: View {
 
     private func row(_ card: Card) -> some View {
         let isOn = selected.contains(card.id)
-        let change = SampleData.market[card.id]?.change30d ?? 0
+        let change = marketStore.market[card.id]?.change30d ?? 0
         return Button {
             Haptics.selection()
             if isOn {
@@ -122,4 +123,5 @@ struct ComparisonView: View {
 #Preview {
     ComparisonView()
         .environment(CollectionStore(items: SampleData.collection))
+        .environment(MarketStore())
 }

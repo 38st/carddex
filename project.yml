@@ -25,6 +25,9 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSRequiresIPhoneOS: true
         NSCameraUsageDescription: "Carddex uses the camera to scan and identify your trading cards."
+        # Dev only: allow http to the local Supabase stack (127.0.0.1) in the simulator.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         UILaunchScreen:
