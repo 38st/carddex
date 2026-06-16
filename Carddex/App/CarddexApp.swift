@@ -1,7 +1,9 @@
 import SwiftUI
+import WidgetKit
 
 @main
 struct CarddexApp: App {
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("hasOnboarded") private var hasOnboarded = false
     @State private var store = CollectionStore(items: SampleData.collection, persistKey: "collection.json")
     @State private var environment = AppEnvironment()
@@ -26,7 +28,13 @@ struct CarddexApp: App {
                 .environment(router)
                 .environment(watchlist)
                 .environment(marketStore)
-                .task { await marketStore.refresh() }
+                .task {
+                    await marketStore.refresh()
+                    updateWidget()
+                }
+                .onChange(of: scenePhase) { _, phase in
+                    if phase != .active { updateWidget() }
+                }
                 .fullScreenCover(isPresented: Binding(
                     get: { !hasOnboarded },
                     set: { presented in if !presented { hasOnboarded = true } }
@@ -34,5 +42,27 @@ struct CarddexApp: App {
                     OnboardingView()
                 }
         }
+    }
+
+    /// Snapshot the current market + portfolio into the App Group for the widgets.
+    private func updateWidget() {
+        let idx = marketStore.index
+        let gain = NSDecimalNumber(decimal: store.totalGainLoss.amount).doubleValue
+        let mover = SampleData.marketCards.max {
+            abs(marketStore.market[$0.id]?.change30d ?? 0) < abs(marketStore.market[$1.id]?.change30d ?? 0)
+        }
+        let snapshot = WidgetSnapshot(
+            indexValue: idx.value,
+            indexChange: idx.change(for: .month),
+            indexSeries: idx.series(for: .month),
+            portfolioValue: store.totalValue.formatted,
+            portfolioGain: "\(gain >= 0 ? "+" : "−")\(Money(amount: Decimal(abs(gain))).formatted) (\(String(format: "%.0f", abs(store.gainLossPercent)))%)",
+            gainUp: gain >= 0,
+            topMoverName: mover?.name ?? "—",
+            topMoverChange: marketStore.market[mover?.id ?? ""]?.change30d ?? 0,
+            updatedAt: Date()
+        )
+        WidgetBridge.write(snapshot)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

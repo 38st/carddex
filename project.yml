@@ -41,6 +41,30 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_ENTITLEMENTS: Carddex/Carddex.entitlements
+    dependencies:
+      - target: CarddexWidgets
+  CarddexWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: CarddexWidgets
+      - path: Carddex/DesignSystem/Theme.swift
+      - path: Carddex/DesignSystem/Color+Hex.swift
+      - path: Carddex/Store/WidgetShared.swift
+    info:
+      path: CarddexWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: "The Case"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.carddex.app.widgets
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_ENTITLEMENTS: CarddexWidgets/CarddexWidgets.entitlements
+        SKIP_INSTALL: YES
   CarddexTests:
     type: bundle.unit-test
     platform: iOS
