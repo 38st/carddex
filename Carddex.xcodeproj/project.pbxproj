@@ -61,6 +61,7 @@
 		E889519F72241D7B7492D225 /* GamePill.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF19D95A1447D88D0B089130 /* GamePill.swift */; };
 		EBA8CDA2EBEC6876638E5EF7 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A3C2C21CF6D463F8F74C1 /* SampleData.swift */; };
 		EDD0CC12FD6C39EA5ACE18C7 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8F6CCD200180A066E994DE36 /* PrivacyInfo.xcprivacy */; };
+		EDF6299A587725911A959C9A /* RangeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6BFD98907DFC2E6956DB9A /* RangeSelector.swift */; };
 		EEC00DC6CE66295AE76A6647 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E313ED651E765ACFDC063ACB /* CachedAsyncImage.swift */; };
 		EFCDB9CAF184D6971C7E7657 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6641D60939CA82CD0B026D90 /* RootView.swift */; };
 		F2C24D494EB51785D53D0E89 /* BulkScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23805BAE2F7E272E06D51717 /* BulkScanView.swift */; };
@@ -82,6 +83,7 @@
 
 /* Begin PBXFileReference section */
 		01EDBC0F174AC957E35849E2 /* CardPriceChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPriceChart.swift; sourceTree = "<group>"; };
+		0D6BFD98907DFC2E6956DB9A /* RangeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeSelector.swift; sourceTree = "<group>"; };
 		12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		14F4FB1E29E55D21AB1A0747 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
 		1FF03BD99BC1FF413B539467 /* CardArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardArtwork.swift; sourceTree = "<group>"; };
@@ -230,6 +232,7 @@
 				E92A2C1DE0913631EB1B570A /* HolographicFoil.swift */,
 				E45964136E933A7B84200BAD /* MiniAreaChart.swift */,
 				12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */,
+				0D6BFD98907DFC2E6956DB9A /* RangeSelector.swift */,
 				E4EBB65D08CC76601467891D /* StatTile.swift */,
 			);
 			path = Components;
@@ -530,6 +533,7 @@
 				3C9568D196C8FA751CC65759 /* PaywallView.swift in Sources */,
 				D26B11A7C5B99E908BC8FCC5 /* PortfolioView.swift in Sources */,
 				772602228544119EA49EE33F /* PrimaryButton.swift in Sources */,
+				EDF6299A587725911A959C9A /* RangeSelector.swift in Sources */,
 				AD8952B2E27796D75362BFA8 /* Rarity.swift in Sources */,
 				EFCDB9CAF184D6971C7E7657 /* RootView.swift in Sources */,
 				8A3E5B6B570104B48F718333 /* SalesChart.swift in Sources */,

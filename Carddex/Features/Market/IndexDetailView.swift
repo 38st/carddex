@@ -3,19 +3,24 @@ import SwiftUI
 /// A market sub-index detail (Card Ladder-style): the index trend + its constituents.
 struct IndexDetailView: View {
     let entry: MarketIndexEntry
+    @State private var range: IndexRange = .month
 
-    private var change: Double { SampleData.indexChange(entry.memberIDs) }
-    private var series: [Double] { SampleData.indexSeries(entry.memberIDs) }
+    private var change: Double { SampleData.indexChange(entry.memberIDs, range: range) }
+    private var series: [Double] { SampleData.indexSeries(entry.memberIDs, range: range) }
     private var members: [Card] { SampleData.indexMembers(entry.memberIDs) }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                 header
-                MiniAreaChart(values: series, tint: change >= 0 ? Theme.gain : Theme.loss)
-                    .frame(height: 140)
-                    .padding(Theme.Spacing.md)
-                    .glassPanel(cornerRadius: Theme.Radius.lg)
+                VStack(spacing: Theme.Spacing.md) {
+                    MiniAreaChart(values: series, tint: change >= 0 ? Theme.gain : Theme.loss)
+                        .frame(height: 140)
+                        .animation(.easeInOut(duration: 0.35), value: range)
+                    RangeSelector(selection: $range)
+                }
+                .padding(Theme.Spacing.md)
+                .glassPanel(cornerRadius: Theme.Radius.lg)
 
                 Text("\(members.count) cards")
                     .font(.headline)
@@ -45,9 +50,10 @@ struct IndexDetailView: View {
                 Text(entry.name)
                     .font(.title2.weight(.bold))
                     .foregroundStyle(Theme.textPrimary)
-                Text("\(change >= 0 ? "▲ +" : "▼ ")\(String(format: "%.1f", abs(change)))% · 30 days")
+                Text("\(change >= 0 ? "▲ +" : "▼ ")\(String(format: "%.1f", abs(change)))% · \(range.rawValue)")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(change >= 0 ? Theme.gain : Theme.loss)
+                    .contentTransition(.numericText())
             }
             Spacer()
         }

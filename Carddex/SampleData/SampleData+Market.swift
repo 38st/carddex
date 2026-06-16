@@ -45,6 +45,22 @@ extension SampleData {
         return changes.isEmpty ? 0 : changes.reduce(0, +) / Double(changes.count)
     }
 
+    /// Element-wise average of member price series for a range (normalized 0…1).
+    static func indexSeries(_ memberIDs: [String], range: IndexRange) -> [Double] {
+        let lists = memberIDs.map { priceSeries(for: $0, range: range) }.filter { !$0.isEmpty }
+        guard let first = lists.first else { return [] }
+        return (0..<first.count).map { i in
+            lists.map { $0[i] }.reduce(0, +) / Double(lists.count)
+        }
+    }
+
+    /// Percent change of an index over a range (first → last of the averaged series).
+    static func indexChange(_ memberIDs: [String], range: IndexRange) -> Double {
+        let s = indexSeries(memberIDs, range: range)
+        guard let first = s.first, let last = s.last, first != 0 else { return 0 }
+        return (last - first) / first * 100
+    }
+
     static func indexMembers(_ memberIDs: [String]) -> [Card] {
         marketCards.filter { memberIDs.contains($0.id) }
     }

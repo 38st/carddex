@@ -209,7 +209,7 @@ struct MarketView: View {
             MiniAreaChart(values: index.series(for: indexRange), tint: accent)
                 .frame(height: 96)
                 .animation(.easeInOut(duration: 0.35), value: indexRange)
-            rangePicker
+            RangeSelector(selection: $indexRange)
         }
         .padding(Theme.Spacing.lg)
         .background {
@@ -250,33 +250,6 @@ struct MarketView: View {
             }
         }
         .padding(2)
-        .background(Capsule().fill(Color.white.opacity(0.05)))
-        .overlay(Capsule().strokeBorder(Theme.hairline))
-    }
-
-    private var rangePicker: some View {
-        HStack(spacing: 0) {
-            ForEach(IndexRange.allCases) { range in
-                let selected = indexRange == range
-                Button {
-                    Haptics.selection()
-                    withAnimation(.snappy(duration: 0.25)) { indexRange = range }
-                } label: {
-                    Text(range.rawValue)
-                        .font(.caption.weight(.semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 7)
-                        .foregroundStyle(selected ? .white : Theme.textSecondary)
-                        .background {
-                            if selected {
-                                Capsule().fill(Theme.accent)
-                            }
-                        }
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(3)
         .background(Capsule().fill(Color.white.opacity(0.05)))
         .overlay(Capsule().strokeBorder(Theme.hairline))
     }
