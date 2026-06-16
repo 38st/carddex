@@ -9,6 +9,7 @@ struct MarketCardView: View {
     @State private var selectedGrade: String
     @State private var priceRange: IndexRange = .month
     @State private var added = false
+    @State private var showAdd = false
 
     init(card: Card) {
         self.card = card
@@ -65,9 +66,7 @@ struct MarketCardView: View {
                 }
 
                 PrimaryButton(title: added ? "Added to portfolio" : "Add to portfolio", systemImage: added ? "checkmark" : "plus") {
-                    store.add(card)
-                    Haptics.success()
-                    added = true
+                    showAdd = true
                 }
                 .disabled(added)
             }
@@ -75,6 +74,10 @@ struct MarketCardView: View {
         }
         .navigationTitle(card.name)
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showAdd) {
+            AddToPortfolioSheet(card: card, suggestedPrice: selectedPrice) { added = true }
+                .presentationDetents([.medium, .large])
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

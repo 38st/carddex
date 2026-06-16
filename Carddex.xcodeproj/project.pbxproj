@@ -42,6 +42,7 @@
 		980CB4AB3FAE27FE27C508AF /* CardGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBCC8AADADB125C30C59456 /* CardGame.swift */; };
 		9AA606E5AEA664FAF18457C1 /* CardPriceChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EDBC0F174AC957E35849E2 /* CardPriceChart.swift */; };
 		9B90F360258706B4F05E6608 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82D6DA06E9FD6F0F0ACAEA8 /* AppConfig.swift */; };
+		9F8232CBA22A08B6E09B4DA1 /* AddToPortfolioSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F21CF70871EFF3BD3E4A8B /* AddToPortfolioSheet.swift */; };
 		A2E4B0BC1C7C2C64AFBF1E9B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74C8D2528046D25BFBDDCD7C /* OnboardingView.swift */; };
 		A403AA6CB1EADC1D00A457B5 /* FakeIdentificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABACF0BBB51F47C38FE8FF6 /* FakeIdentificationService.swift */; };
 		AA2E9C19D851F0BCF570521F /* CardSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4DFC49D84E3195DE6FD8DF /* CardSet.swift */; };
@@ -135,6 +136,7 @@
 		CB964D2472427C0D8EFC781C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CB9FA29969F1BC99FB176AC7 /* GlassTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassTabBar.swift; sourceTree = "<group>"; };
 		D09449BE08055A2CCACDFCFB /* SportCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SportCategory.swift; sourceTree = "<group>"; };
+		D5F21CF70871EFF3BD3E4A8B /* AddToPortfolioSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToPortfolioSheet.swift; sourceTree = "<group>"; };
 		DECFAD4285A3AD2FD2A804E1 /* MotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionManager.swift; sourceTree = "<group>"; };
 		E313ED651E765ACFDC063ACB /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
 		E45964136E933A7B84200BAD /* MiniAreaChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniAreaChart.swift; sourceTree = "<group>"; };
@@ -278,6 +280,7 @@
 		958F7E100E60BEC2256B575F /* Market */ = {
 			isa = PBXGroup;
 			children = (
+				D5F21CF70871EFF3BD3E4A8B /* AddToPortfolioSheet.swift */,
 				ABCBC7C41558503CFFD5D191 /* AlertsView.swift */,
 				58A526867D9D1C1B8D5FA6B6 /* ComparisonView.swift */,
 				CAF581996BE7C4DE18E7858C /* IndexDetailView.swift */,
@@ -493,6 +496,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F8232CBA22A08B6E09B4DA1 /* AddToPortfolioSheet.swift in Sources */,
 				85B68CEC13C14A398DA11557 /* AlertsView.swift in Sources */,
 				9B90F360258706B4F05E6608 /* AppConfig.swift in Sources */,
 				FBE4AC16D042484B4DEFE566 /* AppEnvironment.swift in Sources */,
