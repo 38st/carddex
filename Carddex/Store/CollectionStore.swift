@@ -49,6 +49,13 @@ final class CollectionStore {
             .reduce(Money.zero) { $0 + $1.estimatedValue }
     }
 
+    /// Gain/loss contributed by a game (value minus cost basis).
+    func gainLoss(for game: CardGame) -> Money {
+        items
+            .filter { $0.card.game == game }
+            .reduce(Money.zero) { Money(amount: $0.amount + $1.gainLoss.amount) }
+    }
+
     func items(for game: CardGame?) -> [CollectionItem] {
         guard let game else { return items }
         return items.filter { $0.card.game == game }
