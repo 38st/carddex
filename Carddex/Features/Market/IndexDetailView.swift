@@ -9,6 +9,10 @@ struct IndexDetailView: View {
     private var series: [Double] { SampleData.indexSeries(entry.memberIDs, range: range) }
     private var members: [Card] { SampleData.indexMembers(entry.memberIDs) }
 
+    private var totalValue: Decimal {
+        members.reduce(Decimal(0)) { $0 + (SampleData.market[$1.id]?.topPrice ?? $1.marketPrice ?? .zero).amount }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
@@ -22,7 +26,17 @@ struct IndexDetailView: View {
                 .padding(Theme.Spacing.md)
                 .glassPanel(cornerRadius: Theme.Radius.lg)
 
-                Text("\(members.count) cards")
+                HStack(spacing: Theme.Spacing.sm) {
+                    StatTile(title: "Index value", value: Money(amount: totalValue).compactFormatted)
+                    StatTile(title: "Cards", value: "\(members.count)")
+                    StatTile(
+                        title: "Avg · \(range.rawValue)",
+                        value: "\(change >= 0 ? "+" : "")\(String(format: "%.1f", change))%",
+                        accent: change >= 0 ? Theme.gain : Theme.loss
+                    )
+                }
+
+                Text("Constituents")
                     .font(.headline)
                     .foregroundStyle(Theme.textPrimary)
                 VStack(spacing: Theme.Spacing.sm) {
