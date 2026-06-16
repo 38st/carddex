@@ -17,6 +17,21 @@ struct MarketCardView: View {
     }
 
     private var market: CardMarket? { SampleData.market[card.id] }
+
+    /// Other tracked cards in the same sport (or game, for TCG).
+    private var relatedCards: [Card] {
+        SampleData.marketCards.filter { other in
+            guard other.id != card.id else { return false }
+            return card.game == .sports
+                ? (other.game == .sports && other.sport == card.sport)
+                : other.game == card.game
+        }
+    }
+
+    /// The category index this card belongs to, if any.
+    private var indexEntry: MarketIndexEntry? {
+        SampleData.categoryIndices.first { $0.memberIDs.contains(card.id) }
+    }
     private var selectedPrice: Money {
         market?.gradedPrices.first(where: { $0.grade == selectedGrade })?.price ?? card.marketPrice ?? .zero
     }
@@ -57,6 +72,7 @@ struct MarketCardView: View {
                     RangeSelector(selection: $priceRange)
                 }
                 salesSection
+                relatedSection
                 if let population = market?.population {
                     LabeledContent("Population", value: "\(population.formatted())")
                         .font(.subheadline)
@@ -191,6 +207,33 @@ struct MarketCardView: View {
             Label("Grading upside: Raw → PSA 10 is \(multiple)×", systemImage: "arrow.up.right.circle")
                 .font(.caption)
                 .foregroundStyle(Theme.gain)
+        }
+    }
+
+    @ViewBuilder private var relatedSection: some View {
+        if !relatedCards.isEmpty {
+            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                HStack {
+                    Text(card.game == .sports ? "More in \(card.sport?.displayName ?? "this sport")" : "More \(card.game.displayName)")
+                        .font(.headline)
+                        .foregroundStyle(Theme.textPrimary)
+                    Spacer()
+                    if let entry = indexEntry {
+                        NavigationLink(value: entry) {
+                            HStack(spacing: 3) {
+                                Text("Index")
+                                Image(systemName: "chevron.right").font(.caption2)
+                            }
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Theme.accent)
+                        }
+                    }
+                }
+                ForEach(relatedCards.prefix(4)) { other in
+                    NavigationLink(value: other) { MarketRow(card: other) }
+                        .buttonStyle(.plain)
+                }
+            }
         }
     }
 
