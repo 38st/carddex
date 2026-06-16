@@ -52,7 +52,7 @@ struct MarketCardView: View {
                         sales: market?.recentSales.filter { $0.grade == selectedGrade } ?? [],
                         windowDays: SampleData.windowDays(priceRange)
                     )
-                    rangePicker
+                    RangeSelector(selection: $priceRange)
                 }
                 salesSection
                 if let population = market?.population {
@@ -115,29 +115,6 @@ struct MarketCardView: View {
                     .contentTransition(.numericText())
             }
         }
-    }
-
-    private var rangePicker: some View {
-        HStack(spacing: 0) {
-            ForEach(IndexRange.allCases) { range in
-                let selected = priceRange == range
-                Button {
-                    Haptics.selection()
-                    withAnimation(.snappy(duration: 0.25)) { priceRange = range }
-                } label: {
-                    Text(range.rawValue)
-                        .font(.caption.weight(.semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 7)
-                        .foregroundStyle(selected ? .white : Theme.textSecondary)
-                        .background { if selected { Capsule().fill(Theme.accent) } }
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(3)
-        .background(Capsule().fill(Color.white.opacity(0.05)))
-        .overlay(Capsule().strokeBorder(Theme.hairline))
     }
 
     @ViewBuilder private var gradeMatrix: some View {
