@@ -68,14 +68,14 @@ struct OnboardingPage: Identifiable {
 
     static let all: [OnboardingPage] = [
         OnboardingPage(kind: .holo,
-                       headline: "Catch every card",
-                       subtitle: "Collect Pokémon, Magic, and Yu-Gi-Oh! in one place — holos and all."),
+                       headline: "Your collection, alive",
+                       subtitle: "Every card you own — tracked, valued, and shining like the real thing in your hand."),
         OnboardingPage(kind: .scan,
                        headline: "Snap to identify",
                        subtitle: "Point your camera at any card and The Case knows what it is and what it's worth."),
         OnboardingPage(kind: .value,
-                       headline: "Watch your collection grow",
-                       subtitle: "Track each card's value, complete your sets, and see your portfolio over time."),
+                       headline: "Watch your value move",
+                       subtitle: "Live prices, market movers, and your portfolio's worth — a stock ticker for your cards."),
     ]
 }
 
@@ -103,15 +103,12 @@ private struct OnboardingPageView: View {
     @ViewBuilder private var hero: some View {
         switch page.kind {
         case .holo:
-            CardArtwork(game: .pokemon, rarity: "Holo Rare", price: Money(amount: 320),
-                        imageURL: URL(string: "https://images.pokemontcg.io/base1/4_hires.png"))
-                .frame(width: 184)
-                .rotation3DEffect(.degrees(8), axis: (x: 1, y: 0, z: 0))
-                .rotation3DEffect(.degrees(-8), axis: (x: 0, y: 1, z: 0))
-                .shadow(color: .black.opacity(0.5), radius: 20, y: 14)
+            LivingCardView(game: .sports, price: SampleData.jordan.marketPrice,
+                           imageURL: SampleData.jordan.imageURL, sport: .basketball, maxWidth: 188)
         case .scan:
             ZStack {
-                CardArtwork(game: .magic, rarity: "Mythic", price: Money(amount: 55))
+                CardArtwork(game: .sports, price: SampleData.brady.marketPrice,
+                            imageURL: SampleData.brady.imageURL, sport: .football)
                     .frame(width: 150)
                 RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
                     .strokeBorder(Theme.accent, lineWidth: 3)
@@ -124,15 +121,15 @@ private struct OnboardingPageView: View {
         case .value:
             VStack(spacing: Theme.Spacing.md) {
                 VStack(spacing: 4) {
-                    Text("$1,284")
+                    Text("$20,188")
                         .font(.system(size: 46, weight: .bold, design: .rounded))
                         .foregroundStyle(Theme.textPrimary)
                         .monospacedDigit()
-                    Text("▲ $98 (8.3%) this month")
+                    Text("▲ $3,098 (18%) all-time")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(Theme.gain)
                 }
-                MiniAreaChart(values: [10, 12, 11, 14, 13, 16, 15, 19, 21, 24])
+                MiniAreaChart(values: [10, 12, 11, 14, 13, 16, 15, 19, 21, 24], tint: Theme.gain)
                     .frame(height: 96)
                     .padding(.horizontal, Theme.Spacing.xl)
             }
