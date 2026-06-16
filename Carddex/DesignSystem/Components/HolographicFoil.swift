@@ -9,6 +9,10 @@ struct HolographicFoil: View {
     /// When false, renders a single static foil sheen (no per-frame redraw) — use
     /// in grids where many cards are on screen at once.
     var isAnimated: Bool = false
+    /// Normalized tilt (-1…1 per axis). When set, the foil sheen + specular
+    /// highlight track the tilt instead of animating on a timer — the "living
+    /// card" effect. Driven by gyro + drag in `LivingCardView`.
+    var tilt: CGSize? = nil
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -20,7 +24,9 @@ struct HolographicFoil: View {
     var body: some View {
         GeometryReader { geo in
             Group {
-                if reduceMotion || !isAnimated {
+                if let tilt, !reduceMotion {
+                    tiltReactive(tilt: tilt, size: geo.size)
+                } else if reduceMotion || !isAnimated {
                     AngularGradient(gradient: Gradient(colors: foil), center: .center)
                         .blendMode(.overlay)
                         .opacity(0.22 * intensity)
@@ -49,5 +55,30 @@ struct HolographicFoil: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         .allowsHitTesting(false)
+    }
+
+    /// Foil hue + specular highlight that track device/drag tilt — the card
+    /// "catches the light" as you move it.
+    private func tiltReactive(tilt: CGSize, size: CGSize) -> some View {
+        let tx = Double(tilt.width), ty = Double(tilt.height)
+        let mag = min(1, hypot(tx, ty))
+        return ZStack {
+            AngularGradient(
+                gradient: Gradient(colors: foil),
+                center: .center,
+                angle: .degrees(atan2(ty, tx) * 180 / .pi + 90)
+            )
+            .blendMode(.overlay)
+            .opacity((0.24 + 0.22 * mag) * intensity)
+
+            RadialGradient(
+                colors: [.white.opacity(0.6), .clear],
+                center: UnitPoint(x: 0.5 + tx * 0.45, y: 0.5 + ty * 0.45),
+                startRadius: 0,
+                endRadius: size.width * 0.75
+            )
+            .blendMode(.screen)
+            .opacity((0.28 + 0.34 * mag) * intensity)
+        }
     }
 }
