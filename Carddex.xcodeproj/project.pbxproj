@@ -112,6 +112,7 @@
 		74C8D2528046D25BFBDDCD7C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		7CF8BF4EE69D94346D674039 /* SalesChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesChart.swift; sourceTree = "<group>"; };
 		83E23565FFD3CD968B8F9515 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		83F861B6B6CD841B7CA7D208 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		84BBBF0733DDB546EAAE7073 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
 		8F6CCD200180A066E994DE36 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		8F724DDD9B26E77DF91C0E01 /* EmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyState.swift; sourceTree = "<group>"; };
@@ -156,6 +157,7 @@
 		115AF2F1CA3722031A4DC021 /* Carddex */ = {
 			isa = PBXGroup;
 			children = (
+				83F861B6B6CD841B7CA7D208 /* Info.plist */,
 				2BD790D509D4FDB0B9FCFF65 /* App */,
 				C7C5B48887DAF9C07D1DE4CF /* DesignSystem */,
 				C7DC56698E395B9BCF0E6E5A /* Features */,
@@ -654,11 +656,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "The Case";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Carddex uses the camera to scan and identify your trading cards.";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Carddex/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -692,11 +691,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "The Case";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Carddex uses the camera to scan and identify your trading cards.";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Carddex/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
