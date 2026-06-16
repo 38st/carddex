@@ -67,10 +67,18 @@ struct SalesChart: View {
         .glassPanel(cornerRadius: Theme.Radius.card)
     }
 
+    private var bounds: (lo: Double, hi: Double) {
+        let values = linePoints.map(\.value) + salePoints.map(\.price)
+        let lo = (values.min() ?? 0) * 0.96
+        let hi = (values.max() ?? 1) * 1.04
+        return (lo, hi == lo ? hi + 1 : hi)
+    }
+
     private var chart: some View {
-        Chart {
+        let (lo, hi) = bounds
+        return Chart {
             ForEach(linePoints) { point in
-                AreaMark(x: .value("day", point.day), y: .value("value", point.value))
+                AreaMark(x: .value("day", point.day), yStart: .value("lo", lo), yEnd: .value("value", point.value))
                     .foregroundStyle(LinearGradient(colors: [Theme.accent.opacity(0.3), .clear], startPoint: .top, endPoint: .bottom))
                     .interpolationMethod(.catmullRom)
                 LineMark(x: .value("day", point.day), y: .value("value", point.value))
@@ -88,6 +96,7 @@ struct SalesChart: View {
                     .foregroundStyle(Theme.textTertiary.opacity(0.5))
             }
         }
+        .chartYScale(domain: lo...hi)
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
         .frame(height: 150)

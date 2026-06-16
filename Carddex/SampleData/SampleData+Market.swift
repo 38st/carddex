@@ -49,6 +49,40 @@ extension SampleData {
         marketCards.filter { memberIDs.contains($0.id) }
     }
 
+    /// Days of history shown for a chart range.
+    static func windowDays(_ range: IndexRange) -> Double {
+        switch range {
+        case .week: 7
+        case .month: 30
+        case .quarter: 90
+        case .year: 365
+        case .all: 1100
+        }
+    }
+
+    /// Derives a normalized price series (ending at 1.0) for a card over a range.
+    /// Drift scales with the card's 30-day change, so longer ranges move more.
+    static func priceSeries(for cardId: String, range: IndexRange) -> [Double] {
+        guard let m = market[cardId] else { return [] }
+        let factor: Double = switch range {
+        case .week: 0.3
+        case .month: 1
+        case .quarter: 2.6
+        case .year: 6.5
+        case .all: 12
+        }
+        let total = (m.change30d / 100) * factor      // fractional change across the window
+        let start = 1.0 / (1.0 + total)               // so the series ends at 1.0
+        let n = 16
+        let seed = Double(cardId.unicodeScalars.reduce(0) { $0 + Int($1.value) } % 97)
+        return (0..<n).map { i in
+            let t = Double(i) / Double(n - 1)
+            let base = start + (1.0 - start) * t
+            let wobble = sin(Double(i) * 1.6 + seed) * 0.012 * (1 - t * 0.5)
+            return base + wobble
+        }
+    }
+
     static let market: [String: CardMarket] = [
         jordan.id: CardMarket(
             cardId: jordan.id, change30d: 6.8,
