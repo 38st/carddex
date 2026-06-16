@@ -37,9 +37,24 @@ struct CardMarket: Identifiable, Sendable {
     var topPrice: Money { gradedPrices.first?.price ?? .zero }
 }
 
-/// The overall market index (the "Carddex Index").
+/// Selectable time horizons for index and price charts (Card Ladder-style).
+enum IndexRange: String, CaseIterable, Identifiable, Sendable {
+    case week = "1W", month = "1M", quarter = "3M", year = "1Y", all = "All"
+    var id: String { rawValue }
+}
+
+/// The overall market index (the "Case Index"), with a series per time range.
 struct MarketIndex: Sendable {
-    let value: Double
-    let changeToday: Double          // percent
-    let series: [Double]             // recent index values
+    let value: Double                          // current index value
+    let changeToday: Double                    // percent change today (intraday)
+    let seriesByRange: [IndexRange: [Double]]  // index values per range, oldest → newest
+
+    func series(for range: IndexRange) -> [Double] { seriesByRange[range] ?? [] }
+
+    /// Percent change across the selected range (first → last).
+    func change(for range: IndexRange) -> Double {
+        let s = series(for: range)
+        guard let first = s.first, let last = s.last, first != 0 else { return 0 }
+        return (last - first) / first * 100
+    }
 }

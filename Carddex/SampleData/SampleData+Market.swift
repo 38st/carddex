@@ -6,7 +6,13 @@ extension SampleData {
     static let marketIndex = MarketIndex(
         value: 1284.50,
         changeToday: 2.4,
-        series: [1180, 1195, 1188, 1210, 1225, 1218, 1240, 1255, 1262, 1271, 1284.5]
+        seriesByRange: [
+            .week: [1255, 1262, 1258, 1268, 1275, 1280, 1284.5],
+            .month: [1180, 1195, 1188, 1210, 1225, 1218, 1240, 1255, 1262, 1271, 1284.5],
+            .quarter: [1050, 1080, 1110, 1095, 1140, 1175, 1200, 1230, 1255, 1271, 1284.5],
+            .year: [820, 870, 910, 960, 1005, 1060, 1100, 1150, 1200, 1250, 1284.5],
+            .all: [400, 520, 640, 720, 810, 905, 1010, 1120, 1200, 1284.5],
+        ]
     )
 
     private static func daysAgo(_ d: Int) -> Date { Date.now.addingTimeInterval(-Double(d) * 86400) }
