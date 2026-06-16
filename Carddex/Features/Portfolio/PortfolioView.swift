@@ -84,24 +84,40 @@ struct PortfolioView: View {
     }
 
     private var hero: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+        let up = deltaAbs >= 0
+        let accent = up ? Theme.gain : Theme.loss
+        return VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
             Text("Total value")
-                .font(.subheadline)
+                .font(.caption.weight(.semibold))
                 .foregroundStyle(Theme.textSecondary)
             Text(store.totalValue.formatted)
-                .font(.system(size: 40, weight: .bold))
+                .font(.system(size: 42, weight: .bold, design: .rounded))
                 .foregroundStyle(Theme.textPrimary)
                 .monospacedDigit()
                 .contentTransition(.numericText())
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
             HStack(spacing: 6) {
-                Image(systemName: deltaAbs >= 0 ? "arrow.up.right" : "arrow.down.right")
-                Text("\(deltaAbs >= 0 ? "+" : "−")\(money(abs(deltaAbs))) (\(String(format: "%.1f", deltaPct))%) · \(range.rawValue)")
+                Image(systemName: up ? "arrow.up.right" : "arrow.down.right")
+                Text("\(up ? "+" : "−")\(money(abs(deltaAbs))) (\(String(format: "%.1f", deltaPct))%) · \(range.rawValue)")
             }
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(deltaAbs >= 0 ? Theme.gain : Theme.loss)
+            .foregroundStyle(accent)
             .monospacedDigit()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(Theme.Spacing.lg)
+        .background {
+            RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                        .fill(LinearGradient(colors: [accent.opacity(0.13), .clear], startPoint: .topTrailing, endPoint: .bottomLeading))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                        .strokeBorder(Theme.hairline)
+                )
         }
     }
 
@@ -198,9 +214,7 @@ struct PortfolioView: View {
 
     private var attribution: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            Text("Attribution")
-                .font(.headline)
-                .foregroundStyle(Theme.textPrimary)
+            SectionHeader("Attribution")
             ForEach(gamesWithValue) { game in
                 let gain = NSDecimalNumber(decimal: store.gainLoss(for: game).amount).doubleValue
                 HStack {
@@ -219,9 +233,7 @@ struct PortfolioView: View {
 
     private var moversSection: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            Text("Movers")
-                .font(.headline)
-                .foregroundStyle(Theme.textPrimary)
+            SectionHeader("Movers")
             ForEach(store.movers.prefix(4)) { item in
                 let gain = NSDecimalNumber(decimal: item.gainLoss.amount).doubleValue
                 HStack(spacing: Theme.Spacing.md) {
@@ -245,9 +257,7 @@ struct PortfolioView: View {
 
     private var byGame: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            Text("By game")
-                .font(.headline)
-                .foregroundStyle(Theme.textPrimary)
+            SectionHeader("By game")
             ForEach(gamesWithValue) { game in
                 VStack(spacing: Theme.Spacing.sm) {
                     HStack {

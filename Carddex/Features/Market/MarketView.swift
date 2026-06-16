@@ -187,17 +187,9 @@ struct MarketView: View {
     }
 
     private func sectionTitle(_ text: String) -> some View {
-        HStack(spacing: 7) {
-            RoundedRectangle(cornerRadius: 2, style: .continuous)
-                .fill(Theme.accent)
-                .frame(width: 3, height: 13)
-            Text(text.uppercased())
-                .font(.caption.weight(.semibold))
-                .tracking(1.3)
-                .foregroundStyle(Theme.textSecondary)
-        }
-        .padding(.horizontal)
-        .padding(.top, Theme.Spacing.xs)
+        SectionHeader(text)
+            .padding(.horizontal)
+            .padding(.top, Theme.Spacing.xs)
     }
 
     private var categoryBar: some View {

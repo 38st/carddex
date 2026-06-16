@@ -37,9 +37,7 @@ struct IndexDetailView: View {
                     )
                 }
 
-                Text("Constituents")
-                    .font(.headline)
-                    .foregroundStyle(Theme.textPrimary)
+                SectionHeader("Constituents")
                 VStack(spacing: Theme.Spacing.sm) {
                     ForEach(members) { card in
                         NavigationLink(value: card) { MarketRow(card: card) }

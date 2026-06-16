@@ -31,6 +31,7 @@
 		61700A1960A3138E997ED2E9 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75D7BC2E7A21E4EBF139228 /* CollectionView.swift */; };
 		67DBE634474BAEFF979AB1B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB964D2472427C0D8EFC781C /* Assets.xcassets */; };
 		6EA8BB24CF8F79E84B21105B /* LiveIdentificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E614259B52E7A8AE90DDCEA /* LiveIdentificationService.swift */; };
+		75D7EA1410B0803EC1E3975A /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CAC76FE966C257D84BC4052 /* SectionHeader.swift */; };
 		772602228544119EA49EE33F /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */; };
 		776D1012C007CA566A78CF37 /* GlassTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9FA29969F1BC99FB176AC7 /* GlassTabBar.swift */; };
 		848406F03B29B526068F8A5D /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 985EF2F1A2F4BF585C51D827 /* CardDetailView.swift */; };
@@ -120,6 +121,7 @@
 		12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		14F4FB1E29E55D21AB1A0747 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
 		18DC918D9DE26EDE893AFC3A /* CarddexWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = CarddexWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CAC76FE966C257D84BC4052 /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		1FF03BD99BC1FF413B539467 /* CardArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardArtwork.swift; sourceTree = "<group>"; };
 		23805BAE2F7E272E06D51717 /* BulkScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkScanView.swift; sourceTree = "<group>"; };
 		2B0B81F9276E47C30F3F9507 /* MarketIndexEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketIndexEntry.swift; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 				E45964136E933A7B84200BAD /* MiniAreaChart.swift */,
 				12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */,
 				0D6BFD98907DFC2E6956DB9A /* RangeSelector.swift */,
+				1CAC76FE966C257D84BC4052 /* SectionHeader.swift */,
 				E4EBB65D08CC76601467891D /* StatTile.swift */,
 			);
 			path = Components;
@@ -648,6 +651,7 @@
 				50CB8020D544B5DF6B9725D0 /* SampleData+Market.swift in Sources */,
 				EBA8CDA2EBEC6876638E5EF7 /* SampleData.swift in Sources */,
 				0D72AA5EE1AA1070C91A8880 /* ScanView.swift in Sources */,
+				75D7EA1410B0803EC1E3975A /* SectionHeader.swift in Sources */,
 				2A5768557312C0E635387BD1 /* SellSheet.swift in Sources */,
 				B2ED098BA66E0257B53E2C56 /* SettingsView.swift in Sources */,
 				AECFDAFD67B770E0C4DE51C1 /* SharePosters.swift in Sources */,
