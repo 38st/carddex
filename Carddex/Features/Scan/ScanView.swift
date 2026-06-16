@@ -228,11 +228,18 @@ private struct IdentifyResultSheet: View {
     private func confirm(_ card: Card) -> some View {
         let priceValue = NSDecimalNumber(decimal: card.marketPrice?.amount ?? 0).doubleValue
         return VStack(spacing: Theme.Spacing.md) {
-            CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport, animatedFoil: true)
-                .frame(maxWidth: 150)
-                .scaleEffect(revealScale)
-                .opacity(revealOpacity)
-                .padding(.top)
+            ZStack {
+                Circle()
+                    .fill(RadialGradient(colors: [Theme.accent.opacity(0.35), .clear],
+                                         center: .center, startRadius: 0, endRadius: 150))
+                    .frame(width: 300, height: 300)
+                    .opacity(revealOpacity)
+                LivingCardView(game: card.game, rarity: card.rarity, price: card.marketPrice,
+                               imageURL: card.imageURL, sport: card.sport, maxWidth: 160)
+                    .scaleEffect(revealScale)
+                    .opacity(revealOpacity)
+            }
+            .padding(.top)
             GamePill(game: card.game, sport: card.sport)
             Text(card.name)
                 .font(.title2.weight(.bold))
@@ -252,7 +259,8 @@ private struct IdentifyResultSheet: View {
         }
         .padding()
         .onAppear {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+            Haptics.success()
+            withAnimation(.spring(response: 0.55, dampingFraction: 0.6)) {
                 revealScale = 1
                 revealOpacity = 1
             }
