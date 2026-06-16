@@ -218,9 +218,7 @@ struct MarketCardView: View {
         if !relatedCards.isEmpty {
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 HStack {
-                    Text(card.game == .sports ? "More in \(card.sport?.displayName ?? "this sport")" : "More \(card.game.displayName)")
-                        .font(.headline)
-                        .foregroundStyle(Theme.textPrimary)
+                    SectionHeader(card.game == .sports ? "More in \(card.sport?.displayName ?? "this sport")" : "More \(card.game.displayName)")
                     Spacer()
                     if let entry = indexEntry {
                         NavigationLink(value: entry) {
@@ -244,9 +242,7 @@ struct MarketCardView: View {
     @ViewBuilder private var salesSection: some View {
         if let sales = market?.recentSales, !sales.isEmpty {
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                Text("Recent sales")
-                    .font(.headline)
-                    .foregroundStyle(Theme.textPrimary)
+                SectionHeader("Recent sales")
                 ForEach(sales) { sale in
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
