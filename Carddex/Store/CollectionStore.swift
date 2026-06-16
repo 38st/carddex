@@ -70,6 +70,17 @@ final class CollectionStore {
         }
     }
 
+    /// Log a buy with a cost basis. Stacks onto an existing holding, filling in a
+    /// cost basis if it didn't have one yet.
+    func add(_ card: Card, purchasePrice: Money?, quantity: Int = 1) {
+        if let index = items.firstIndex(where: { $0.card.id == card.id }) {
+            items[index].quantity += quantity
+            if items[index].purchasePrice == nil { items[index].purchasePrice = purchasePrice }
+        } else {
+            items.append(CollectionItem(card: card, quantity: quantity, purchasePrice: purchasePrice))
+        }
+    }
+
     func remove(_ item: CollectionItem) {
         items.removeAll { $0.id == item.id }
     }

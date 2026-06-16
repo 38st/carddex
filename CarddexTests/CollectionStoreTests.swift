@@ -12,6 +12,16 @@ import Foundation
         #expect(store.items.first?.quantity == 2)
     }
 
+    @Test func loggingABuyRecordsCostBasis() {
+        // Charizard market = 320; logged a buy of 2 @ 200 each.
+        let store = CollectionStore(items: [])
+        store.add(SampleData.charizard, purchasePrice: Money(amount: 200), quantity: 2)
+        #expect(store.totalCards == 2)
+        #expect(store.totalCost.amount == 400)
+        #expect(store.totalValue.amount == 640)
+        #expect(store.totalGainLoss.amount == 240)
+    }
+
     @Test func gainLossFromCostBasis() {
         // Charizard market = 320; paid 200 → +120.
         let item = CollectionItem(card: SampleData.charizard, purchasePrice: Money(amount: 200))
