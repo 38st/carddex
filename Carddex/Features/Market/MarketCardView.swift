@@ -5,6 +5,7 @@ import SwiftUI
 struct MarketCardView: View {
     @Environment(CollectionStore.self) private var store
     @Environment(WatchlistStore.self) private var watchlist
+    @Environment(MarketStore.self) private var marketStore
     let card: Card
     @State private var selectedGrade: String
     @State private var priceRange: IndexRange = .month
@@ -16,7 +17,7 @@ struct MarketCardView: View {
         _selectedGrade = State(initialValue: SampleData.market[card.id]?.gradedPrices.first?.grade ?? "Raw")
     }
 
-    private var market: CardMarket? { SampleData.market[card.id] }
+    private var market: CardMarket? { marketStore.market[card.id] }
 
     /// Other tracked cards in the same sport (or game, for TCG).
     private var relatedCards: [Card] {
@@ -272,6 +273,7 @@ struct MarketCardView: View {
         MarketCardView(card: SampleData.jordan)
             .environment(CollectionStore(items: SampleData.collection))
             .environment(WatchlistStore())
+            .environment(MarketStore())
     }
     .preferredColorScheme(.dark)
 }

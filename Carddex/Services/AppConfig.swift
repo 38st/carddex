@@ -8,6 +8,7 @@ struct SupabaseConfig {
 
     var baseURL: URL { URL(string: "https://\(projectRef).supabase.co")! }
     var identifyURL: URL { URL(string: "https://\(projectRef).functions.supabase.co/identify")! }
+    var marketDataURL: URL { URL(string: "https://\(projectRef).functions.supabase.co/market-data")! }
 }
 
 enum AppConfig {
@@ -22,5 +23,19 @@ enum AppConfig {
             let key = dict["SUPABASE_ANON_KEY"] as? String, !key.isEmpty
         else { return nil }
         return SupabaseConfig(projectRef: ref, anonKey: key)
+    }()
+
+    /// The market-data source. In DEBUG we default to the local Supabase stack so
+    /// the app shows live data out of the box; release uses the cloud project if
+    /// `Secrets.plist` is present, otherwise nil (the store stays on sample data).
+    static let marketService: MarketService? = {
+        #if DEBUG
+        return .localDev
+        #else
+        if let s = supabase {
+            return MarketService(baseURL: s.marketDataURL, apiKey: s.anonKey)
+        }
+        return nil
+        #endif
     }()
 }
