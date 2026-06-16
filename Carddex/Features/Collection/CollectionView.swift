@@ -88,15 +88,49 @@ struct CollectionView: View {
     }
 
     private var header: some View {
-        HStack {
-            Label("\(store.totalCards) cards", systemImage: "square.stack")
-            Spacer()
+        let gain = NSDecimalNumber(decimal: store.totalGainLoss.amount).doubleValue
+        let up = gain >= 0
+        let accent = up ? Theme.gain : Theme.loss
+        return VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            Text("Collection value")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Theme.textSecondary)
             Text(store.totalValue.formatted)
+                .font(.system(size: 32, weight: .bold, design: .rounded))
+                .foregroundStyle(Theme.textPrimary)
                 .monospacedDigit()
-                .foregroundStyle(Theme.accent)
+                .contentTransition(.numericText())
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+            HStack(spacing: Theme.Spacing.md) {
+                if store.totalCost.amount > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: up ? "arrow.up.right" : "arrow.down.right")
+                        Text("\(up ? "+" : "−")\(Money(amount: Decimal(abs(gain))).formatted) (\(String(format: "%.0f", abs(store.gainLossPercent)))%)")
+                    }
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(accent)
+                    .monospacedDigit()
+                }
+                Spacer()
+                Label("\(store.totalCards) cards", systemImage: "square.stack")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(Theme.textSecondary)
+            }
         }
-        .font(.subheadline.weight(.medium))
-        .foregroundStyle(Theme.textSecondary)
+        .padding(Theme.Spacing.lg)
+        .background {
+            RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                        .fill(LinearGradient(colors: [accent.opacity(0.12), .clear], startPoint: .topTrailing, endPoint: .bottomLeading))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                        .strokeBorder(Theme.hairline)
+                )
+        }
         .padding(.horizontal)
         .padding(.top, Theme.Spacing.xs)
     }

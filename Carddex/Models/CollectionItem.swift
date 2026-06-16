@@ -42,4 +42,11 @@ struct CollectionItem: Identifiable, Codable, Hashable, Sendable {
     var gainLoss: Money {
         Money(amount: estimatedValue.amount - costBasis.amount)
     }
+
+    /// Gain/loss as a percentage of cost basis, when there is one.
+    var gainPercent: Double? {
+        guard hasCostBasis, costBasis.amount > 0 else { return nil }
+        return NSDecimalNumber(decimal: gainLoss.amount).doubleValue
+            / NSDecimalNumber(decimal: costBasis.amount).doubleValue * 100
+    }
 }
