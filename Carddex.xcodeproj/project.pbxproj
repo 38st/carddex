@@ -17,6 +17,7 @@
 		0FBFEAF00D3690650EF3708D /* Marketplace.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */; };
 		105A14F37A4F6759E5C88994 /* CollectionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4A16F993AACB48ADD5A8F8 /* CollectionStoreTests.swift */; };
 		153F104711530D0197A30B5C /* CarddexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A108D336F75F134A6B6521FA /* CarddexApp.swift */; };
+		15C5B597BEF2FB25E0B2FACD /* CaseIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763C803C14E173F6DE15795 /* CaseIntents.swift */; };
 		1961FF26ECB359DE879A8B12 /* Money.swift in Sources */ = {isa = PBXBuildFile; fileRef = A509AB568997A722F0896EC9 /* Money.swift */; };
 		232BFD93B70D48B1A1BDE8E8 /* WatchlistStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BF1FF7E1FE050C253B0756 /* WatchlistStore.swift */; };
 		27BE6EEBAE1195423B00565B /* SubscriptionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6C56B720E530A7D66C52FD1 /* SubscriptionStore.swift */; };
@@ -190,6 +191,7 @@
 		F1DF9E30EF413E210833D0AF /* MarketCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketCardView.swift; sourceTree = "<group>"; };
 		F33660361B124FA61A7F37C6 /* Carddex.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Carddex.entitlements; sourceTree = "<group>"; };
 		F75D7BC2E7A21E4EBF139228 /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
+		F763C803C14E173F6DE15795 /* CaseIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseIntents.swift; sourceTree = "<group>"; };
 		F82D6DA06E9FD6F0F0ACAEA8 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		F8A43A7A1CAF3FC080F4F724 /* MarketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketService.swift; sourceTree = "<group>"; };
 		FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Marketplace.swift; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 				2BD790D509D4FDB0B9FCFF65 /* App */,
 				C7C5B48887DAF9C07D1DE4CF /* DesignSystem */,
 				C7DC56698E395B9BCF0E6E5A /* Features */,
+				CB532C9048E6385C8F447B3D /* Intents */,
 				A1748CCE05E0213556932CF9 /* Models */,
 				124409B06EA5736B6D3CF931 /* Resources */,
 				EAF50800B1FE886CBE2FDA2B /* SampleData */,
@@ -412,6 +415,14 @@
 			path = Features;
 			sourceTree = "<group>";
 		};
+		CB532C9048E6385C8F447B3D /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				F763C803C14E173F6DE15795 /* CaseIntents.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
 		E70DFD868343583542F6035F /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -614,6 +625,7 @@
 				AA2E9C19D851F0BCF570521F /* CardSet.swift in Sources */,
 				08B8A308209E7BF1EE8901ED /* CardTextRecognizer.swift in Sources */,
 				153F104711530D0197A30B5C /* CarddexApp.swift in Sources */,
+				15C5B597BEF2FB25E0B2FACD /* CaseIntents.swift in Sources */,
 				8FE56926EC900900F3BF4C7C /* CollectionItem.swift in Sources */,
 				E01E45E112C6729462FE4981 /* CollectionStore.swift in Sources */,
 				61700A1960A3138E997ED2E9 /* CollectionView.swift in Sources */,

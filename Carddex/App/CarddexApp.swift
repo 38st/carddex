@@ -29,11 +29,17 @@ struct CarddexApp: App {
                 .environment(watchlist)
                 .environment(marketStore)
                 .task {
+                    SpotlightIndexer.index(SampleData.marketCards)
+                    consumePendingTab()
                     await marketStore.refresh()
                     updateWidget()
                 }
                 .onChange(of: scenePhase) { _, phase in
-                    if phase != .active { updateWidget() }
+                    if phase == .active {
+                        consumePendingTab()
+                    } else {
+                        updateWidget()
+                    }
                 }
                 .fullScreenCover(isPresented: Binding(
                     get: { !hasOnboarded },
@@ -42,6 +48,19 @@ struct CarddexApp: App {
                     OnboardingView()
                 }
         }
+    }
+
+    /// Route to a tab requested by an App Intent (e.g. "Scan a card" via Siri).
+    private func consumePendingTab() {
+        guard let tab = IntentRouter.pendingTab else { return }
+        switch tab {
+        case "scan": router.selectedTab = .scan
+        case "market": router.selectedTab = .market
+        case "portfolio": router.selectedTab = .portfolio
+        case "collection": router.selectedTab = .collection
+        default: break
+        }
+        IntentRouter.pendingTab = nil
     }
 
     /// Snapshot the current market + portfolio into the App Group for the widgets.
