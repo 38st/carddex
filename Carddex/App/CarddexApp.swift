@@ -7,7 +7,13 @@ struct CarddexApp: App {
     @State private var environment = AppEnvironment()
     @State private var subscriptions = SubscriptionStore()
     @State private var router = AppRouter()
-    @State private var watchlist = WatchlistStore(followed: [SampleData.jordan.id, SampleData.brady.id])
+    @State private var watchlist = WatchlistStore(
+        followed: [SampleData.jordan.id, SampleData.brady.id],
+        alerts: [
+            PriceAlert(cardID: SampleData.jordan.id, target: Money(amount: 90000)),
+            PriceAlert(cardID: SampleData.brady.id, target: Money(amount: 60000)),
+        ]
+    )
 
     var body: some Scene {
         WindowGroup {
