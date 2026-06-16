@@ -7,10 +7,17 @@ struct MarketView: View {
     @State private var search = ""
     @State private var filter: MarketFilter?
     @State private var showCompare = false
+    @State private var indexRange: IndexRange = .month
+    @State private var moverSide: MoverSide = .gainers
 
     enum MarketFilter: Hashable {
         case sport(SportCategory)
         case game(CardGame)
+    }
+
+    enum MoverSide: String, CaseIterable, Identifiable {
+        case gainers = "Gainers", losers = "Losers"
+        var id: String { rawValue }
     }
 
     private func change(_ card: Card) -> Double { SampleData.market[card.id]?.change30d ?? 0 }
@@ -31,9 +38,15 @@ struct MarketView: View {
         }
     }
 
-    private var movers: [Card] {
-        SampleData.marketCards.filter(matches).sorted { abs(change($0)) > abs(change($1)) }
+    private var gainers: [Card] {
+        SampleData.marketCards.filter(matches).filter { change($0) > 0 }.sorted { change($0) > change($1) }
     }
+
+    private var losers: [Card] {
+        SampleData.marketCards.filter(matches).filter { change($0) < 0 }.sorted { change($0) < change($1) }
+    }
+
+    private var shownMovers: [Card] { moverSide == .gainers ? gainers : losers }
 
     private var watched: [Card] {
         SampleData.marketCards.filter { watchlist.isFollowing($0.id) }
@@ -75,16 +88,27 @@ struct MarketView: View {
                         cardList(watched)
                     }
 
-                    if search.isEmpty && !movers.isEmpty {
-                        sectionTitle("Movers")
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: Theme.Spacing.md) {
-                                ForEach(movers) { card in
-                                    NavigationLink(value: card) { MoverCard(card: card) }
-                                        .buttonStyle(.plain)
+                    if search.isEmpty {
+                        HStack {
+                            sectionTitle("Movers")
+                            Spacer()
+                            moverToggle.padding(.trailing)
+                        }
+                        if shownMovers.isEmpty {
+                            Text("No \(moverSide.rawValue.lowercased()) in this category")
+                                .font(.caption)
+                                .foregroundStyle(Theme.textTertiary)
+                                .padding(.horizontal)
+                        } else {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: Theme.Spacing.md) {
+                                    ForEach(shownMovers) { card in
+                                        NavigationLink(value: card) { MoverCard(card: card) }
+                                            .buttonStyle(.plain)
+                                    }
                                 }
+                                .padding(.horizontal)
                             }
-                            .padding(.horizontal)
                         }
                     }
 
@@ -161,7 +185,8 @@ struct MarketView: View {
 
     private var indexCard: some View {
         let index = SampleData.marketIndex
-        let up = index.changeToday >= 0
+        let change = index.change(for: indexRange)
+        let up = change >= 0
         let accent = up ? Theme.gain : Theme.loss
         return VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             HStack {
@@ -169,19 +194,22 @@ struct MarketView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(Theme.textSecondary)
                 Spacer()
-                Text("\(up ? "+" : "")\(String(format: "%.1f", index.changeToday))% today")
+                Text("\(up ? "+" : "")\(String(format: "%.1f", change))% · \(indexRange.rawValue)")
                     .font(.caption.weight(.bold))
                     .foregroundStyle(accent)
                     .padding(.horizontal, 9)
                     .padding(.vertical, 4)
                     .background(accent.opacity(0.16), in: Capsule())
+                    .contentTransition(.numericText())
             }
             Text(index.value, format: .number.precision(.fractionLength(2)))
                 .font(.system(size: 46, weight: .bold, design: .rounded))
                 .foregroundStyle(Theme.textPrimary)
                 .monospacedDigit()
-            MiniAreaChart(values: index.series, tint: accent)
+            MiniAreaChart(values: index.series(for: indexRange), tint: accent)
                 .frame(height: 96)
+                .animation(.easeInOut(duration: 0.35), value: indexRange)
+            rangePicker
         }
         .padding(Theme.Spacing.lg)
         .background {
@@ -197,6 +225,60 @@ struct MarketView: View {
                 )
         }
         .padding(.horizontal)
+    }
+
+    private var moverToggle: some View {
+        HStack(spacing: 0) {
+            ForEach(MoverSide.allCases) { side in
+                let selected = moverSide == side
+                Button {
+                    Haptics.selection()
+                    withAnimation(.snappy(duration: 0.2)) { moverSide = side }
+                } label: {
+                    Text(side.rawValue)
+                        .font(.caption2.weight(.semibold))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .foregroundStyle(selected ? .white : Theme.textSecondary)
+                        .background {
+                            if selected {
+                                Capsule().fill(side == .gainers ? Theme.gain : Theme.loss)
+                            }
+                        }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(2)
+        .background(Capsule().fill(Color.white.opacity(0.05)))
+        .overlay(Capsule().strokeBorder(Theme.hairline))
+    }
+
+    private var rangePicker: some View {
+        HStack(spacing: 0) {
+            ForEach(IndexRange.allCases) { range in
+                let selected = indexRange == range
+                Button {
+                    Haptics.selection()
+                    withAnimation(.snappy(duration: 0.25)) { indexRange = range }
+                } label: {
+                    Text(range.rawValue)
+                        .font(.caption.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 7)
+                        .foregroundStyle(selected ? .white : Theme.textSecondary)
+                        .background {
+                            if selected {
+                                Capsule().fill(Theme.accent)
+                            }
+                        }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(3)
+        .background(Capsule().fill(Color.white.opacity(0.05)))
+        .overlay(Capsule().strokeBorder(Theme.hairline))
     }
 }
 
