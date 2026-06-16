@@ -8,6 +8,7 @@ struct PortfolioView: View {
     @Environment(CollectionStore.self) private var store
     @State private var range: Range = .month
     @State private var shareImage: Image?
+    @State private var scrub: PricePoint?
 
     enum Range: String, CaseIterable, Identifiable {
         case week = "1W", month = "1M", quarter = "3M", year = "1Y", all = "All"
@@ -121,18 +122,57 @@ struct PortfolioView: View {
                 .foregroundStyle(Theme.accent)
                 .interpolationMethod(.catmullRom)
                 .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
+
+            if let scrub {
+                RuleMark(x: .value("t", scrub.index))
+                    .foregroundStyle(Theme.textTertiary.opacity(0.5))
+                PointMark(x: .value("t", scrub.index), y: .value("v", scrub.value))
+                    .foregroundStyle(Theme.accent)
+                    .symbolSize(90)
+            }
         }
         .chartYScale(domain: lo...hi)
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
         .frame(height: 150)
+        .chartOverlay { proxy in
+            GeometryReader { geo in
+                if let plotFrame = proxy.plotFrame {
+                    let originX = geo[plotFrame].origin.x
+                    Rectangle()
+                        .fill(.clear)
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    if let idx: Double = proxy.value(atX: value.location.x - originX),
+                                       let nearest = series.min(by: { abs(Double($0.index) - idx) < abs(Double($1.index) - idx) }) {
+                                        if nearest.id != scrub?.id { Haptics.selection() }
+                                        scrub = nearest
+                                    }
+                                }
+                                .onEnded { _ in scrub = nil }
+                        )
+                }
+            }
+        }
         .overlay(alignment: .topLeading) {
-            Text("Sample")
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(Theme.textTertiary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .background(.ultraThinMaterial, in: Capsule())
+            if let scrub {
+                Text(money(scrub.value))
+                    .font(.caption.weight(.bold))
+                    .monospacedDigit()
+                    .foregroundStyle(Theme.accent)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(.ultraThinMaterial, in: Capsule())
+            } else {
+                Text("Sample")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(Theme.textTertiary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(.ultraThinMaterial, in: Capsule())
+            }
         }
     }
 

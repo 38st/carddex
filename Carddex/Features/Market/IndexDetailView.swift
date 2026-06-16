@@ -6,8 +6,8 @@ struct IndexDetailView: View {
     let entry: MarketIndexEntry
     @State private var range: IndexRange = .month
 
-    private var change: Double { SampleData.indexChange(entry.memberIDs, range: range) }
-    private var series: [Double] { SampleData.indexSeries(entry.memberIDs, range: range) }
+    private var change: Double { marketStore.indexChange(entry.memberIDs, range: range) }
+    private var series: [Double] { marketStore.indexSeries(entry.memberIDs, range: range) }
     private var members: [Card] { SampleData.indexMembers(entry.memberIDs) }
 
     private var totalValue: Decimal {
@@ -19,7 +19,7 @@ struct IndexDetailView: View {
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                 header
                 VStack(spacing: Theme.Spacing.md) {
-                    MiniAreaChart(values: series, tint: change >= 0 ? Theme.gain : Theme.loss)
+                    MiniAreaChart(values: series, tint: change >= 0 ? Theme.gain : Theme.loss, interactive: true)
                         .frame(height: 140)
                         .animation(.easeInOut(duration: 0.35), value: range)
                     RangeSelector(selection: $range)

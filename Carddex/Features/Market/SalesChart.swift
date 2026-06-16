@@ -112,6 +112,7 @@ struct SalesChart: View {
                                 .onChanged { value in
                                     if let day: Double = proxy.value(atX: value.location.x - originX),
                                        let nearest = linePoints.min(by: { abs($0.day - day) < abs($1.day - day) }) {
+                                        if nearest.id != selected?.id { Haptics.selection() }
                                         selected = nearest
                                     }
                                 }
