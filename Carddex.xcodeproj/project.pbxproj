@@ -45,6 +45,7 @@
 		9F8232CBA22A08B6E09B4DA1 /* AddToPortfolioSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F21CF70871EFF3BD3E4A8B /* AddToPortfolioSheet.swift */; };
 		A2E4B0BC1C7C2C64AFBF1E9B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74C8D2528046D25BFBDDCD7C /* OnboardingView.swift */; };
 		A403AA6CB1EADC1D00A457B5 /* FakeIdentificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABACF0BBB51F47C38FE8FF6 /* FakeIdentificationService.swift */; };
+		A7AF1CFD183F3831EAC36641 /* LivingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80FE3F83D01FA4D5E388F3C8 /* LivingCardView.swift */; };
 		AA2E9C19D851F0BCF570521F /* CardSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4DFC49D84E3195DE6FD8DF /* CardSet.swift */; };
 		AD8952B2E27796D75362BFA8 /* Rarity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87334A1E7485DC97242BA9E /* Rarity.swift */; };
 		AE18F7E53335D11C36F462FF /* CardArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF03BD99BC1FF413B539467 /* CardArtwork.swift */; };
@@ -113,6 +114,7 @@
 		6FC3794684572890D03F101E /* Carddex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Carddex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		74C8D2528046D25BFBDDCD7C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		7CF8BF4EE69D94346D674039 /* SalesChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesChart.swift; sourceTree = "<group>"; };
+		80FE3F83D01FA4D5E388F3C8 /* LivingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivingCardView.swift; sourceTree = "<group>"; };
 		83E23565FFD3CD968B8F9515 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		83F861B6B6CD841B7CA7D208 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		84BBBF0733DDB546EAAE7073 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
@@ -240,6 +242,7 @@
 				BF19D95A1447D88D0B089130 /* GamePill.swift */,
 				CB9FA29969F1BC99FB176AC7 /* GlassTabBar.swift */,
 				E92A2C1DE0913631EB1B570A /* HolographicFoil.swift */,
+				80FE3F83D01FA4D5E388F3C8 /* LivingCardView.swift */,
 				E45964136E933A7B84200BAD /* MiniAreaChart.swift */,
 				12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */,
 				0D6BFD98907DFC2E6956DB9A /* RangeSelector.swift */,
@@ -537,6 +540,7 @@
 				28C12E1BB0608052504E5B04 /* IdentificationService.swift in Sources */,
 				055E63044CE8B668563152AD /* IndexDetailView.swift in Sources */,
 				6EA8BB24CF8F79E84B21105B /* LiveIdentificationService.swift in Sources */,
+				A7AF1CFD183F3831EAC36641 /* LivingCardView.swift in Sources */,
 				CBAA3404D0BAC6A9EB1DDDD6 /* MarketCardView.swift in Sources */,
 				06F64BCB3523A9F41C133BAE /* MarketData.swift in Sources */,
 				C6E2CBBB3B830D42C5246C4C /* MarketIndexEntry.swift in Sources */,

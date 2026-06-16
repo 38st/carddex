@@ -49,9 +49,7 @@ struct MarketCardView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Theme.Spacing.lg) {
-                CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport, animatedFoil: true)
-                    .frame(maxWidth: 190)
-                    .shadow(color: .black.opacity(0.5), radius: 16, y: 10)
+                LivingCardView(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport, maxWidth: 200)
 
                 VStack(spacing: Theme.Spacing.xs) {
                     GamePill(game: card.game, sport: card.sport)

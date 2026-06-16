@@ -6,32 +6,22 @@ import UIKit
 struct CardDetailView: View {
     @Environment(CollectionStore.self) private var store
     @Environment(\.dismiss) private var dismiss
-    @State private var motion = MotionManager()
     @State private var showSell = false
     @State private var showRemoveConfirm = false
     @State private var shareImage: Image?
     let item: CollectionItem
 
-    private func clamp(_ value: Double, _ limit: Double) -> Double {
-        max(-limit, min(limit, value))
-    }
-
     var body: some View {
         ScrollView {
             VStack(spacing: Theme.Spacing.lg) {
-                CardArtwork(
+                LivingCardView(
                     game: item.card.game,
                     rarity: item.card.rarity,
                     price: item.card.marketPrice,
                     imageURL: item.card.imageURL,
                     sport: item.card.sport,
-                    animatedFoil: true,
-                    cornerRadius: Theme.Radius.lg
+                    maxWidth: 220
                 )
-                .frame(maxWidth: 220)
-                .rotation3DEffect(.degrees(clamp(motion.pitch * 16, 8) + 3), axis: (x: 1, y: 0, z: 0))
-                .rotation3DEffect(.degrees(clamp(motion.roll * 16, 8)), axis: (x: 0, y: 1, z: 0))
-                .shadow(color: .black.opacity(0.5), radius: 18, y: 12)
                 .padding(.top, Theme.Spacing.sm)
 
                 VStack(spacing: Theme.Spacing.sm) {
@@ -113,11 +103,7 @@ struct CardDetailView: View {
                 }
             }
         }
-        .onAppear {
-            motion.start()
-            renderShareImage()
-        }
-        .onDisappear { motion.stop() }
+        .onAppear { renderShareImage() }
     }
 
     @MainActor private func renderShareImage() {

@@ -10,6 +10,9 @@ struct CardArtwork: View {
     var sport: SportCategory? = nil
     var animatedFoil: Bool = false
     var cornerRadius: CGFloat = Theme.Radius.card
+    /// Normalized tilt (-1…1 per axis) for the "living card" effect — forwarded
+    /// to the foil and a base gloss so every card catches the light.
+    var tilt: CGSize? = nil
 
     var body: some View {
         let tier = Rarity.tier(rarityText: rarity, price: price)
@@ -21,7 +24,22 @@ struct CardArtwork: View {
             }
 
             if tier != .none {
-                HolographicFoil(cornerRadius: cornerRadius, intensity: tier == .mythic ? 1.0 : 0.6, isAnimated: animatedFoil)
+                HolographicFoil(cornerRadius: cornerRadius, intensity: tier == .mythic ? 1.0 : 0.6, isAnimated: animatedFoil, tilt: tilt)
+            }
+
+            // Base specular gloss on every card so non-holo cards still catch light.
+            if let tilt {
+                GeometryReader { geo in
+                    RadialGradient(
+                        colors: [.white.opacity(0.35), .clear],
+                        center: UnitPoint(x: 0.5 + Double(tilt.width) * 0.5, y: 0.5 + Double(tilt.height) * 0.5),
+                        startRadius: 0,
+                        endRadius: geo.size.width * 0.9
+                    )
+                    .blendMode(.softLight)
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                    .allowsHitTesting(false)
+                }
             }
         }
         .aspectRatio(Theme.cardAspectRatio, contentMode: .fit)
