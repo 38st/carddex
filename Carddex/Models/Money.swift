@@ -15,6 +15,19 @@ struct Money: Codable, Hashable, Sendable {
         amount.formatted(.currency(code: currencyCode))
     }
 
+    /// Abbreviated for large figures: $1.6M, $30.4K, $950. Currency symbol assumes USD.
+    var compactFormatted: String {
+        let value = NSDecimalNumber(decimal: amount).doubleValue
+        let sign = value < 0 ? "-" : ""
+        let v = abs(value)
+        switch v {
+        case 1_000_000_000...: return "\(sign)$\(String(format: "%.1f", v / 1_000_000_000))B"
+        case 1_000_000...: return "\(sign)$\(String(format: "%.1f", v / 1_000_000))M"
+        case 1_000...: return "\(sign)$\(String(format: "%.1f", v / 1_000))K"
+        default: return formatted
+        }
+    }
+
     static let zero = Money(amount: 0)
 
     static func + (lhs: Money, rhs: Money) -> Money {

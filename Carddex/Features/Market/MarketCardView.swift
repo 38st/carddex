@@ -43,6 +43,7 @@ struct MarketCardView: View {
                 }
 
                 value
+                keyStats
                 gradeMatrix
                 gradingHint
                 VStack(spacing: Theme.Spacing.sm) {
@@ -113,6 +114,29 @@ struct MarketCardView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(change >= 0 ? Theme.gain : Theme.loss)
                     .contentTransition(.numericText())
+            }
+        }
+    }
+
+    /// Card Ladder-style key stats: 52-week range, all-time high, and market cap.
+    @ViewBuilder private var keyStats: some View {
+        let price = NSDecimalNumber(decimal: selectedPrice.amount).doubleValue
+        let year = SampleData.priceSeries(for: card.id, range: .year)
+        let all = SampleData.priceSeries(for: card.id, range: .all)
+        if price > 0, let yLo = year.min(), year.max() != nil, all.max() != nil {
+            // Series end at the current price (1.0), so the high is never below it.
+            let yHi = max(year.max() ?? 1, 1.0)
+            let aHi = max(all.max() ?? 1, 1.0)
+            let cap = Double(market?.population ?? 0) * NSDecimalNumber(decimal: (market?.topPrice ?? selectedPrice).amount).doubleValue
+            VStack(spacing: Theme.Spacing.sm) {
+                HStack(spacing: Theme.Spacing.sm) {
+                    StatTile(title: "52W high", value: Money(amount: Decimal(yHi * price)).formatted, accent: Theme.gain)
+                    StatTile(title: "52W low", value: Money(amount: Decimal(yLo * price)).formatted, accent: Theme.loss)
+                }
+                HStack(spacing: Theme.Spacing.sm) {
+                    StatTile(title: "All-time high", value: Money(amount: Decimal(aHi * price)).formatted)
+                    StatTile(title: "Market cap", value: Money(amount: Decimal(cap)).compactFormatted)
+                }
             }
         }
     }
