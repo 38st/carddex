@@ -19,6 +19,15 @@ struct MarketCardView: View {
         market?.gradedPrices.first(where: { $0.grade == selectedGrade })?.price ?? card.marketPrice ?? .zero
     }
 
+    private func gradePopulation(_ grade: String) -> Int {
+        let total = market?.population ?? 0
+        switch grade {
+        case "PSA 10": return Int(Double(total) * 0.12)
+        case "PSA 9": return Int(Double(total) * 0.40)
+        default: return max(0, total - Int(Double(total) * 0.52))
+        }
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: Theme.Spacing.lg) {
@@ -113,6 +122,11 @@ struct MarketCardView: View {
                                 .font(.subheadline.weight(.medium))
                                 .foregroundStyle(Theme.textPrimary)
                             Spacer()
+                            Text("Pop \(gradePopulation(graded.grade).formatted())")
+                                .font(.caption)
+                                .foregroundStyle(Theme.textTertiary)
+                                .monospacedDigit()
+                                .padding(.trailing, Theme.Spacing.md)
                             Text(graded.price.formatted)
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(selectedGrade == graded.grade ? Theme.accent : Theme.textPrimary)

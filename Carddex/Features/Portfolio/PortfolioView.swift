@@ -41,6 +41,7 @@ struct PortfolioView: View {
                     chart
                     insightsRow
                     if !gamesWithValue.isEmpty { byGame }
+                    if !gamesWithValue.isEmpty { attribution }
                     if !store.movers.isEmpty { moversSection }
                     Text("Value history is illustrative — live snapshots arrive in Phase 2.")
                         .font(.footnote)
@@ -152,6 +153,27 @@ struct PortfolioView: View {
                 value: "\(allTimeGain >= 0 ? "+" : "−")\(money(abs(allTimeGain))) (\(String(format: "%.0f", abs(store.gainLossPercent)))%)",
                 accent: allTimeGain >= 0 ? Theme.gain : Theme.loss
             )
+        }
+    }
+
+    private var attribution: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            Text("Attribution")
+                .font(.headline)
+                .foregroundStyle(Theme.textPrimary)
+            ForEach(gamesWithValue) { game in
+                let gain = NSDecimalNumber(decimal: store.gainLoss(for: game).amount).doubleValue
+                HStack {
+                    GamePill(game: game)
+                    Spacer()
+                    Text("\(gain >= 0 ? "+" : "−")\(money(abs(gain)))")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(gain >= 0 ? Theme.gain : Theme.loss)
+                        .monospacedDigit()
+                }
+                .padding(Theme.Spacing.md)
+                .glassPanel(cornerRadius: Theme.Radius.card)
+            }
         }
     }
 

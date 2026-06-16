@@ -39,6 +39,18 @@ struct MarketView: View {
         SampleData.marketCards.filter { watchlist.isFollowing($0.id) }
     }
 
+    struct SaleEntry: Identifiable {
+        let card: Card
+        let sale: Sale
+        var id: UUID { sale.id }
+    }
+
+    private var recentSales: [SaleEntry] {
+        SampleData.marketCards
+            .flatMap { card in (SampleData.market[card.id]?.recentSales ?? []).map { SaleEntry(card: card, sale: $0) } }
+            .sorted { $0.sale.date > $1.sale.date }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -78,6 +90,16 @@ struct MarketView: View {
 
                     sectionTitle(search.isEmpty ? "Top cards" : "Results")
                     cardList(results)
+
+                    if search.isEmpty {
+                        sectionTitle("Recent sales")
+                        VStack(spacing: Theme.Spacing.sm) {
+                            ForEach(recentSales.prefix(8)) { entry in
+                                SaleRow(card: entry.card, sale: entry.sale)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
                 }
                 .padding(.vertical)
             }
@@ -251,6 +273,34 @@ private struct MoverCard: View {
             }
         }
         .frame(width: 114)
+        .padding(Theme.Spacing.sm)
+        .glassPanel(cornerRadius: Theme.Radius.card)
+    }
+}
+
+private struct SaleRow: View {
+    let card: Card
+    let sale: Sale
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.md) {
+            CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport)
+                .frame(width: 34)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(card.name).font(.subheadline).foregroundStyle(Theme.textPrimary).lineLimit(1)
+                Text("\(sale.grade) · \(sale.platform)").font(.caption).foregroundStyle(Theme.textSecondary)
+            }
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(sale.price.formatted)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Theme.textPrimary)
+                    .monospacedDigit()
+                Text(sale.date.formatted(date: .abbreviated, time: .omitted))
+                    .font(.caption2)
+                    .foregroundStyle(Theme.textTertiary)
+            }
+        }
         .padding(Theme.Spacing.sm)
         .glassPanel(cornerRadius: Theme.Radius.card)
     }
