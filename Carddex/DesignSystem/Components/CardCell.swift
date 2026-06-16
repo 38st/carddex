@@ -28,11 +28,22 @@ struct CardCell: View {
                 .font(.caption)
                 .foregroundStyle(Theme.textSecondary)
                 .lineLimit(1)
-            if let price = item.card.marketPrice {
-                Text(price.formatted)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(Theme.accent)
-                    .monospacedDigit()
+            HStack(spacing: 6) {
+                if let price = item.card.marketPrice {
+                    Text(price.formatted)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Theme.accent)
+                        .monospacedDigit()
+                }
+                if let gain = item.gainPercent {
+                    Text("\(gain >= 0 ? "+" : "")\(String(format: "%.0f", gain))%")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(gain >= 0 ? Theme.gain : Theme.loss)
+                        .monospacedDigit()
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background((gain >= 0 ? Theme.gain : Theme.loss).opacity(0.14), in: Capsule())
+                }
             }
         }
     }
