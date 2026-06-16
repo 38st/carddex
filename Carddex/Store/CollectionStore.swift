@@ -6,9 +6,22 @@ import Observation
 @Observable
 final class CollectionStore {
     var items: [CollectionItem]
+    private let persistKey: String?
 
-    init(items: [CollectionItem] = []) {
-        self.items = items
+    /// `persistKey` enables Codable-to-disk persistence (production). Pass nil for
+    /// previews/tests to stay purely in-memory.
+    init(items: [CollectionItem] = [], persistKey: String? = nil) {
+        self.persistKey = persistKey
+        if let persistKey, let saved = Disk.load([CollectionItem].self, from: persistKey) {
+            self.items = saved
+        } else {
+            self.items = items
+            persist()
+        }
+    }
+
+    private func persist() {
+        if let persistKey { Disk.save(items, to: persistKey) }
     }
 
     var totalValue: Money {
@@ -68,6 +81,7 @@ final class CollectionStore {
         } else {
             items.append(CollectionItem(card: card))
         }
+        persist()
     }
 
     /// Log a buy with a cost basis. Stacks onto an existing holding, filling in a
@@ -79,10 +93,12 @@ final class CollectionStore {
         } else {
             items.append(CollectionItem(card: card, quantity: quantity, purchasePrice: purchasePrice))
         }
+        persist()
     }
 
     func remove(_ item: CollectionItem) {
         items.removeAll { $0.id == item.id }
+        persist()
     }
 
     /// The owned card filling a given set slot, if any.
