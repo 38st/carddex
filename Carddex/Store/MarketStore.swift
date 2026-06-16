@@ -40,6 +40,25 @@ final class MarketStore {
         }
     }
 
+    /// Live per-category index series — averages members' change-derived series
+    /// using the store's (backend) `change30d`, not the bundled sample.
+    func indexSeries(_ memberIDs: [String], range: IndexRange) -> [Double] {
+        let lists = memberIDs.compactMap { id -> [Double]? in
+            guard let m = market[id] else { return nil }
+            return SampleData.priceSeries(change30d: m.change30d, range: range, seed: id)
+        }
+        guard let first = lists.first else { return [] }
+        return (0..<first.count).map { i in
+            lists.map { $0[i] }.reduce(0, +) / Double(lists.count)
+        }
+    }
+
+    func indexChange(_ memberIDs: [String], range: IndexRange) -> Double {
+        let s = indexSeries(memberIDs, range: range)
+        guard let first = s.first, let last = s.last, first != 0 else { return 0 }
+        return (last - first) / first * 100
+    }
+
     // MARK: - DTO → domain
 
     static func buildIndex(from points: [IndexPointDTO]) -> MarketIndex {
@@ -79,7 +98,7 @@ final class MarketStore {
             change30d: b.change30d,
             gradedPrices: graded,
             recentSales: sales,
-            priceSeries: SampleData.market[b.cardId]?.priceSeries ?? [],
+            priceSeries: SampleData.priceSeries(change30d: b.change30d, range: .month, seed: b.cardId),
             population: b.population ?? 0
         )
     }

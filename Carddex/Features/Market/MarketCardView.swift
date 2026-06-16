@@ -37,6 +37,11 @@ struct MarketCardView: View {
         market?.gradedPrices.first(where: { $0.grade == selectedGrade })?.price ?? card.marketPrice ?? .zero
     }
 
+    /// Price trend derived from the card's LIVE 30-day change (backend → store).
+    private func priceSeries(_ range: IndexRange) -> [Double] {
+        SampleData.priceSeries(change30d: market?.change30d ?? 0, range: range, seed: card.id)
+    }
+
     private func gradePopulation(_ grade: String) -> Int {
         let total = market?.population ?? 0
         switch grade {
@@ -63,7 +68,7 @@ struct MarketCardView: View {
                 gradingHint
                 VStack(spacing: Theme.Spacing.sm) {
                     SalesChart(
-                        series: SampleData.priceSeries(for: card.id, range: priceRange),
+                        series: priceSeries(priceRange),
                         topPrice: NSDecimalNumber(decimal: selectedPrice.amount).doubleValue,
                         sales: market?.recentSales.filter { $0.grade == selectedGrade } ?? [],
                         windowDays: SampleData.windowDays(priceRange)
@@ -118,7 +123,7 @@ struct MarketCardView: View {
     }
 
     private var value: some View {
-        let series = SampleData.priceSeries(for: card.id, range: priceRange)
+        let series = priceSeries(priceRange)
         let first = series.first ?? 0
         let change = first > 0 ? ((series.last ?? 0) - first) / first * 100 : (market?.change30d ?? 0)
         return VStack(spacing: 2) {
@@ -139,8 +144,8 @@ struct MarketCardView: View {
     /// Card Ladder-style key stats: 52-week range, all-time high, and market cap.
     @ViewBuilder private var keyStats: some View {
         let price = NSDecimalNumber(decimal: selectedPrice.amount).doubleValue
-        let year = SampleData.priceSeries(for: card.id, range: .year)
-        let all = SampleData.priceSeries(for: card.id, range: .all)
+        let year = priceSeries(.year)
+        let all = priceSeries(.all)
         if price > 0, let yLo = year.min(), year.max() != nil, all.max() != nil {
             // Series end at the current price (1.0), so the high is never below it.
             let yHi = max(year.max() ?? 1, 1.0)

@@ -237,7 +237,7 @@ struct MarketView: View {
                 .font(.system(size: 46, weight: .bold, design: .rounded))
                 .foregroundStyle(Theme.textPrimary)
                 .monospacedDigit()
-            MiniAreaChart(values: index.series(for: indexRange), tint: accent)
+            MiniAreaChart(values: index.series(for: indexRange), tint: accent, interactive: true)
                 .frame(height: 96)
                 .animation(.easeInOut(duration: 0.35), value: indexRange)
             RangeSelector(selection: $indexRange)
@@ -419,16 +419,17 @@ private struct SaleRow: View {
 }
 
 private struct IndexTile: View {
+    @Environment(MarketStore.self) private var marketStore
     let entry: MarketIndexEntry
     var body: some View {
-        let change = SampleData.indexChange(entry.memberIDs)
+        let change = marketStore.indexChange(entry.memberIDs, range: .month)
         let up = change >= 0
         return VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
                 Image(systemName: entry.symbolName).font(.caption).foregroundStyle(entry.accent)
                 Text(entry.name).font(.subheadline.weight(.medium)).foregroundStyle(Theme.textPrimary)
             }
-            MiniAreaChart(values: SampleData.indexSeries(entry.memberIDs), tint: up ? Theme.gain : Theme.loss)
+            MiniAreaChart(values: marketStore.indexSeries(entry.memberIDs, range: .month), tint: up ? Theme.gain : Theme.loss)
                 .frame(height: 40)
             Text("\(up ? "▲ +" : "▼ ")\(String(format: "%.1f", abs(change)))%")
                 .font(.caption.weight(.bold))
