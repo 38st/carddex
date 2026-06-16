@@ -7,6 +7,7 @@ struct MarketCardView: View {
     @Environment(WatchlistStore.self) private var watchlist
     let card: Card
     @State private var selectedGrade: String
+    @State private var priceRange: IndexRange = .month
     @State private var added = false
 
     init(card: Card) {
@@ -44,11 +45,15 @@ struct MarketCardView: View {
                 value
                 gradeMatrix
                 gradingHint
-                SalesChart(
-                    series: market?.priceSeries ?? [],
-                    topPrice: NSDecimalNumber(decimal: selectedPrice.amount).doubleValue,
-                    sales: market?.recentSales.filter { $0.grade == selectedGrade } ?? []
-                )
+                VStack(spacing: Theme.Spacing.sm) {
+                    SalesChart(
+                        series: SampleData.priceSeries(for: card.id, range: priceRange),
+                        topPrice: NSDecimalNumber(decimal: selectedPrice.amount).doubleValue,
+                        sales: market?.recentSales.filter { $0.grade == selectedGrade } ?? [],
+                        windowDays: SampleData.windowDays(priceRange)
+                    )
+                    rangePicker
+                }
                 salesSection
                 if let population = market?.population {
                     LabeledContent("Population", value: "\(population.formatted())")
@@ -94,7 +99,9 @@ struct MarketCardView: View {
     }
 
     private var value: some View {
-        let change = market?.change30d ?? 0
+        let series = SampleData.priceSeries(for: card.id, range: priceRange)
+        let first = series.first ?? 0
+        let change = first > 0 ? ((series.last ?? 0) - first) / first * 100 : (market?.change30d ?? 0)
         return VStack(spacing: 2) {
             Text(selectedPrice.formatted)
                 .font(.system(size: 36, weight: .bold))
@@ -102,11 +109,35 @@ struct MarketCardView: View {
                 .monospacedDigit()
                 .contentTransition(.numericText())
             if market != nil {
-                Text("\(change >= 0 ? "▲ +" : "▼ ")\(String(format: "%.1f", abs(change)))% · 30 days")
+                Text("\(change >= 0 ? "▲ +" : "▼ ")\(String(format: "%.1f", abs(change)))% · \(priceRange.rawValue)")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(change >= 0 ? Theme.gain : Theme.loss)
+                    .contentTransition(.numericText())
             }
         }
+    }
+
+    private var rangePicker: some View {
+        HStack(spacing: 0) {
+            ForEach(IndexRange.allCases) { range in
+                let selected = priceRange == range
+                Button {
+                    Haptics.selection()
+                    withAnimation(.snappy(duration: 0.25)) { priceRange = range }
+                } label: {
+                    Text(range.rawValue)
+                        .font(.caption.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 7)
+                        .foregroundStyle(selected ? .white : Theme.textSecondary)
+                        .background { if selected { Capsule().fill(Theme.accent) } }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(3)
+        .background(Capsule().fill(Color.white.opacity(0.05)))
+        .overlay(Capsule().strokeBorder(Theme.hairline))
     }
 
     @ViewBuilder private var gradeMatrix: some View {
