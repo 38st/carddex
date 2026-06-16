@@ -44,6 +44,10 @@ eBay) lives in Edge Function secrets.
   sales, population, 30d change) and index series from the `0008` tables. Public
   read; maps 1:1 onto the app's `CardMarket` / `MarketIndex`. Deploy with
   `supabase functions deploy market-data`.
+- `functions/ebay-ingest` — pulls eBay sold prices (Marketplace Insights) into
+  `card_sales`, then `rollup_card()` → `card_grade_values`. Needs `EBAY_*`
+  secrets + (restricted) production access. **Full runbook:
+  [docs/ebay-data-pipeline.md](../docs/ebay-data-pipeline.md).**
 
 ## Sports market data (the real-data pipeline)
 

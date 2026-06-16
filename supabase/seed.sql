@@ -14,6 +14,14 @@ insert into cards (id, game, name, set_name, number, rarity, image_url) values
   ('ygo-lob-001',        'yugioh',  'Blue-Eyes White Dragon', 'Legend of Blue Eyes', 'LOB-001','Ultra Rare', 'https://images.ygoprodeck.com/images/cards/89631139.jpg')
 on conflict (id) do nothing;
 
+-- eBay search query per sports card (drives the ebay-ingest function) ----------
+update cards set ebay_query = '1986 Fleer Michael Jordan 57'        where id = 'sports-fleer86-57';
+update cards set ebay_query = '2003 Topps Chrome LeBron James 111'  where id = 'sports-topps03-111';
+update cards set ebay_query = '2000 Bowman Tom Brady 236'           where id = 'sports-bowman00-236';
+update cards set ebay_query = '2011 Topps Update Mike Trout US175'  where id = 'sports-topps11-175';
+update cards set ebay_query = '2004 Megacracks Lionel Messi 71'     where id = 'sports-mega04-71';
+update cards set ebay_query = '1979 O-Pee-Chee Wayne Gretzky 18'    where id = 'sports-opc79-18';
+
 -- Per-grade value + population (population/change carried on the top grade) ---
 insert into card_grade_values (card_id, grade, market_price, population, change_30d) values
   ('sports-fleer86-57',  'PSA 10',  95000,   320,  6.8),
