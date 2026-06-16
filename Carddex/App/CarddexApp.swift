@@ -3,9 +3,9 @@ import SwiftUI
 @main
 struct CarddexApp: App {
     @AppStorage("hasOnboarded") private var hasOnboarded = false
-    @State private var store = CollectionStore(items: SampleData.collection)
+    @State private var store = CollectionStore(items: SampleData.collection, persistKey: "collection.json")
     @State private var environment = AppEnvironment()
-    @State private var subscriptions = SubscriptionStore()
+    @State private var subscriptions = SubscriptionStore(persistKey: "subscription.json")
     @State private var router = AppRouter()
     @State private var marketStore = MarketStore(service: AppConfig.marketService)
     @State private var watchlist = WatchlistStore(
@@ -13,7 +13,8 @@ struct CarddexApp: App {
         alerts: [
             PriceAlert(cardID: SampleData.jordan.id, target: Money(amount: 90000)),
             PriceAlert(cardID: SampleData.brady.id, target: Money(amount: 60000)),
-        ]
+        ],
+        persistKey: "watchlist.json"
     )
 
     var body: some Scene {
