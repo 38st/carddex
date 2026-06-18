@@ -101,18 +101,7 @@ struct PortfolioView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(Theme.Spacing.lg)
-        .background {
-            RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
-                        .fill(LinearGradient(colors: [accent.opacity(0.13), .clear], startPoint: .topTrailing, endPoint: .bottomLeading))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
-                        .strokeBorder(Theme.hairline)
-                )
-        }
+        .glassCard(cornerRadius: Theme.Radius.xl)
     }
 
     private var chart: some View {
@@ -174,14 +163,14 @@ struct PortfolioView: View {
                     .foregroundStyle(Theme.accent)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(.ultraThinMaterial, in: Capsule())
+                    .glassCapsule()
             } else {
                 Text("Sample")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(Theme.textTertiary)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(.ultraThinMaterial, in: Capsule())
+                    .glassCapsule()
             }
         }
     }

@@ -25,13 +25,22 @@ struct Chip: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 9)
             .foregroundStyle(isSelected ? Theme.onCream : Theme.textSecondary)
-            .background(
-                isSelected ? AnyShapeStyle(Theme.cream) : AnyShapeStyle(Theme.surface),
-                in: Capsule()
-            )
-            .overlay(Capsule().strokeBorder(isSelected ? Color.clear : Theme.hairline))
+            .modifier(ChipBackground(isSelected: isSelected))
         }
         .buttonStyle(PressableStyle())
+    }
+}
+
+/// Selected chips are a solid cream pill (the primary affordance); unselected
+/// chips are Liquid Glass.
+private struct ChipBackground: ViewModifier {
+    let isSelected: Bool
+    func body(content: Content) -> some View {
+        if isSelected {
+            content.background(Theme.cream, in: Capsule())
+        } else {
+            content.glassCapsule(interactive: true)
+        }
     }
 }
 

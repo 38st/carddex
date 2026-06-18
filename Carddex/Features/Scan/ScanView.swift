@@ -107,7 +107,7 @@ struct ScanView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, Theme.Spacing.md)
                         .padding(.vertical, Theme.Spacing.sm)
-                        .background(.ultraThinMaterial, in: Capsule())
+                        .glassCapsule()
                 }
             }
         }

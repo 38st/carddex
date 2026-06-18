@@ -22,15 +22,3 @@ struct VaultBackground: View {
         .ignoresSafeArea()
     }
 }
-
-extension View {
-    /// Card surface: solid warm panel + hairline stroke. (Named `glassPanel` for
-    /// continuity; the warm theme reads better as a solid fill than frosted glass.)
-    func glassPanel(cornerRadius: CGFloat = Theme.Radius.lg) -> some View {
-        background(Theme.surface, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(Theme.hairline)
-            )
-    }
-}

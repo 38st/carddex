@@ -33,7 +33,10 @@ struct CollectionView: View {
         }
     }
 
-    private let columns = [GridItem(.adaptive(minimum: 108), spacing: Theme.Spacing.md)]
+    private let columns = [
+        GridItem(.flexible(), spacing: Theme.Spacing.md),
+        GridItem(.flexible(), spacing: Theme.Spacing.md),
+    ]
 
     private var filteredItems: [CollectionItem] {
         var items = store.items(for: selectedGame)
@@ -56,24 +59,38 @@ struct CollectionView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                     ScreenHeader(title: "Collection", subtitle: "\(store.totalCards) cards") {
-                        HStack(spacing: 10) {
-                            NavigationLink {
-                                GrailsView()
-                            } label: {
-                                Image(systemName: wishlist.grails.isEmpty ? "heart" : "heart.fill")
-                                    .circleIconChip()
-                            }
-                            Menu {
-                                Picker("Sort", selection: $sort) {
-                                    ForEach(SortOption.allCases) { Text($0.rawValue).tag($0) }
+                        GlassGroup(spacing: 10) {
+                            HStack(spacing: 10) {
+                                NavigationLink {
+                                    GrailsView()
+                                } label: {
+                                    Image(systemName: wishlist.grails.isEmpty ? "heart" : "heart.fill")
+                                        .circleIconChip()
                                 }
-                            } label: {
-                                Image(systemName: "arrow.up.arrow.down").circleIconChip()
+                                Menu {
+                                    Picker("Sort", selection: $sort) {
+                                        ForEach(SortOption.allCases) { Text($0.rawValue).tag($0) }
+                                    }
+                                } label: {
+                                    Image(systemName: "arrow.up.arrow.down").circleIconChip()
+                                }
                             }
                         }
                     }
 
-                    valueCard
+                    if let featured = store.items.max(by: { $0.estimatedValue.amount < $1.estimatedValue.amount }) {
+                        NavigationLink(value: featured) {
+                            FeaturedCard(
+                                card: featured.card,
+                                eyebrow: "Top card",
+                                trailingValue: featured.estimatedValue.formatted
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal)
+                    }
+
+                    valueStats
 
                     SearchField(text: $searchText, prompt: "Search cards")
                         .padding(.horizontal)
@@ -99,47 +116,19 @@ struct CollectionView: View {
         }
     }
 
-    private var valueCard: some View {
+    private var valueStats: some View {
         let gain = NSDecimalNumber(decimal: store.totalGainLoss.amount).doubleValue
         let up = gain >= 0
-        let accent = up ? Theme.gain : Theme.loss
-        return VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-            Text("Collection value")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(Theme.textSecondary)
-            RollingNumber(
-                NSDecimalNumber(decimal: store.totalValue.amount).doubleValue,
-                format: { Money(amount: Decimal($0)).formatted },
-                size: 32
-            )
-            HStack(spacing: Theme.Spacing.md) {
-                if store.totalCost.amount > 0 {
-                    HStack(spacing: 4) {
-                        Image(systemName: up ? "arrow.up.right" : "arrow.down.right")
-                        Text("\(up ? "+" : "−")\(Money(amount: Decimal(abs(gain))).formatted) (\(String(format: "%.0f", abs(store.gainLossPercent)))%)")
-                    }
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(accent)
-                    .monospacedDigit()
-                }
-                Spacer()
-                Label("\(store.totalCards) cards", systemImage: "square.stack")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(Theme.textSecondary)
+        return HStack(spacing: Theme.Spacing.sm) {
+            StatPill(icon: "dollarsign.circle.fill", title: "Collection value", value: store.totalValue.formatted)
+            if store.totalCost.amount > 0 {
+                StatPill(
+                    icon: up ? "arrow.up.right" : "arrow.down.right",
+                    title: up ? "All-time gain" : "All-time loss",
+                    value: "\(up ? "+" : "−")\(Money(amount: Decimal(abs(gain))).formatted) (\(String(format: "%.0f", abs(store.gainLossPercent)))%)",
+                    accent: up ? Theme.gain : Theme.loss
+                )
             }
-        }
-        .padding(Theme.Spacing.lg)
-        .background {
-            RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
-                        .fill(LinearGradient(colors: [accent.opacity(0.12), .clear], startPoint: .topTrailing, endPoint: .bottomLeading))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
-                        .strokeBorder(Theme.hairline)
-                )
         }
         .padding(.horizontal)
     }
@@ -213,34 +202,38 @@ struct CollectionView: View {
 
     private var gameFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Theme.Spacing.sm) {
-                Chip(title: "All", count: store.items.count, isSelected: selectedGame == nil) {
-                    select(game: nil)
-                }
-                ForEach(CardGame.allCases) { game in
-                    Chip(title: game.displayName, count: store.items(for: game).count, isSelected: selectedGame == game) {
-                        select(game: game)
+            GlassGroup(spacing: Theme.Spacing.sm) {
+                HStack(spacing: Theme.Spacing.sm) {
+                    Chip(title: "All", count: store.items.count, isSelected: selectedGame == nil) {
+                        select(game: nil)
+                    }
+                    ForEach(CardGame.allCases) { game in
+                        Chip(title: game.displayName, count: store.items(for: game).count, isSelected: selectedGame == game) {
+                            select(game: game)
+                        }
                     }
                 }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
         }
     }
 
     private var sportFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Theme.Spacing.sm) {
-                Chip(title: "All sports", isSelected: selectedSport == nil) {
-                    selectedSport = nil
-                }
-                ForEach(SportCategory.allCases) { sport in
-                    let count = store.items.filter { $0.card.sport == sport }.count
-                    Chip(title: sport.displayName, count: count, isSelected: selectedSport == sport) {
-                        selectedSport = sport
+            GlassGroup(spacing: Theme.Spacing.sm) {
+                HStack(spacing: Theme.Spacing.sm) {
+                    Chip(title: "All sports", isSelected: selectedSport == nil) {
+                        selectedSport = nil
+                    }
+                    ForEach(SportCategory.allCases) { sport in
+                        let count = store.items.filter { $0.card.sport == sport }.count
+                        Chip(title: sport.displayName, count: count, isSelected: selectedSport == sport) {
+                            selectedSport = sport
+                        }
                     }
                 }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
         }
     }
 

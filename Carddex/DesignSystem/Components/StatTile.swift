@@ -57,7 +57,6 @@ struct StatPill: View {
         .padding(.horizontal, Theme.Spacing.md)
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.surface2, in: RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous).strokeBorder(Theme.hairline))
+        .glassCard(cornerRadius: Theme.Radius.lg)
     }
 }

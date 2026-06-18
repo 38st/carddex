@@ -90,18 +90,34 @@ struct MarketView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                     ScreenHeader(title: "Market") {
-                        HStack(spacing: 10) {
-                            CircleIconButton(systemImage: watchlist.alerts.isEmpty ? "bell" : "bell.badge.fill") {
-                                showAlerts = true
-                            }
-                            CircleIconButton(systemImage: "rectangle.portrait.on.rectangle.portrait") {
-                                showCompare = true
+                        GlassGroup(spacing: 10) {
+                            HStack(spacing: 10) {
+                                CircleIconButton(systemImage: watchlist.alerts.isEmpty ? "bell" : "bell.badge.fill") {
+                                    showAlerts = true
+                                }
+                                CircleIconButton(systemImage: "rectangle.portrait.on.rectangle.portrait") {
+                                    showCompare = true
+                                }
                             }
                         }
                     }
 
                     SearchField(text: $search, prompt: "Search the market")
                         .padding(.horizontal)
+
+                    if search.isEmpty, let top = shownMovers.first ?? results.first {
+                        NavigationLink(value: top) {
+                            FeaturedCard(
+                                card: top,
+                                eyebrow: moverSide == .gainers ? "Top mover" : "Biggest dip",
+                                trailingValue: (marketStore.market[top.id]?.topPrice ?? top.marketPrice ?? .zero).formatted,
+                                trailingDelta: "\(change(top) >= 0 ? "+" : "")\(String(format: "%.1f", change(top)))%",
+                                deltaUp: change(top) >= 0
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal)
+                    }
 
                     indexCard
 
@@ -197,20 +213,22 @@ struct MarketView: View {
 
     private var categoryBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Theme.Spacing.sm) {
-                Chip(title: "All", isSelected: filter == nil) { filter = nil }
-                ForEach(SportCategory.allCases) { sport in
-                    Chip(title: sport.displayName, isSelected: filter == .sport(sport)) {
-                        filter = .sport(sport)
+            GlassGroup(spacing: Theme.Spacing.sm) {
+                HStack(spacing: Theme.Spacing.sm) {
+                    Chip(title: "All", isSelected: filter == nil) { filter = nil }
+                    ForEach(SportCategory.allCases) { sport in
+                        Chip(title: sport.displayName, isSelected: filter == .sport(sport)) {
+                            filter = .sport(sport)
+                        }
+                    }
+                    ForEach([CardGame.pokemon, .magic, .yugioh]) { game in
+                        Chip(title: game.displayName, isSelected: filter == .game(game)) {
+                            filter = .game(game)
+                        }
                     }
                 }
-                ForEach([CardGame.pokemon, .magic, .yugioh]) { game in
-                    Chip(title: game.displayName, isSelected: filter == .game(game)) {
-                        filter = .game(game)
-                    }
-                }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
         }
     }
 
@@ -244,18 +262,7 @@ struct MarketView: View {
             RangeSelector(selection: $indexRange)
         }
         .padding(Theme.Spacing.lg)
-        .background {
-            RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
-                        .fill(LinearGradient(colors: [accent.opacity(0.14), .clear], startPoint: .topTrailing, endPoint: .bottomLeading))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
-                        .strokeBorder(Theme.hairline)
-                )
-        }
+        .glassCard(cornerRadius: Theme.Radius.xl)
         .padding(.horizontal)
     }
 
@@ -306,8 +313,7 @@ struct MarketView: View {
             }
         }
         .padding(2)
-        .background(Capsule().fill(Color.white.opacity(0.05)))
-        .overlay(Capsule().strokeBorder(Theme.hairline))
+        .glassCapsule()
     }
 }
 
@@ -329,7 +335,7 @@ struct MarketRow: View {
                     .frame(width: 18, alignment: .center)
             }
             CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport)
-                .frame(width: 40)
+                .frame(width: 52)
             VStack(alignment: .leading, spacing: 2) {
                 Text(card.name).foregroundStyle(Theme.textPrimary).lineLimit(1)
                 Text(card.setName).font(.caption).foregroundStyle(Theme.textSecondary).lineLimit(1)
@@ -436,18 +442,7 @@ private struct IndexTile: View {
         }
         .frame(width: 150)
         .padding(Theme.Spacing.md)
-        .background {
-            RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                        .fill(LinearGradient(colors: [entry.accent.opacity(0.18), .clear], startPoint: .top, endPoint: .bottom))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                        .strokeBorder(Theme.hairline)
-                )
-        }
+        .glassCard(cornerRadius: Theme.Radius.card)
     }
 }
 

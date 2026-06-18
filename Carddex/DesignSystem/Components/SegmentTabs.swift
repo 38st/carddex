@@ -27,8 +27,7 @@ struct SegmentTabs<T: Hashable>: View {
             }
         }
         .padding(4)
-        .background(Theme.surface, in: Capsule())
-        .overlay(Capsule().strokeBorder(Theme.hairline))
+        .glassCapsule()
     }
 }
 

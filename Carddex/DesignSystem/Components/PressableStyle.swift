@@ -13,17 +13,18 @@ struct PressableStyle: ButtonStyle {
 }
 
 extension View {
-    /// Big, rounded display heading used on hero / empty states
+    /// Big, tight display heading used on hero / empty states
     /// (the reference's "Exclusive Digital Collectibles" treatment).
     func heroTitle(size: CGFloat = 34) -> some View {
-        self.font(.system(size: size, weight: .bold, design: .rounded))
+        self.font(.system(size: size, weight: .heavy, design: .default))
             .foregroundStyle(Theme.textPrimary)
     }
 }
 
 extension Font {
-    /// SF Pro Rounded display font for headings.
+    /// Sharp geometric display font (SF Pro) for headings — matches the
+    /// reference's tight display face rather than a rounded one.
     static func display(_ size: CGFloat, weight: Font.Weight = .bold) -> Font {
-        .system(size: size, weight: weight, design: .rounded)
+        .system(size: size, weight: weight, design: .default)
     }
 }

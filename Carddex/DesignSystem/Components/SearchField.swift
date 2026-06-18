@@ -27,8 +27,7 @@ struct SearchField: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 13)
-        .background(Theme.surface2, in: Capsule())
-        .overlay(Capsule().strokeBorder(Theme.hairline))
+        .glassCapsule()
     }
 }
 

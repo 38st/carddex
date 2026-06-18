@@ -59,7 +59,7 @@ struct SalesChart: View {
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(Theme.textTertiary)
                     .padding(.horizontal, 8).padding(.vertical, 3)
-                    .background(.ultraThinMaterial, in: Capsule())
+                    .glassCapsule()
             }
             chart
         }

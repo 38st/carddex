@@ -14,18 +14,21 @@ struct CircleIconButton: View {
             Haptics.selection()
             action()
         } label: {
-            Image(systemName: systemImage)
-                .font(.system(size: size * 0.4, weight: .semibold))
-                .foregroundStyle(tint ?? (prominent ? Theme.onCream : Theme.textPrimary))
-                .frame(width: size, height: size)
-                .background {
-                    if prominent {
-                        Circle().fill(Theme.cream)
-                    } else {
-                        Circle().fill(Theme.surface)
-                        Circle().strokeBorder(Theme.hairline)
-                    }
+            Group {
+                if prominent {
+                    Image(systemName: systemImage)
+                        .font(.system(size: size * 0.4, weight: .semibold))
+                        .foregroundStyle(tint ?? Theme.onCream)
+                        .frame(width: size, height: size)
+                        .background(Circle().fill(Theme.cream))
+                } else {
+                    Image(systemName: systemImage)
+                        .font(.system(size: size * 0.4, weight: .semibold))
+                        .foregroundStyle(tint ?? Theme.textPrimary)
+                        .frame(width: size, height: size)
+                        .glassCircle(interactive: true)
                 }
+            }
         }
         .buttonStyle(PressableStyle())
     }
@@ -38,8 +41,7 @@ extension View {
         self.font(.system(size: size * 0.4, weight: .semibold))
             .foregroundStyle(Theme.textPrimary)
             .frame(width: size, height: size)
-            .background(Circle().fill(Theme.surface))
-            .overlay(Circle().strokeBorder(Theme.hairline))
+            .glassCircle(interactive: true)
     }
 }
 

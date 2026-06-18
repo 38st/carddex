@@ -78,8 +78,7 @@ struct MiniAreaChart: View {
             .foregroundStyle(Theme.textPrimary)
             .padding(.horizontal, 7)
             .padding(.vertical, 3)
-            .background(.ultraThinMaterial, in: Capsule())
-            .overlay(Capsule().strokeBorder(Theme.hairline))
+            .glassCapsule()
             .fixedSize()
             .position(x: min(max(point.x, 32), size.width - 32), y: max(point.y - 16, 10))
     }

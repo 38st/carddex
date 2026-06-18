@@ -5,32 +5,35 @@ struct RootView: View {
 
     var body: some View {
         @Bindable var router = router
-        ZStack(alignment: .bottom) {
-            VaultBackground()
-
-            Group {
-                switch router.selectedTab {
-                case .market: MarketView()
-                case .collection: CollectionView()
-                case .scan: ScanView()
-                case .portfolio: PortfolioView()
-                case .settings: SettingsView()
-                }
+        // Native TabView gives the authentic iOS 26 Liquid Glass tab bar
+        // (floating, morphing, scroll-edge refraction). Each tab sits on the
+        // warm vault backdrop.
+        TabView(selection: $router.selectedTab) {
+            SwiftUI.Tab("Market", systemImage: "chart.line.uptrend.xyaxis", value: .market) {
+                tab { MarketView() }
             }
-
-            // Bottom fade so content dissolves into the dark before the floating bar.
-            LinearGradient(colors: [.clear, Theme.bg], startPoint: .top, endPoint: .bottom)
-                .frame(height: 150)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                .ignoresSafeArea()
-                .allowsHitTesting(false)
-
-            GlassTabBar(selection: $router.selectedTab)
-                .padding(.bottom, 4)
+            SwiftUI.Tab("Collection", systemImage: "square.grid.2x2", value: .collection) {
+                tab { CollectionView() }
+            }
+            SwiftUI.Tab("Scan", systemImage: "viewfinder", value: .scan) {
+                tab { ScanView() }
+            }
+            SwiftUI.Tab("Portfolio", systemImage: "dollarsign.circle", value: .portfolio) {
+                tab { PortfolioView() }
+            }
+            SwiftUI.Tab("Settings", systemImage: "gearshape", value: .settings) {
+                tab { SettingsView() }
+            }
         }
         .preferredColorScheme(.dark)
         .tint(Theme.cream)
-        .fontDesign(.rounded)
+    }
+
+    @ViewBuilder private func tab<V: View>(@ViewBuilder _ content: () -> V) -> some View {
+        ZStack {
+            VaultBackground()
+            content()
+        }
     }
 }
 

@@ -126,10 +126,10 @@ struct PaywallView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(Theme.Spacing.md)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous))
+            .glassCard(cornerRadius: Theme.Radius.lg)
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
-                    .strokeBorder(selected ? Theme.accent : Theme.hairline, lineWidth: selected ? 2 : 1)
+                    .strokeBorder(selected ? Theme.accent : .clear, lineWidth: selected ? 2 : 0)
             )
         }
         .buttonStyle(.plain)
@@ -155,10 +155,10 @@ struct PaywallView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(Theme.Spacing.md)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous))
+            .glassCard(cornerRadius: Theme.Radius.lg)
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
-                    .strokeBorder(selected ? Theme.accent : Theme.hairline, lineWidth: selected ? 2 : 1)
+                    .strokeBorder(selected ? Theme.accent : .clear, lineWidth: selected ? 2 : 0)
             )
         }
         .buttonStyle(.plain)
