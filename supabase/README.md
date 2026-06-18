@@ -8,7 +8,7 @@ eBay) lives in Edge Function secrets.
 
 1. Create a project at https://supabase.com (free tier is fine).
 2. Install the CLI: `brew install supabase/tap/supabase`, then `supabase link --project-ref <ref>`.
-3. Apply the schema: `supabase db push` (runs `migrations/0001` … `0008` in order).
+3. Apply the schema: `supabase db push` (runs `migrations/0001` … `0010` in order).
 4. Enable Sign in with Apple under Authentication → Providers.
 5. Create a private Storage bucket `user-photos` (see backend-plan.md §1.5 for the RLS policies).
 6. Set function secrets and deploy:
@@ -16,9 +16,11 @@ eBay) lives in Edge Function secrets.
    supabase secrets set VISION_PROVIDER=... VISION_API_KEY=... POKEMON_TCG_API_KEY=...
    supabase functions deploy identify
    ```
-7. Point the app at the project: put the URL + anon key in a gitignored `Secrets.xcconfig`,
-   then swap `AppEnvironment` from `FakeIdentificationService` to
-   `LiveIdentificationService(endpoint:)`.
+7. Point the app at the project: copy `Secrets.example.plist` to
+   `Carddex/Resources/Secrets.plist` and fill in `SUPABASE_PROJECT_REF` +
+   `SUPABASE_ANON_KEY` (see `docs/setup-runbook.md`). `AppEnvironment` picks
+   `LiveIdentificationService` automatically once the plist is present — no code
+   change needed. `Secrets.plist` is gitignored.
 
 ## Migrations
 
@@ -32,6 +34,8 @@ eBay) lives in Edge Function secrets.
 | `0006_ebay_secrets_audit.sql` | encrypted `ebay_accounts`, listing fields, audit log |
 | `0007_scan_cache.sql` | `scan_cache` for the identify result cache |
 | `0008_market_data.sql` | `card_sales`, `card_grade_values`, `market_index_points` + `refresh_grade_change()` |
+| `0009_market_grants.sql` | read grants for the market-data tables |
+| `0010_ebay_ingest.sql` | support tables for the eBay sold-price ingest pipeline |
 
 `0001` is immutable; everything else is additive.
 

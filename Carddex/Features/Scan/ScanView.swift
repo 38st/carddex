@@ -11,6 +11,7 @@ struct ScanView: View {
 
     @State private var recognizedText: [String] = []
     @State private var isIdentifying = false
+    @State private var scanPhase: ScanOverlay.Phase = .idle
     @State private var outcome: IdentificationOutcome?
     @State private var showResult = false
     @State private var showPaywall = false
@@ -19,7 +20,11 @@ struct ScanView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: Theme.Spacing.lg) {
+            VStack(spacing: 0) {
+                ScreenHeader(title: "Scan") {
+                    CircleIconButton(systemImage: "rectangle.stack") { showBulk = true }
+                }
+                VStack(spacing: Theme.Spacing.lg) {
                 Spacer(minLength: 0)
                 cameraArea
                     .aspectRatio(0.82, contentMode: .fit)
@@ -47,15 +52,11 @@ struct ScanView: View {
                 .disabled(isIdentifying)
 
                 Spacer(minLength: 0)
-            }
-            .padding()
-            .navigationTitle("Scan")
-            .tabBarSafeArea()
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showBulk = true } label: { Image(systemName: "rectangle.stack") }
                 }
+                .padding()
             }
+            .toolbar(.hidden, for: .navigationBar)
+            .tabBarSafeArea()
             .sheet(isPresented: $showBulk) { BulkScanView() }
             .onChange(of: pickedPhoto) { _, item in
                 Task { await identifyPickedPhoto(item) }
@@ -96,17 +97,17 @@ struct ScanView: View {
                 .padding()
             }
 
-            ScanReticle(active: isIdentifying)
+            ScanOverlay(phase: scanPhase)
 
             if isIdentifying {
-                Color.black.opacity(0.4)
+                Color.black.opacity(0.35)
                 VStack(spacing: Theme.Spacing.sm) {
-                    ProgressView()
-                        .controlSize(.large)
-                        .tint(Theme.accent)
                     Text("Reading the card…")
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.white)
+                        .padding(.horizontal, Theme.Spacing.md)
+                        .padding(.vertical, Theme.Spacing.sm)
+                        .background(.ultraThinMaterial, in: Capsule())
                 }
             }
         }
@@ -126,15 +127,21 @@ struct ScanView: View {
 
     private func identify() async {
         isIdentifying = true
-        defer { isIdentifying = false }
+        scanPhase = .scanning
+        defer { isIdentifying = false; scanPhase = .idle }
         let input = ScanInput(imageData: Data(), ocrText: recognizedText, gameHint: nil)
         do {
             outcome = try await env.identification.identify(input)
+            // Charge a scan only when the call returned an outcome. A thrown
+            // error (offline/quota/server) leaves the quota untouched so a
+            // network failure doesn't burn a free scan.
+            subs.recordScan()
         } catch {
             outcome = .unidentified(ocrText: recognizedText)
         }
-        subs.recordScan()
+        scanPhase = .found
         notifyOutcome()
+        try? await Task.sleep(for: .milliseconds(250))
         showResult = true
     }
 
@@ -150,7 +157,8 @@ struct ScanView: View {
         guard let item else { return }
         guard subs.canScan else { showPaywall = true; return }
         isIdentifying = true
-        defer { isIdentifying = false }
+        scanPhase = .scanning
+        defer { isIdentifying = false; scanPhase = .idle }
         guard
             let data = try? await item.loadTransferable(type: Data.self),
             let image = UIImage(data: data),
@@ -161,27 +169,15 @@ struct ScanView: View {
         let input = ScanInput(imageData: jpeg, ocrText: ocr, gameHint: nil)
         do {
             outcome = try await env.identification.identify(input)
+            subs.recordScan()
         } catch {
             outcome = .unidentified(ocrText: ocr)
         }
-        subs.recordScan()
+        scanPhase = .found
         notifyOutcome()
+        try? await Task.sleep(for: .milliseconds(250))
         showResult = true
         pickedPhoto = nil
-    }
-}
-
-/// Accent scan frame — dashed while idle, solid while identifying.
-private struct ScanReticle: View {
-    var active: Bool
-    var body: some View {
-        RoundedRectangle(cornerRadius: Theme.Radius.lg)
-            .strokeBorder(
-                Theme.accent.opacity(active ? 0.9 : 0.5),
-                style: StrokeStyle(lineWidth: active ? 3 : 2, dash: active ? [] : [9])
-            )
-            .padding(20)
-            .animation(Theme.springUI, value: active)
     }
 }
 

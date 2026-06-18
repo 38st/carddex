@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 /// Snapshot the app writes to the shared App Group container for the widgets to
 /// read. Small + pre-formatted so the widget needs no app logic.
@@ -30,6 +31,7 @@ struct WidgetSnapshot: Codable {
 enum WidgetBridge {
     static let appGroupID = "group.com.carddex.app"
     private static let fileName = "widget-snapshot.json"
+    private static let logger = Logger(subsystem: "com.carddex.app", category: "widget-bridge")
 
     private static var url: URL? {
         FileManager.default
@@ -38,12 +40,31 @@ enum WidgetBridge {
     }
 
     static func read() -> WidgetSnapshot? {
-        guard let url, let data = try? Data(contentsOf: url) else { return nil }
-        return try? JSONDecoder().decode(WidgetSnapshot.self, from: data)
+        guard let url else {
+            logger.error("WidgetBridge.read: App Group container unavailable")
+            return nil
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(WidgetSnapshot.self, from: data)
+        } catch {
+            if FileManager.default.fileExists(atPath: url.path) {
+                logger.error("WidgetBridge.read failed: \(String(describing: error), privacy: .public)")
+            }
+            return nil
+        }
     }
 
     static func write(_ snapshot: WidgetSnapshot) {
-        guard let url, let data = try? JSONEncoder().encode(snapshot) else { return }
-        try? data.write(to: url, options: .atomic)
+        guard let url else {
+            logger.error("WidgetBridge.write: App Group container unavailable")
+            return
+        }
+        do {
+            let data = try JSONEncoder().encode(snapshot)
+            try data.write(to: url, options: .atomic)
+        } catch {
+            logger.error("WidgetBridge.write failed: \(String(describing: error), privacy: .public)")
+        }
     }
 }

@@ -32,8 +32,8 @@ import Foundation
     @Test func setCompletionCountsOwnedSlots() {
         let store = CollectionStore(items: SampleData.collection)
         let progress = store.completion(for: SampleData.baseSet)
-        #expect(progress.owned == 6)
-        #expect(progress.total == 9)
+        #expect(progress.owned == 7)
+        #expect(progress.total == 10)
     }
 
     @Test func rarityMapsToFoilTier() {

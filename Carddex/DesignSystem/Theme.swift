@@ -1,30 +1,38 @@
 import SwiftUI
 
-/// "The Vault" design tokens — a dark, museum-lit display case for cards.
+/// "The Vault" design tokens — a warm, espresso-lit display case for cards.
 /// Dark-first; light mode comes later.
 enum Theme {
-    // Brand
-    static let accent = Color(hex: 0x6E6BFF)
-    static let accentPressed = Color(hex: 0x5552E6)
+    // Primary action surface: warm cream/white pills with dark text (the
+    // reference's "Get Started" / "Place Bid" / active-chip language).
+    static let cream = Color(hex: 0xF6EFE7)
+    static let creamPressed = Color(hex: 0xE3DACE)
+    static let onCream = Color(hex: 0x1A1210)
 
-    // Vault surfaces
-    static let bg = Color(hex: 0x0B0B0F)
-    static let bgRaised = Color(hex: 0x16161D)
-    static let surface = Color(hex: 0x1C1C26)
-    static let surface2 = Color(hex: 0x262633)
+    // `accent` is retained as an alias of `cream` so existing call sites keep
+    // working while the warm repalette lands; new code prefers `cream`/`onCream`.
+    static let accent = cream
+    static let accentPressed = creamPressed
 
-    // Text
-    static let textPrimary = Color(hex: 0xF4F4F7)
-    static let textSecondary = Color(hex: 0xA0A0AE)
-    static let textTertiary = Color(hex: 0x6C6C7A)
+    // Vault surfaces — warm taupe/espresso, evenly lit (sampled from the
+    // reference: bg ~#261D1D, raised cards ~#2D2424, lighter surfaces ~#453636).
+    static let bg = Color(hex: 0x271E1D)
+    static let bgRaised = Color(hex: 0x312625)
+    static let surface = Color(hex: 0x3A2E2C)
+    static let surface2 = Color(hex: 0x463835)
 
-    // Semantic
+    // Text — warm off-whites.
+    static let textPrimary = Color(hex: 0xF6F1ED)
+    static let textSecondary = Color(hex: 0xBCAFA9)
+    static let textTertiary = Color(hex: 0x8C7E78)
+
+    // Semantic — unchanged for data legibility.
     static let gain = Color(hex: 0x34D399)
     static let loss = Color(hex: 0xFB7185)
     static let warning = Color(hex: 0xFBBF24)
 
-    // Hairline stroke on glass
-    static let hairline = Color.white.opacity(0.09)
+    // Hairline stroke on glass — faintly warm.
+    static let hairline = Color(hex: 0xFFE9DB).opacity(0.10)
 
     /// Standard trading-card aspect ratio (2.5" × 3.5").
     static let cardAspectRatio: CGFloat = 2.5 / 3.5
@@ -43,9 +51,9 @@ enum Theme {
     enum Radius {
         static let sm: CGFloat = 8
         static let md: CGFloat = 12
-        static let card: CGFloat = 14
-        static let lg: CGFloat = 20
-        static let xl: CGFloat = 28
+        static let card: CGFloat = 18
+        static let lg: CGFloat = 24
+        static let xl: CGFloat = 32
     }
 
     static let springUI = Animation.spring(response: 0.4, dampingFraction: 0.82)

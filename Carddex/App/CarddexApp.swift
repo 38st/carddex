@@ -5,8 +5,8 @@ import WidgetKit
 struct CarddexApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("hasOnboarded") private var hasOnboarded = false
-    @State private var store = CollectionStore(items: SampleData.collection, persistKey: "collection.json")
     @State private var environment = AppEnvironment()
+    @State private var store = CollectionStore(items: SampleData.collection, persistKey: "collection.json")
     @State private var subscriptions = SubscriptionStore(persistKey: "subscription.json")
     @State private var router = AppRouter()
     @State private var marketStore = MarketStore(service: AppConfig.marketService)
@@ -18,20 +18,33 @@ struct CarddexApp: App {
         ],
         persistKey: "watchlist.json"
     )
+    @State private var wishlist = WishlistStore(
+        grails: [
+            GrailEntry(cardID: SampleData.charizard.id, target: Money(amount: 250)),
+        ],
+        persistKey: "wishlist.json"
+    )
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environment(store)
                 .environment(environment)
+                .environment(environment.auth)
                 .environment(subscriptions)
                 .environment(router)
                 .environment(watchlist)
+                .environment(wishlist)
                 .environment(marketStore)
                 .task {
+                    wireSync()
                     SpotlightIndexer.index(SampleData.marketCards)
                     consumePendingTab()
+                    await verifyEntitlement()
                     await marketStore.refresh()
+                    if environment.auth.isSignedIn {
+                        await pullRemoteState()
+                    }
                     updateWidget()
                 }
                 .onChange(of: scenePhase) { _, phase in
@@ -41,12 +54,49 @@ struct CarddexApp: App {
                         updateWidget()
                     }
                 }
+                .onChange(of: environment.auth.isSignedIn) { _, signedIn in
+                    if signedIn { Task { await pullRemoteState() } }
+                }
                 .fullScreenCover(isPresented: Binding(
                     get: { !hasOnboarded },
                     set: { presented in if !presented { hasOnboarded = true } }
                 )) {
                     OnboardingView()
                 }
+        }
+    }
+
+    /// Connect the stores to the sync service once the composition root is up.
+    /// Stores stay local-only (sync = nil) when no backend is configured.
+    private func wireSync() {
+        store.sync = environment.sync
+        watchlist.sync = environment.sync
+        wishlist.sync = environment.sync
+        subscriptions.sync = environment.sync
+    }
+
+    /// Pull the user's remote state and merge into local stores. Called on app
+    /// launch (when signed in) and on sign-in. Additive merge: remote items not
+    /// present locally are appended; local items keep their state. A proper LWW
+    /// merge needs `updated_at` timestamps (Phase 2).
+    private func pullRemoteState() async {
+        guard let remote = try? await environment.sync.pullAll() else { return }
+        store.mergeRemote(remote.collectionItems)
+        watchlist.mergeRemote(remote.priceAlerts)
+        wishlist.mergeRemote(remote.wishlistEntries)
+        if let sub = remote.subscription {
+            subscriptions.applyRemote(sub)
+        }
+    }
+
+    /// Verify the StoreKit 2 entitlement on launch. If the user has an active
+    /// Pro subscription (verified via `Transaction.currentEntitlements`), flip
+    /// `isPro` on. This catches subscriptions made on another device or restored
+    /// after reinstall.
+    private func verifyEntitlement() async {
+        let isPro = await environment.storeKit.verifyEntitlement()
+        if isPro && !subscriptions.isPro {
+            subscriptions.activatePro()
         }
     }
 

@@ -89,6 +89,20 @@ struct MarketView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+                    ScreenHeader(title: "Market") {
+                        HStack(spacing: 10) {
+                            CircleIconButton(systemImage: watchlist.alerts.isEmpty ? "bell" : "bell.badge.fill") {
+                                showAlerts = true
+                            }
+                            CircleIconButton(systemImage: "rectangle.portrait.on.rectangle.portrait") {
+                                showCompare = true
+                            }
+                        }
+                    }
+
+                    SearchField(text: $search, prompt: "Search the market")
+                        .padding(.horizontal)
+
                     indexCard
 
                     sectionTitle("Indices")
@@ -152,24 +166,13 @@ struct MarketView: View {
                 }
                 .padding(.vertical)
             }
-            .navigationTitle("Market")
+            .toolbar(.hidden, for: .navigationBar)
             .tabBarSafeArea()
-            .searchable(text: $search, prompt: "Search the market")
             .navigationDestination(for: Card.self) { card in
                 MarketCardView(card: card)
             }
             .navigationDestination(for: MarketIndexEntry.self) { entry in
                 IndexDetailView(entry: entry)
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showAlerts = true } label: {
-                        Image(systemName: watchlist.alerts.isEmpty ? "bell" : "bell.badge.fill")
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Compare") { showCompare = true }
-                }
             }
             .sheet(isPresented: $showCompare) { ComparisonView() }
             .sheet(isPresented: $showAlerts) { AlertsView() }
@@ -195,14 +198,14 @@ struct MarketView: View {
     private var categoryBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: Theme.Spacing.sm) {
-                MarketChip(title: "All", isSelected: filter == nil) { filter = nil }
+                Chip(title: "All", isSelected: filter == nil) { filter = nil }
                 ForEach(SportCategory.allCases) { sport in
-                    MarketChip(title: sport.displayName, isSelected: filter == .sport(sport)) {
+                    Chip(title: sport.displayName, isSelected: filter == .sport(sport)) {
                         filter = .sport(sport)
                     }
                 }
                 ForEach([CardGame.pokemon, .magic, .yugioh]) { game in
-                    MarketChip(title: game.displayName, isSelected: filter == .game(game)) {
+                    Chip(title: game.displayName, isSelected: filter == .game(game)) {
                         filter = .game(game)
                     }
                 }
@@ -230,10 +233,11 @@ struct MarketView: View {
                     .background(accent.opacity(0.16), in: Capsule())
                     .contentTransition(.numericText())
             }
-            Text(index.value, format: .number.precision(.fractionLength(2)))
-                .font(.system(size: 46, weight: .bold, design: .rounded))
-                .foregroundStyle(Theme.textPrimary)
-                .monospacedDigit()
+            RollingNumber(
+                index.value,
+                format: { $0.formatted(.number.precision(.fractionLength(2))) },
+                size: 46
+            )
             MiniAreaChart(values: index.series(for: indexRange), tint: accent, interactive: true)
                 .frame(height: 96)
                 .animation(.easeInOut(duration: 0.35), value: indexRange)
@@ -304,26 +308,6 @@ struct MarketView: View {
         .padding(2)
         .background(Capsule().fill(Color.white.opacity(0.05)))
         .overlay(Capsule().strokeBorder(Theme.hairline))
-    }
-}
-
-private struct MarketChip: View {
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
-    var body: some View {
-        Button {
-            Haptics.selection()
-            action()
-        } label: {
-            Text(title)
-                .font(.subheadline.weight(.medium))
-                .padding(.horizontal, 14)
-                .padding(.vertical, Theme.Spacing.sm)
-                .foregroundStyle(isSelected ? .white : Theme.textSecondary)
-                .background(isSelected ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(.ultraThinMaterial), in: Capsule())
-                .overlay(Capsule().strokeBorder(isSelected ? .clear : Theme.hairline))
-        }
     }
 }
 

@@ -37,6 +37,13 @@ struct PortfolioView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+                    ScreenHeader(title: "Portfolio") {
+                        if let shareImage {
+                            ShareLink(item: shareImage, preview: SharePreview("My collection · The Case", image: shareImage)) {
+                                Image(systemName: "square.and.arrow.up").circleIconChip()
+                            }
+                        }
+                    }
                     hero
                     rangePicker
                     chart
@@ -50,17 +57,8 @@ struct PortfolioView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Portfolio")
+            .toolbar(.hidden, for: .navigationBar)
             .tabBarSafeArea()
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    if let shareImage {
-                        ShareLink(item: shareImage, preview: SharePreview("My collection · The Case", image: shareImage)) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                    }
-                }
-            }
             .onAppear(perform: renderShareImage)
         }
     }
@@ -90,13 +88,9 @@ struct PortfolioView: View {
             Text("Total value")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(Theme.textSecondary)
-            Text(store.totalValue.formatted)
-                .font(.system(size: 42, weight: .bold, design: .rounded))
-                .foregroundStyle(Theme.textPrimary)
-                .monospacedDigit()
-                .contentTransition(.numericText())
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
+            RollingNumber(totalDouble,
+                          format: { Money(amount: Decimal($0)).formatted },
+                          size: 42)
             HStack(spacing: 6) {
                 Image(systemName: up ? "arrow.up.right" : "arrow.down.right")
                 Text("\(up ? "+" : "−")\(money(abs(deltaAbs))) (\(String(format: "%.1f", deltaPct))%) · \(range.rawValue)")
@@ -193,10 +187,7 @@ struct PortfolioView: View {
     }
 
     private var rangePicker: some View {
-        Picker("Range", selection: $range) {
-            ForEach(Range.allCases) { Text($0.rawValue).tag($0) }
-        }
-        .pickerStyle(.segmented)
+        SegmentTabs(selection: $range, items: Range.allCases.map { (value: $0, label: $0.rawValue) })
     }
 
     private var allTimeGain: Double { NSDecimalNumber(decimal: store.totalGainLoss.amount).doubleValue }

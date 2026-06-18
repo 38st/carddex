@@ -49,7 +49,7 @@ struct GlassTabBar: View {
                 Text(label)
                     .font(.system(size: 10, weight: .medium))
             }
-            .foregroundStyle(selected ? Theme.accent : Theme.textTertiary)
+            .foregroundStyle(selected ? Theme.cream : Theme.textTertiary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 6)
         }

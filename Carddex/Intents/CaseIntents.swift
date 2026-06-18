@@ -93,8 +93,9 @@ enum SpotlightIndexer {
         let items = cards.map { card -> CSSearchableItem in
             let attrs = CSSearchableItemAttributeSet(contentType: .text)
             attrs.title = card.name
-            attrs.contentDescription = "\(card.setName) · \(card.number)"
-            if let price = card.marketPrice { attrs.contentDescription! += " · \(price.formatted)" }
+            var description = "\(card.setName) · \(card.number)"
+            if let price = card.marketPrice { description += " · \(price.formatted)" }
+            attrs.contentDescription = description
             return CSSearchableItem(uniqueIdentifier: card.id, domainIdentifier: "cards", attributeSet: attrs)
         }
         CSSearchableIndex.default().indexSearchableItems(items)

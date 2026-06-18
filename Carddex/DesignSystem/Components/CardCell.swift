@@ -32,7 +32,7 @@ struct CardCell: View {
                 if let price = item.card.marketPrice {
                     Text(price.formatted)
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(Theme.textPrimary)
                         .monospacedDigit()
                 }
                 if let gain = item.gainPercent {

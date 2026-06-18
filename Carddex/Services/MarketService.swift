@@ -1,8 +1,15 @@
 import Foundation
 
+/// Read-only market-data source. `MarketStore` depends on this protocol so tests
+/// can inject a fake instead of hitting the Supabase `market-data` function.
+protocol MarketServiceProtocol: Sendable {
+    func fetchIndex(category: String?) async throws -> [IndexPointDTO]
+    func fetchCard(id: String) async throws -> CardBundleDTO
+}
+
 /// Reads live market data from the Supabase `market-data` Edge Function.
 /// Returns raw DTOs; `MarketStore` maps them onto the app's domain models.
-struct MarketService {
+struct MarketService: MarketServiceProtocol, Sendable {
     let baseURL: URL          // …/functions/v1/market-data
     let apiKey: String
     var session: URLSession = .shared
@@ -15,9 +22,12 @@ struct MarketService {
     )
 
     private func get(_ query: String) async throws -> Data {
-        var comps = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)!
+        guard var comps = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
+            throw URLError(.badURL)
+        }
         comps.query = query
-        var req = URLRequest(url: comps.url!)
+        guard let url = comps.url else { throw URLError(.badURL) }
+        var req = URLRequest(url: url)
         req.timeoutInterval = 8
         req.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         req.setValue(apiKey, forHTTPHeaderField: "apikey")
@@ -34,6 +44,28 @@ struct MarketService {
     func fetchCard(id: String) async throws -> CardBundleDTO {
         let data = try await get("cardId=\(id)")
         return try JSONDecoder().decode(CardBundleDTO.self, from: data)
+    }
+}
+
+/// In-process fake market-data source for previews and tests. Returns a fixed
+/// index and per-card bundle so `MarketStore.refresh()` can be exercised without
+/// a network or the Supabase `market-data` function.
+struct FakeMarketService: MarketServiceProtocol {
+    var indexPoints: [IndexPointDTO] = []
+    var cards: [String: CardBundleDTO] = [:]
+    /// IDs whose `fetchCard` throws (simulates a backend failure per card).
+    var failingCardIDs: Set<String> = []
+
+    func fetchIndex(category: String?) async throws -> [IndexPointDTO] {
+        try Task.checkCancellation()
+        return indexPoints
+    }
+
+    func fetchCard(id: String) async throws -> CardBundleDTO {
+        try Task.checkCancellation()
+        if failingCardIDs.contains(id) { throw URLError(.badServerResponse) }
+        guard let bundle = cards[id] else { throw URLError(.fileDoesNotExist) }
+        return bundle
     }
 }
 

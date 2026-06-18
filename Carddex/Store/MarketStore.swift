@@ -10,9 +10,9 @@ final class MarketStore {
     var index: MarketIndex
     private(set) var isLive = false
 
-    private let service: MarketService?
+    private let service: (any MarketServiceProtocol)?
 
-    init(service: MarketService? = nil) {
+    init(service: (any MarketServiceProtocol)? = nil) {
         self.market = SampleData.market
         self.index = SampleData.marketIndex
         self.service = service
@@ -22,7 +22,7 @@ final class MarketStore {
     func refresh() async {
         guard let service else { return }
 
-        if let points = try? await service.fetchIndex(), !points.isEmpty {
+        if let points = try? await service.fetchIndex(category: nil), !points.isEmpty {
             index = Self.buildIndex(from: points)
             isLive = true
         }

@@ -35,11 +35,11 @@ private struct Sparkline: View {
             let pts = points(in: geo.size)
             ZStack {
                 Path { p in
-                    guard let f = pts.first else { return }
+                    guard let f = pts.first, let l = pts.last else { return }
                     p.move(to: CGPoint(x: f.x, y: geo.size.height))
                     p.addLine(to: f)
                     for q in pts.dropFirst() { p.addLine(to: q) }
-                    p.addLine(to: CGPoint(x: pts.last!.x, y: geo.size.height))
+                    p.addLine(to: CGPoint(x: l.x, y: geo.size.height))
                     p.closeSubpath()
                 }
                 .fill(LinearGradient(colors: [tint.opacity(0.3), .clear], startPoint: .top, endPoint: .bottom))

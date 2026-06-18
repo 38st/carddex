@@ -6,10 +6,10 @@ struct MarketCardView: View {
     @Environment(CollectionStore.self) private var store
     @Environment(WatchlistStore.self) private var watchlist
     @Environment(MarketStore.self) private var marketStore
+    @Environment(\.dismiss) private var dismiss
     let card: Card
     @State private var selectedGrade: String
     @State private var priceRange: IndexRange = .month
-    @State private var added = false
     @State private var showAdd = false
 
     init(card: Card) {
@@ -18,6 +18,11 @@ struct MarketCardView: View {
     }
 
     private var market: CardMarket? { marketStore.market[card.id] }
+
+    /// Whether this card is already in the collection — drives the "Add" button
+    /// label. Derived from the store so it's honest on appear *and* after a buy,
+    /// and a second "Log a buy" is always allowed (it stacks quantity).
+    private var isOwned: Bool { store.items.contains { $0.card.id == card.id } }
 
     /// Other tracked cards in the same sport (or game, for TCG).
     private var relatedCards: [Card] {
@@ -54,6 +59,29 @@ struct MarketCardView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Theme.Spacing.lg) {
+                HStack {
+                    CircleIconButton(systemImage: "chevron.left") { dismiss() }
+                    Spacer()
+                    Text(card.name)
+                        .font(.display(17))
+                        .foregroundStyle(Theme.textPrimary)
+                        .lineLimit(1)
+                    Spacer()
+                    HStack(spacing: 10) {
+                        CircleIconButton(systemImage: watchlist.hasAlert(card.id) ? "bell.fill" : "bell") {
+                            if watchlist.hasAlert(card.id) {
+                                watchlist.removeAlert(card.id)
+                            } else {
+                                watchlist.setAlert(cardID: card.id, target: selectedPrice)
+                                Haptics.success()
+                            }
+                        }
+                        CircleIconButton(systemImage: watchlist.isFollowing(card.id) ? "star.fill" : "star") {
+                            watchlist.toggleFollow(card.id)
+                        }
+                    }
+                }
+
                 LivingCardView(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport, maxWidth: 200)
 
                 VStack(spacing: Theme.Spacing.xs) {
@@ -85,40 +113,17 @@ struct MarketCardView: View {
                         .glassPanel(cornerRadius: Theme.Radius.card)
                 }
 
-                PrimaryButton(title: added ? "Added to portfolio" : "Add to portfolio", systemImage: added ? "checkmark" : "plus") {
+                PrimaryButton(title: isOwned ? "Add another to portfolio" : "Add to portfolio",
+                              systemImage: isOwned ? "plus.rectangle.on.rectangle" : "plus") {
                     showAdd = true
                 }
-                .disabled(added)
             }
             .padding()
         }
-        .navigationTitle(card.name)
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $showAdd) {
-            AddToPortfolioSheet(card: card, suggestedPrice: selectedPrice) { added = true }
+            AddToPortfolioSheet(card: card, suggestedPrice: selectedPrice)
                 .presentationDetents([.medium, .large])
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    if watchlist.hasAlert(card.id) {
-                        watchlist.removeAlert(card.id)
-                    } else {
-                        watchlist.setAlert(cardID: card.id, target: selectedPrice)
-                        Haptics.success()
-                    }
-                } label: {
-                    Image(systemName: watchlist.hasAlert(card.id) ? "bell.fill" : "bell")
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    Haptics.selection()
-                    watchlist.toggleFollow(card.id)
-                } label: {
-                    Image(systemName: watchlist.isFollowing(card.id) ? "star.fill" : "star")
-                }
-            }
         }
     }
 

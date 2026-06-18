@@ -5,11 +5,13 @@ import SwiftUI
 struct CollectionView: View {
     @Environment(CollectionStore.self) private var store
     @Environment(AppRouter.self) private var router
+    @Environment(WishlistStore.self) private var wishlist
     @State private var selectedGame: CardGame?
     @State private var selectedSport: SportCategory?
     @State private var mode: Mode = .grid
     @State private var searchText = ""
     @State private var sort: SortOption = .recent
+    @State private var grailsRoute = false
     @Namespace private var cardNamespace
 
     enum Mode: String, CaseIterable, Identifiable {
@@ -52,42 +54,52 @@ struct CollectionView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                header
-
-                Picker("View", selection: $mode) {
-                    ForEach(Mode.allCases) { Text($0.rawValue).tag($0) }
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal)
-                .padding(.top, Theme.Spacing.sm)
-
-                switch mode {
-                case .grid: gridContent
-                case .sets: setsContent
-                }
-            }
-            .navigationTitle("Collection")
-            .tabBarSafeArea()
-            .searchable(text: $searchText, prompt: "Search cards")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        Picker("Sort", selection: $sort) {
-                            ForEach(SortOption.allCases) { Text($0.rawValue).tag($0) }
+                VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    ScreenHeader(title: "Collection", subtitle: "\(store.totalCards) cards") {
+                        HStack(spacing: 10) {
+                            NavigationLink {
+                                GrailsView()
+                            } label: {
+                                Image(systemName: wishlist.grails.isEmpty ? "heart" : "heart.fill")
+                                    .circleIconChip()
+                            }
+                            Menu {
+                                Picker("Sort", selection: $sort) {
+                                    ForEach(SortOption.allCases) { Text($0.rawValue).tag($0) }
+                                }
+                            } label: {
+                                Image(systemName: "arrow.up.arrow.down").circleIconChip()
+                            }
                         }
-                    } label: {
-                        Image(systemName: "arrow.up.arrow.down")
+                    }
+
+                    valueCard
+
+                    SearchField(text: $searchText, prompt: "Search cards")
+                        .padding(.horizontal)
+
+                    SegmentTabs(selection: $mode, items: [(.grid, "Grid"), (.sets, "Sets")])
+                        .padding(.horizontal)
+
+                    switch mode {
+                    case .grid: gridContent
+                    case .sets: setsContent
                     }
                 }
             }
+            .toolbar(.hidden, for: .navigationBar)
+            .tabBarSafeArea()
             .navigationDestination(for: CollectionItem.self) { item in
                 CardDetailView(item: item)
                     .navigationTransition(.zoom(sourceID: item.id, in: cardNamespace))
             }
+            .navigationDestination(for: CardSet.self) { set in
+                SetDetailView(cardSet: set)
+            }
         }
     }
 
-    private var header: some View {
+    private var valueCard: some View {
         let gain = NSDecimalNumber(decimal: store.totalGainLoss.amount).doubleValue
         let up = gain >= 0
         let accent = up ? Theme.gain : Theme.loss
@@ -95,13 +107,11 @@ struct CollectionView: View {
             Text("Collection value")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(Theme.textSecondary)
-            Text(store.totalValue.formatted)
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-                .foregroundStyle(Theme.textPrimary)
-                .monospacedDigit()
-                .contentTransition(.numericText())
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
+            RollingNumber(
+                NSDecimalNumber(decimal: store.totalValue.amount).doubleValue,
+                format: { Money(amount: Decimal($0)).formatted },
+                size: 32
+            )
             HStack(spacing: Theme.Spacing.md) {
                 if store.totalCost.amount > 0 {
                     HStack(spacing: 4) {
@@ -132,7 +142,6 @@ struct CollectionView: View {
                 )
         }
         .padding(.horizontal)
-        .padding(.top, Theme.Spacing.xs)
     }
 
     @ViewBuilder private var gridContent: some View {
@@ -174,42 +183,59 @@ struct CollectionView: View {
     }
 
     @ViewBuilder private var setsContent: some View {
-        VStack(spacing: Theme.Spacing.lg) {
-            ForEach(SampleData.sets) { set in
-                BinderPageView(set: set)
+        let sets = filteredSets
+        gameFilterBar
+        if sets.isEmpty {
+            EmptyState(
+                icon: "square.stack.3d.up",
+                title: "No sets here",
+                message: "No sets match this filter. Switch the filter or scan more cards to grow your completion."
+            )
+            .padding(.top, Theme.Spacing.xl)
+        } else {
+            VStack(spacing: Theme.Spacing.md) {
+                ForEach(sets) { set in
+                    NavigationLink(value: set) { SetRow(set: set) }
+                        .buttonStyle(.plain)
+                }
             }
+            .padding()
         }
-        .padding()
+    }
+
+    /// Sets filtered by the same game/sport selection as the grid, plus search.
+    private var filteredSets: [CardSet] {
+        SampleData.sets.filter { set in
+            if let selectedGame, set.game != selectedGame { return false }
+            return true
+        }
     }
 
     private var gameFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: Theme.Spacing.sm) {
-                FilterChip(title: "All", count: store.items.count, isSelected: selectedGame == nil) {
+                Chip(title: "All", count: store.items.count, isSelected: selectedGame == nil) {
                     select(game: nil)
                 }
                 ForEach(CardGame.allCases) { game in
-                    FilterChip(title: game.displayName, count: store.items(for: game).count, isSelected: selectedGame == game) {
+                    Chip(title: game.displayName, count: store.items(for: game).count, isSelected: selectedGame == game) {
                         select(game: game)
                     }
                 }
             }
             .padding(.horizontal)
-            .padding(.top, Theme.Spacing.sm)
         }
     }
 
     private var sportFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: Theme.Spacing.sm) {
-                FilterChip(title: "All sports", isSelected: selectedSport == nil) {
-                    Haptics.selection()
+                Chip(title: "All sports", isSelected: selectedSport == nil) {
                     selectedSport = nil
                 }
                 ForEach(SportCategory.allCases) { sport in
                     let count = store.items.filter { $0.card.sport == sport }.count
-                    FilterChip(title: sport.displayName, count: count, isSelected: selectedSport == sport) {
-                        Haptics.selection()
+                    Chip(title: sport.displayName, count: count, isSelected: selectedSport == sport) {
                         selectedSport = sport
                     }
                 }
@@ -225,32 +251,55 @@ struct CollectionView: View {
     }
 }
 
-private struct FilterChip: View {
-    let title: String
-    var count: Int? = nil
-    let isSelected: Bool
-    let action: () -> Void
+/// A row in the Sets browser: set name, game pill, completion ring, owned/total,
+/// and a count of missing cards the user could add to their grail list.
+private struct SetRow: View {
+    @Environment(CollectionStore.self) private var store
+    @Environment(WishlistStore.self) private var wishlist
+    let set: CardSet
 
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 6) {
-                Text(title)
-                if let count {
-                    Text("\(count)")
-                        .opacity(isSelected ? 0.85 : 0.55)
+        let progress = store.completion(for: set)
+        let fraction = progress.total > 0 ? Double(progress.owned) / Double(progress.total) : 0
+        let groundedMissing = set.slots.filter { slot in
+            slot.cardID != nil && store.ownedCard(setName: set.name, number: slot.number) == nil
+        }.count
+        let grailsInSet = set.slots.filter { slot in
+            slot.cardID.map { wishlist.contains($0) } ?? false
+        }.count
+
+        return HStack(spacing: Theme.Spacing.md) {
+            CompletionRing(fraction: fraction, label: "\(progress.owned)/\(progress.total)")
+            VStack(alignment: .leading, spacing: 4) {
+                Text(set.name)
+                    .font(.headline)
+                    .foregroundStyle(Theme.textPrimary)
+                    .lineLimit(1)
+                GamePill(game: set.game)
+                HStack(spacing: 6) {
+                    Text("\(progress.owned) of \(set.total) owned")
+                        .font(.caption)
+                        .foregroundStyle(Theme.textSecondary)
+                        .monospacedDigit()
+                    if groundedMissing > 0 {
+                        Text("· \(groundedMissing) to grail")
+                            .font(.caption)
+                            .foregroundStyle(grailsInSet > 0 ? Theme.accent : Theme.textTertiary)
+                            .monospacedDigit()
+                    }
                 }
             }
-            .font(.subheadline.weight(.medium))
-            .monospacedDigit()
-            .padding(.horizontal, 14)
-            .padding(.vertical, Theme.Spacing.sm)
-            .foregroundStyle(isSelected ? .white : Theme.textSecondary)
-            .background(
-                isSelected ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(.ultraThinMaterial),
-                in: Capsule()
-            )
-            .overlay(Capsule().strokeBorder(isSelected ? .clear : Theme.hairline))
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Theme.textTertiary)
         }
+        .padding(Theme.Spacing.md)
+        .glassPanel(cornerRadius: Theme.Radius.lg)
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
+                .strokeBorder(fraction >= 1 ? Theme.gain.opacity(0.4) : .clear, lineWidth: 1)
+        )
     }
 }
 
@@ -258,5 +307,6 @@ private struct FilterChip: View {
     CollectionView()
         .environment(CollectionStore(items: SampleData.collection))
         .environment(AppRouter())
+        .environment(WishlistStore())
         .preferredColorScheme(.dark)
 }

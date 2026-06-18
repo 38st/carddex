@@ -19,11 +19,11 @@ struct MiniAreaChart: View {
             let points = normalized(in: geo.size)
             let chart = ZStack(alignment: .topLeading) {
                 Path { path in
-                    guard let first = points.first else { return }
+                    guard let first = points.first, let last = points.last else { return }
                     path.move(to: CGPoint(x: first.x, y: geo.size.height))
                     path.addLine(to: first)
                     for point in points.dropFirst() { path.addLine(to: point) }
-                    path.addLine(to: CGPoint(x: points.last!.x, y: geo.size.height))
+                    path.addLine(to: CGPoint(x: last.x, y: geo.size.height))
                     path.closeSubpath()
                 }
                 .fill(LinearGradient(colors: [tint.opacity(0.35), .clear], startPoint: .top, endPoint: .bottom))

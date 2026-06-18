@@ -5,6 +5,9 @@ import SwiftUI
 struct BinderPageView: View {
     @Environment(CollectionStore.self) private var store
     let set: CardSet
+    /// When set, missing slots become tappable (e.g. to open an "add to grail"
+    /// sheet). Catalog-grounded slots (`cardID != nil`) show a "+" badge.
+    var onSlotTap: ((SetSlot) -> Void)? = nil
 
     private let columns = [GridItem(.adaptive(minimum: 84), spacing: Theme.Spacing.sm)]
 
@@ -37,7 +40,7 @@ struct BinderPageView: View {
                     if let card = store.ownedCard(setName: set.name, number: slot.number) {
                         CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL)
                     } else {
-                        GhostSlot(number: slot.number)
+                        ghostSlot(slot)
                     }
                 }
             }
@@ -55,6 +58,22 @@ struct BinderPageView: View {
             }
         }
         .shadow(color: isComplete ? Theme.gain.opacity(0.22) : .clear, radius: 18)
+    }
+
+    @ViewBuilder
+    private func ghostSlot(_ slot: SetSlot) -> some View {
+        let grounded = slot.cardID != nil
+        if onSlotTap != nil {
+            Button {
+                onSlotTap?(slot)
+                Haptics.selection()
+            } label: {
+                GhostSlot(number: slot.number, addable: grounded)
+            }
+            .buttonStyle(.plain)
+        } else {
+            GhostSlot(number: slot.number, addable: false)
+        }
     }
 }
 
@@ -85,24 +104,37 @@ struct CompletionRing: View {
     }
 }
 
-/// An empty, ghosted slot for a card the user is missing.
+/// An empty, ghosted slot for a card the user is missing. `addable` shows a
+/// subtle "+" badge when the slot is catalog-grounded and can be added to the
+/// grail list.
 struct GhostSlot: View {
     let number: String
+    var addable: Bool = false
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topTrailing) {
             RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
                 .fill(Color.white.opacity(0.02))
             RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
                 .strokeBorder(Theme.hairline, style: StrokeStyle(lineWidth: 1.5, dash: [5]))
             VStack(spacing: 4) {
-                Image(systemName: "questionmark")
+                Image(systemName: addable ? "plus" : "questionmark")
                     .font(.title3)
-                    .foregroundStyle(Theme.textTertiary)
+                    .foregroundStyle(addable ? Theme.accent : Theme.textTertiary)
                 Text(number)
                     .font(.caption2)
                     .foregroundStyle(Theme.textTertiary)
                     .monospacedDigit()
+            }
+            if addable {
+                Text("grail")
+                    .font(.system(size: 8, weight: .semibold))
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .background(Theme.accent.opacity(0.2), in: Capsule())
+                    .overlay(Capsule().strokeBorder(Theme.accent.opacity(0.5)))
+                    .foregroundStyle(Theme.accent)
+                    .padding(4)
             }
         }
         .aspectRatio(Theme.cardAspectRatio, contentMode: .fit)

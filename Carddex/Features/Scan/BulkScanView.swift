@@ -113,15 +113,26 @@ struct BulkScanView: View {
             let ocr = await CardTextRecognizer.recognize(cgImage)
             let jpeg = image.jpegData(compressionQuality: 0.8) ?? data
             let input = ScanInput(imageData: jpeg, ocrText: ocr, gameHint: nil)
-            switch try? await env.identification.identify(input) {
+            // Distinguish a thrown error (offline/quota/server) from a returned
+            // `.unidentified`: only the latter consumed a backend scan.
+            let outcome: IdentificationOutcome?
+            do {
+                outcome = try await env.identification.identify(input)
+            } catch {
+                outcome = nil
+            }
+            switch outcome {
             case .confident(let candidate):
                 output.append(BulkResult(card: candidate.card))
+                subs.recordScan()
             case .ambiguous(let candidates):
                 if let first = candidates.first { output.append(BulkResult(card: first.card)) }
-            default:
+                subs.recordScan()
+            case .unidentified:
+                subs.recordScan()
+            case nil:
                 break
             }
-            subs.recordScan()
         }
         results = output
         picked = []

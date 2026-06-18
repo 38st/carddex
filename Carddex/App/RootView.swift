@@ -29,7 +29,8 @@ struct RootView: View {
                 .padding(.bottom, 4)
         }
         .preferredColorScheme(.dark)
-        .tint(Theme.accent)
+        .tint(Theme.cream)
+        .fontDesign(.rounded)
     }
 }
 
@@ -40,5 +41,6 @@ struct RootView: View {
         .environment(SubscriptionStore())
         .environment(AppRouter())
         .environment(WatchlistStore())
+        .environment(WishlistStore())
         .environment(MarketStore())
 }

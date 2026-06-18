@@ -78,6 +78,12 @@ enum SampleData {
         jordan, lebron, brady, trout, messi, gretzky,
     ]
 
+    /// Resolves a catalog card id to a `Card`, or nil if it isn't in the bundled
+    /// sample. (`cards` already spans the catalog + market-tracked sets.) Real
+    /// catalogs replace this with a backend query.
+    private static let cardByID: [String: Card] = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, $0) })
+    static func card(id: String) -> Card? { cardByID[id] }
+
     static let collection: [CollectionItem] = [
         CollectionItem(card: charizard, condition: .nearMint, purchasePrice: Money(amount: 190)),
         CollectionItem(card: blastoise, condition: .nearMint, purchasePrice: Money(amount: 110)),
@@ -99,16 +105,70 @@ enum SampleData {
         id: "base1", game: .pokemon, name: "Base Set", total: 102,
         slots: [
             SetSlot(number: "1/102", name: "Alakazam", rarity: "Holo Rare"),
-            SetSlot(number: "2/102", name: "Blastoise", rarity: "Holo Rare"),
+            SetSlot(number: "2/102", name: "Blastoise", rarity: "Holo Rare", cardID: blastoise.id),
             SetSlot(number: "3/102", name: "Chansey", rarity: "Holo Rare"),
-            SetSlot(number: "4/102", name: "Charizard", rarity: "Holo Rare"),
-            SetSlot(number: "6/102", name: "Gyarados", rarity: "Holo Rare"),
-            SetSlot(number: "8/102", name: "Machamp", rarity: "Holo Rare"),
-            SetSlot(number: "10/102", name: "Mewtwo", rarity: "Holo Rare"),
+            SetSlot(number: "4/102", name: "Charizard", rarity: "Holo Rare", cardID: charizard.id),
+            SetSlot(number: "6/102", name: "Gyarados", rarity: "Holo Rare", cardID: gyarados.id),
+            SetSlot(number: "8/102", name: "Machamp", rarity: "Holo Rare", cardID: machamp.id),
+            SetSlot(number: "10/102", name: "Mewtwo", rarity: "Holo Rare", cardID: mewtwo.id),
             SetSlot(number: "14/102", name: "Raichu", rarity: "Holo Rare"),
-            SetSlot(number: "15/102", name: "Venusaur", rarity: "Holo Rare"),
+            SetSlot(number: "15/102", name: "Venusaur", rarity: "Holo Rare", cardID: venusaur.id),
+            SetSlot(number: "58/102", name: "Pikachu", rarity: "Common", cardID: pikachu.id),
         ]
     )
 
-    static let sets: [CardSet] = [baseSet]
+    // Pokémon Scarlet & Violet base — a modern set, none owned in the sample.
+    static let scarletVioletSet = CardSet(
+        id: "sv3", game: .pokemon, name: "Scarlet & Violet Base", total: 198,
+        slots: [
+            SetSlot(number: "024/198", name: "Sprigatito", rarity: "Common"),
+            SetSlot(number: "038/198", name: "Fuecoco", rarity: "Common"),
+            SetSlot(number: "052/198", name: "Quaxly", rarity: "Common"),
+            SetSlot(number: "190/198", name: "Miraidon ex", rarity: "Ultra Rare"),
+            SetSlot(number: "198/198", name: "Koraidon ex", rarity: "Illustration Rare"),
+            SetSlot(number: "230/198", name: "Chien-Pao ex", rarity: "Special Illustration Rare"),
+        ]
+    )
+
+    // Magic: Alpha — the grail set. Black Lotus is owned.
+    static let alphaSet = CardSet(
+        id: "mtg-alpha", game: .magic, name: "Alpha", total: 295,
+        slots: [
+            SetSlot(number: "232", name: "Black Lotus", rarity: "Rare", cardID: blackLotus.id),
+            SetSlot(number: "231", name: "Mox Pearl", rarity: "Rare"),
+            SetSlot(number: "230", name: "Mox Jet", rarity: "Rare"),
+            SetSlot(number: "229", name: "Mox Ruby", rarity: "Rare"),
+            SetSlot(number: "228", name: "Mox Emerald", rarity: "Rare"),
+            SetSlot(number: "227", name: "Mox Sapphire", rarity: "Rare"),
+            SetSlot(number: "226", name: "Ancestral Recall", rarity: "Rare"),
+            SetSlot(number: "225", name: "Time Walk", rarity: "Rare"),
+        ]
+    )
+
+    // Yu-Gi-Oh! Legend of Blue Eyes — Blue-Eyes owned.
+    static let lobSet = CardSet(
+        id: "ygo-lob", game: .yugioh, name: "Legend of Blue Eyes", total: 126,
+        slots: [
+            SetSlot(number: "LOB-001", name: "Blue-Eyes White Dragon", rarity: "Ultra Rare", cardID: blueEyes.id),
+            SetSlot(number: "LOB-002", name: "Dark Magician", rarity: "Ultra Rare"),
+            SetSlot(number: "LOB-003", name: "Exodia the Forbidden One", rarity: "Ultra Rare"),
+            SetSlot(number: "LOB-004", name: "Right Arm of the Forbidden One", rarity: "Rare"),
+            SetSlot(number: "LOB-005", name: "Left Leg of the Forbidden One", rarity: "Rare"),
+            SetSlot(number: "LOB-000", name: "Tri-Horned Dragon", rarity: "Secret Rare"),
+        ]
+    )
+
+    // 1986 Fleer basketball — the Jordan rookie set.
+    static let fleer86Set = CardSet(
+        id: "sports-fleer86", game: .sports, name: "1986 Fleer Basketball", total: 132,
+        slots: [
+            SetSlot(number: "57", name: "Michael Jordan RC", rarity: nil, cardID: jordan.id),
+            SetSlot(number: "32", name: "Karl Malone RC", rarity: nil),
+            SetSlot(number: "120", name: "Hakeem Olajuwon RC", rarity: nil),
+            SetSlot(number: "74", name: "Charles Barkley RC", rarity: nil),
+            SetSlot(number: "8", name: "Patrick Ewing RC", rarity: nil),
+        ]
+    )
+
+    static let sets: [CardSet] = [baseSet, scarletVioletSet, alphaSet, lobSet, fleer86Set]
 }

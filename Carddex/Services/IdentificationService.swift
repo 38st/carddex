@@ -24,7 +24,7 @@ enum IdentificationOutcome: Sendable {
     case unidentified(ocrText: [String])
 }
 
-enum IdentificationError: Error, Sendable {
+enum IdentificationError: Error, Sendable, Equatable {
     case offline
     case quotaExceeded
     case server(String)

@@ -1,18 +1,27 @@
 import Foundation
 
 /// Talks to the Supabase `identify` Edge Function. Holds no secrets — the
-/// function does. Not yet wired into `AppEnvironment` (waiting on deployment).
+/// function does. Selected automatically by `AppEnvironment` when `Secrets.plist`
+/// is present; otherwise the fake service is used. Pulls the current JWT via an
+/// async closure so authenticated calls use a fresh, refreshed token without
+/// capturing a non-Sendable store.
 struct LiveIdentificationService: IdentificationService {
     let endpoint: URL
-    var authToken: String?
+    let tokenProvider: @Sendable () async -> String?
     var session: URLSession = .shared
+
+    init(endpoint: URL, tokenProvider: @escaping @Sendable () async -> String?, session: URLSession = .shared) {
+        self.endpoint = endpoint
+        self.tokenProvider = tokenProvider
+        self.session = session
+    }
 
     func identify(_ input: ScanInput) async throws -> IdentificationOutcome {
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        if let authToken {
-            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        if let token = await tokenProvider() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         let body = IdentifyRequest(
             ocr: .init(lines: input.ocrText),

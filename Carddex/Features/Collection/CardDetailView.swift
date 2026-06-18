@@ -11,17 +11,48 @@ struct CardDetailView: View {
     @State private var shareImage: Image?
     let item: CollectionItem
 
+    private var setCompletion: (owned: Int, total: Int)? {
+        guard let set = SampleData.sets.first(where: { $0.name == item.card.setName }) else { return nil }
+        return store.completion(for: set)
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: Theme.Spacing.lg) {
-                LivingCardView(
-                    game: item.card.game,
-                    rarity: item.card.rarity,
-                    price: item.card.marketPrice,
-                    imageURL: item.card.imageURL,
-                    sport: item.card.sport,
-                    maxWidth: 220
-                )
+                HStack {
+                    CircleIconButton(systemImage: "chevron.left") { dismiss() }
+                    Spacer()
+                    Text(item.card.name)
+                        .font(.display(17))
+                        .foregroundStyle(Theme.textPrimary)
+                        .lineLimit(1)
+                    Spacer()
+                    if let shareImage {
+                        ShareLink(item: shareImage, preview: SharePreview(item.card.name, image: shareImage)) {
+                            Image(systemName: "square.and.arrow.up").circleIconChip()
+                        }
+                    } else {
+                        Color.clear.frame(width: 44, height: 44)
+                    }
+                }
+
+                FlipCardView {
+                    LivingCardView(
+                        game: item.card.game,
+                        rarity: item.card.rarity,
+                        price: item.card.marketPrice,
+                        imageURL: item.card.imageURL,
+                        sport: item.card.sport,
+                        maxWidth: 220
+                    )
+                } back: {
+                    CardBackView(
+                        card: item.card,
+                        condition: item.condition,
+                        setCompletion: setCompletion
+                    )
+                    .frame(maxWidth: 220)
+                }
                 .padding(.top, Theme.Spacing.sm)
 
                 VStack(spacing: Theme.Spacing.sm) {
@@ -30,7 +61,7 @@ struct CardDetailView: View {
                         .font(.title.weight(.bold))
                         .foregroundStyle(Theme.textPrimary)
                         .multilineTextAlignment(.center)
-                    Text("\(item.card.setName) · \(item.card.number)")
+                    Text("\(item.card.setName) · \(item.card.number)\(item.quantity > 1 ? " · ×\(item.quantity)" : "")")
                         .foregroundStyle(Theme.textSecondary)
                     if let rarity = item.card.rarity {
                         Text(rarity)
@@ -39,17 +70,17 @@ struct CardDetailView: View {
                     }
                 }
 
-                HStack(spacing: Theme.Spacing.md) {
-                    StatTile(title: "Market", value: item.card.marketPrice?.formatted ?? "—")
-                    StatTile(title: "Qty", value: "\(item.quantity)")
-                    StatTile(title: "Value", value: item.estimatedValue.formatted, accent: Theme.gain)
+                HStack(spacing: Theme.Spacing.sm) {
+                    StatPill(icon: "tag.fill", title: "Market", value: item.card.marketPrice?.formatted ?? "—")
+                    StatPill(icon: "chart.line.uptrend.xyaxis", title: "Value", value: item.estimatedValue.formatted, accent: Theme.gain)
                 }
 
                 if item.hasCostBasis {
                     let gain = NSDecimalNumber(decimal: item.gainLoss.amount).doubleValue
-                    HStack(spacing: Theme.Spacing.md) {
-                        StatTile(title: "Paid", value: item.costBasis.formatted)
-                        StatTile(
+                    HStack(spacing: Theme.Spacing.sm) {
+                        StatPill(icon: "creditcard.fill", title: "Paid", value: item.costBasis.formatted)
+                        StatPill(
+                            icon: gain >= 0 ? "arrow.up.right" : "arrow.down.right",
                             title: gain >= 0 ? "Gain" : "Loss",
                             value: "\(gain >= 0 ? "+" : "−")\(Money(amount: Decimal(abs(gain))).formatted)",
                             accent: gain >= 0 ? Theme.gain : Theme.loss
@@ -91,18 +122,8 @@ struct CardDetailView: View {
             }
             .padding()
         }
-        .navigationTitle(item.card.name)
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $showSell) { SellSheet(item: item) }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                if let shareImage {
-                    ShareLink(item: shareImage, preview: SharePreview(item.card.name, image: shareImage)) {
-                        Image(systemName: "square.and.arrow.up")
-                    }
-                }
-            }
-        }
         .onAppear { renderShareImage() }
     }
 
