@@ -2,6 +2,7 @@ import Testing
 import Foundation
 @testable import Carddex
 
+@MainActor
 @Suite struct PullMergeTests {
     @Test func collectionMergeAddsRemoteItemsNotPresentLocally() {
         let localCharizard = CollectionItem(card: SampleData.charizard)

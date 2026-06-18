@@ -2,6 +2,7 @@ import Testing
 import Foundation
 @testable import Carddex
 
+@MainActor
 @Suite struct WatchlistStoreTests {
     @Test func toggleFollowAddsThenRemoves() {
         let store = WatchlistStore()

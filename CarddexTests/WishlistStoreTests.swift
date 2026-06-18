@@ -2,6 +2,7 @@ import Testing
 import Foundation
 @testable import Carddex
 
+@MainActor
 @Suite struct WishlistStoreTests {
     @Test func addPutsCardInGrails() {
         let store = WishlistStore()

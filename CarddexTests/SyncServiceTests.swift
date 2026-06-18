@@ -2,6 +2,7 @@ import Testing
 import Foundation
 @testable import Carddex
 
+@MainActor
 @Suite struct SyncServiceTests {
     @Test func noOpUpsertsDoNothing() async {
         let sync = NoOpSyncService()

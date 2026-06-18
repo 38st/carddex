@@ -2,6 +2,7 @@ import Testing
 import Foundation
 @testable import Carddex
 
+@MainActor
 @Suite struct CollectionStoreTests {
     @Test func addingStacksQuantity() {
         let store = CollectionStore(items: [])

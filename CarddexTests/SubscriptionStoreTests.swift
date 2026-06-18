@@ -2,6 +2,7 @@ import Testing
 import Foundation
 @testable import Carddex
 
+@MainActor
 @Suite struct SubscriptionStoreTests {
     @Test func freshAccountCanScanUpToLimit() {
         let subs = SubscriptionStore()

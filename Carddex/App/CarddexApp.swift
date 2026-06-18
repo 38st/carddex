@@ -6,8 +6,9 @@ struct CarddexApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("hasOnboarded") private var hasOnboarded = false
     @State private var environment = AppEnvironment()
-    @State private var store = CollectionStore(items: SampleData.collection, persistKey: "collection.json")
-    @State private var subscriptions = SubscriptionStore(persistKey: "subscription.json")
+    @State private var persistence = PersistenceController.shared
+    @State private var store = CollectionStore(items: SampleData.collection, persistence: PersistenceController.shared)
+    @State private var subscriptions = SubscriptionStore(persistence: PersistenceController.shared)
     @State private var router = AppRouter()
     @State private var marketStore = MarketStore(service: AppConfig.marketService)
     @State private var watchlist = WatchlistStore(
@@ -16,13 +17,13 @@ struct CarddexApp: App {
             PriceAlert(cardID: SampleData.jordan.id, target: Money(amount: 90000)),
             PriceAlert(cardID: SampleData.brady.id, target: Money(amount: 60000)),
         ],
-        persistKey: "watchlist.json"
+        persistence: PersistenceController.shared
     )
     @State private var wishlist = WishlistStore(
         grails: [
             GrailEntry(cardID: SampleData.charizard.id, target: Money(amount: 250)),
         ],
-        persistKey: "wishlist.json"
+        persistence: PersistenceController.shared
     )
 
     var body: some Scene {

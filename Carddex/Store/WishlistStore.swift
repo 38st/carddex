@@ -1,33 +1,40 @@
 import SwiftUI
+import Observation
+import SwiftData
 
 /// The "Grail List" — cards the user is hunting but doesn't own yet, optionally
 /// with a target price ("ping me when a PSA 9 Charizard drops below $1,200").
 /// Distinct from `WatchlistStore` (which follows market cards the user may
-/// already own) and `CollectionStore` (owned). In-memory for now; persists to
-/// Supabase (`wishlists`) at go-live.
+/// already own) and `CollectionStore` (owned). Backed by SwiftData; keeps the
+/// same in-memory surface views use.
+@MainActor
 @Observable
 final class WishlistStore {
     var grails: [GrailEntry]
-    private let persistKey: String?
+    private let persistence: PersistenceController?
     var sync: (any SyncServiceProtocol)? = nil
 
-    /// `persistKey` enables Codable-to-disk persistence (production). Pass nil for
-    /// previews/tests to stay purely in-memory. `sync` mirrors mutations to
-    /// Supabase; nil = local-only.
-    init(grails: [GrailEntry] = [], persistKey: String? = nil, sync: (any SyncServiceProtocol)? = nil) {
-        self.persistKey = persistKey
+    /// `persistence` enables SwiftData-backed persistence (production). Pass
+    /// nil for previews/tests to stay purely in-memory.
+    init(grails: [GrailEntry] = [], persistence: PersistenceController? = nil, sync: (any SyncServiceProtocol)? = nil) {
+        self.persistence = persistence
         self.sync = sync
-        if let persistKey, let saved = Disk.load([GrailEntry].self, from: persistKey) {
-            self.grails = saved
+        if let persistence {
+            self.grails = Self.fetchLive(from: persistence.context)
         } else {
             self.grails = grails
-            persist()
         }
     }
 
-    private func persist() {
-        if let persistKey { Disk.save(grails, to: persistKey) }
+    private static func fetchLive(from context: ModelContext) -> [GrailEntry] {
+        let descriptor = FetchDescriptor<GrailEntryEntity>(
+            predicate: #Predicate { $0.deletedAt == nil }
+        )
+        let entities = (try? context.fetch(descriptor)) ?? []
+        return entities.compactMap { $0.toModel() }
     }
+
+    private func save() { persistence?.save() }
 
     private func syncUpsert(_ entry: GrailEntry) {
         guard let sync else { return }
@@ -47,39 +54,72 @@ final class WishlistStore {
         grails.removeAll { $0.cardID == cardID }
         let entry = GrailEntry(cardID: cardID, target: target, note: note)
         grails.append(entry)
+        upsertEntity(entry)
         syncUpsert(entry)
-        persist()
+        save()
     }
 
     func remove(_ cardID: String) {
         grails.removeAll { $0.cardID == cardID }
+        if let persistence,
+           let entity = try? persistence.context.fetch(FetchDescriptor<GrailEntryEntity>(
+               predicate: #Predicate { $0.cardID == cardID }
+           )).first {
+            entity.deletedAt = .now
+            entity.dirty = true
+            persistence.save()
+        }
         syncDelete(cardID)
-        persist()
     }
 
     /// Update just the target on an existing entry (no-op if the card isn't a grail).
     func setTarget(_ cardID: String, target: Money?) {
         guard let index = grails.firstIndex(where: { $0.cardID == cardID }) else { return }
         grails[index].target = target
+        upsertEntity(grails[index])
         syncUpsert(grails[index])
-        persist()
+        save()
     }
 
     /// Merge remote grails from a pull. Additive: entries for cards not already
-    /// tracked locally are appended.
+    /// tracked locally are appended. The LWW variant lands in Slice 3.
     func mergeRemote(_ remote: [GrailEntry]) {
         let localCardIDs = Set(grails.map(\.cardID))
         for entry in remote where !localCardIDs.contains(entry.cardID) {
             grails.append(entry)
+            upsertEntity(entry, dirty: false)
         }
-        persist()
+        save()
     }
 
     /// Clear all local state and persist the empty snapshot. Used after a
     /// successful account deletion so a re-launch doesn't restore wiped data.
     func wipeLocal() {
         grails = []
-        persist()
+        if let persistence {
+            let all = (try? persistence.context.fetch(FetchDescriptor<GrailEntryEntity>())) ?? []
+            for entity in all { persistence.context.delete(entity) }
+            persistence.save()
+        }
+    }
+
+    private func upsertEntity(_ entry: GrailEntry, dirty: Bool = true) {
+        guard let persistence else { return }
+        let ctx = persistence.context
+        let existing = (try? ctx.fetch(FetchDescriptor<GrailEntryEntity>(
+            predicate: #Predicate { $0.cardID == entry.cardID }
+        )))?.first
+        if let existing {
+            existing.targetAmount = entry.target.map { NSDecimalNumber(decimal: $0.amount).doubleValue }
+            existing.targetCurrency = entry.target?.currencyCode
+            existing.note = entry.note
+            existing.dateAdded = entry.dateAdded
+            existing.dirty = dirty
+            existing.deletedAt = nil
+        } else {
+            let entity = GrailEntryEntity.insert(from: entry, into: ctx)
+            entity.dirty = dirty
+        }
     }
 }
 

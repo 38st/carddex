@@ -1,37 +1,59 @@
 import SwiftUI
 import Observation
+import SwiftData
 
-/// In-memory collection state. Phase 1 swaps the backing store for Supabase
-/// (sync + persistence) but keeps this same surface so views don't change.
+/// In-memory collection state, backed by SwiftData. Keeps the same surface
+/// views depend on (`items`, computed totals, `add`/`remove`); mutations now
+/// write through to `CollectionItemEntity` and mark rows dirty for the
+/// SyncEngine. Previews/tests pass `persistence: nil` to stay purely
+/// in-memory (no SwiftData).
+@MainActor
 @Observable
 final class CollectionStore {
     var items: [CollectionItem]
-    private let persistKey: String?
+    private let persistence: PersistenceController?
     /// Set post-init by the app composition root so stores created without a
     /// backend (previews/tests) stay local-only, while production wires sync
     /// once `AppEnvironment` is available.
     var sync: (any SyncServiceProtocol)? = nil
 
-    /// `persistKey` enables Codable-to-disk persistence (production). Pass nil for
-    /// previews/tests to stay purely in-memory. `sync` (when present) mirrors
-    /// mutations to Supabase; nil = local-only.
-    init(items: [CollectionItem] = [], persistKey: String? = nil, sync: (any SyncServiceProtocol)? = nil) {
-        self.persistKey = persistKey
+    /// `persistence` enables SwiftData-backed persistence (production). Pass
+    /// nil for previews/tests to stay purely in-memory. The legacy
+    /// `persistKey`/`items` inits route through the in-memory path.
+    init(items: [CollectionItem] = [], persistence: PersistenceController? = nil, sync: (any SyncServiceProtocol)? = nil) {
+        self.persistence = persistence
         self.sync = sync
-        if let persistKey, let saved = Disk.load([CollectionItem].self, from: persistKey) {
-            self.items = saved
+        if let persistence {
+            // Load live (non-tombstoned) rows from SwiftData.
+            self.items = Self.fetchLive(from: persistence.context)
         } else {
             self.items = items
-            persist()
         }
     }
 
-    private func persist() {
-        if let persistKey { Disk.save(items, to: persistKey) }
+    // MARK: - SwiftData load
+
+    private static func fetchLive(from context: ModelContext) -> [CollectionItem] {
+        var descriptor = FetchDescriptor<CollectionItemEntity>(
+            predicate: #Predicate { $0.deletedAt == nil },
+            sortBy: [SortDescriptor(\.dateAdded, order: .reverse)]
+        )
+        descriptor.relationshipKeyPathsForPrefetching = []
+        let entities = (try? context.fetch(descriptor)) ?? []
+        return entities.compactMap { $0.toModel() }
     }
 
-    /// Fire-and-forget a sync upsert. Best-effort: failures are swallowed (the
-    /// local store stays correct; a later pull will reconcile).
+    private func reloadFromStore() {
+        guard let persistence else { return }
+        items = Self.fetchLive(from: persistence.context)
+    }
+
+    private func save() {
+        persistence?.save()
+    }
+
+    // MARK: - Sync (fire-and-forget; the SyncEngine will replace this in Slice 3)
+
     private func syncUpsert(_ item: CollectionItem) {
         guard let sync else { return }
         Task { try? await sync.upsertCollectionItem(item) }
@@ -41,6 +63,8 @@ final class CollectionStore {
         guard let sync else { return }
         Task { try? await sync.deleteCollectionItem(id: id) }
     }
+
+    // MARK: - Computed totals (unchanged surface)
 
     var totalValue: Money {
         items.reduce(Money.zero) { $0 + $1.estimatedValue }
@@ -92,17 +116,21 @@ final class CollectionStore {
         return items.filter { $0.card.game == game }
     }
 
+    // MARK: - Mutations
+
     /// Add a scanned/identified card, stacking quantity if already owned.
     func add(_ card: Card) {
         if let index = items.firstIndex(where: { $0.card.id == card.id }) {
             items[index].quantity += 1
+            upsertEntity(items[index])
             syncUpsert(items[index])
         } else {
             let item = CollectionItem(card: card)
             items.append(item)
+            upsertEntity(item)
             syncUpsert(item)
         }
-        persist()
+        save()
     }
 
     /// Log a buy with a cost basis. Stacks onto an existing holding, filling in a
@@ -111,19 +139,29 @@ final class CollectionStore {
         if let index = items.firstIndex(where: { $0.card.id == card.id }) {
             items[index].quantity += quantity
             if items[index].purchasePrice == nil { items[index].purchasePrice = purchasePrice }
+            upsertEntity(items[index])
             syncUpsert(items[index])
         } else {
             let item = CollectionItem(card: card, quantity: quantity, purchasePrice: purchasePrice)
             items.append(item)
+            upsertEntity(item)
             syncUpsert(item)
         }
-        persist()
+        save()
     }
 
     func remove(_ item: CollectionItem) {
         items.removeAll { $0.id == item.id }
+        // Soft-delete the entity (tombstone) so the SyncEngine can propagate.
+        if let persistence,
+           let entity = try? persistence.context.fetch(FetchDescriptor<CollectionItemEntity>(
+               predicate: #Predicate { $0.id == item.id }
+           )).first {
+            entity.deletedAt = .now
+            entity.dirty = true
+            persistence.save()
+        }
         syncDelete(item.id)
-        persist()
     }
 
     /// The owned card filling a given set slot, if any.
@@ -137,15 +175,19 @@ final class CollectionStore {
         return (owned, set.slots.count)
     }
 
+    // MARK: - Merge
+
     /// Merge remote items from a pull. Additive: remote items whose id isn't
     /// already local are appended. Existing local items keep their state (they
-    /// may have unsynced changes). A proper LWW merge needs `updated_at` (Phase 2).
+    /// may have unsynced changes). The LWW variant lands in Slice 3 alongside
+    /// the SyncEngine; this keeps first-sync working in the meantime.
     func mergeRemote(_ remote: [CollectionItem]) {
         let localIDs = Set(items.map(\.id))
         for item in remote where !localIDs.contains(item.id) {
             items.append(item)
+            upsertEntity(item, dirty: false)
         }
-        persist()
+        save()
     }
 
     /// Clear all local state and persist the empty snapshot. Used after a
@@ -153,6 +195,35 @@ final class CollectionStore {
     /// Does not sync — the server-side rows are gone via cascade.
     func wipeLocal() {
         items = []
-        persist()
+        if let persistence {
+            // Hard-delete entities (not tombstones) — the account is gone.
+            let all = (try? persistence.context.fetch(FetchDescriptor<CollectionItemEntity>())) ?? []
+            for entity in all { persistence.context.delete(entity) }
+            persistence.save()
+        }
+    }
+
+    // MARK: - Entity helpers
+
+    /// Upsert the entity for `item`, marking it dirty (a local mutation).
+    private func upsertEntity(_ item: CollectionItem, dirty: Bool = true) {
+        guard let persistence else { return }
+        let ctx = persistence.context
+        let existing = (try? ctx.fetch(FetchDescriptor<CollectionItemEntity>(
+            predicate: #Predicate { $0.id == item.id }
+        )))?.first
+        if let existing {
+            existing.cardData = CollectionItemEntity.encodeCard(item.card)
+            existing.quantity = item.quantity
+            existing.conditionRaw = item.condition.rawValue
+            existing.dateAdded = item.dateAdded
+            existing.purchasePriceAmount = item.purchasePrice.map { NSDecimalNumber(decimal: $0.amount).doubleValue }
+            existing.purchasePriceCurrency = item.purchasePrice?.currencyCode
+            existing.dirty = dirty
+            existing.deletedAt = nil
+        } else {
+            let entity = CollectionItemEntity.insert(from: item, into: ctx)
+            entity.dirty = dirty
+        }
     }
 }
