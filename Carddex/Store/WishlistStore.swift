@@ -36,15 +36,13 @@ final class WishlistStore {
 
     private func save() { persistence?.save() }
 
-    private func syncUpsert(_ entry: GrailEntry) {
-        guard let sync else { return }
-        Task { try? await sync.upsertWishlistEntry(entry) }
+    /// Reload the in-memory array from SwiftData. Called after a SyncEngine cycle.
+    func refresh() {
+        guard let persistence else { return }
+        grails = Self.fetchLive(from: persistence.context)
     }
 
-    private func syncDelete(_ cardID: String) {
-        guard let sync else { return }
-        Task { try? await sync.deleteWishlistEntry(cardID: cardID) }
-    }
+    // Sync push is owned by the SyncEngine; stores only mark dirty on mutation.
 
     func contains(_ cardID: String) -> Bool { grails.contains { $0.cardID == cardID } }
 
@@ -55,7 +53,6 @@ final class WishlistStore {
         let entry = GrailEntry(cardID: cardID, target: target, note: note)
         grails.append(entry)
         upsertEntity(entry)
-        syncUpsert(entry)
         save()
     }
 
@@ -69,7 +66,6 @@ final class WishlistStore {
             entity.dirty = true
             persistence.save()
         }
-        syncDelete(cardID)
     }
 
     /// Update just the target on an existing entry (no-op if the card isn't a grail).
@@ -77,7 +73,6 @@ final class WishlistStore {
         guard let index = grails.firstIndex(where: { $0.cardID == cardID }) else { return }
         grails[index].target = target
         upsertEntity(grails[index])
-        syncUpsert(grails[index])
         save()
     }
 

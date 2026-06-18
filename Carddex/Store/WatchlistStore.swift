@@ -45,15 +45,13 @@ final class WatchlistStore {
 
     private func save() { persistence?.save() }
 
-    private func syncUpsertAlert(_ alert: PriceAlert) {
-        guard let sync else { return }
-        Task { try? await sync.upsertPriceAlert(alert) }
+    /// Reload the in-memory array from SwiftData. Called after a SyncEngine cycle.
+    func refresh() {
+        guard let persistence else { return }
+        alerts = Self.fetchLive(from: persistence.context)
     }
 
-    private func syncDeleteAlert(_ cardID: String) {
-        guard let sync else { return }
-        Task { try? await sync.deletePriceAlert(cardID: cardID) }
-    }
+    // Sync push is owned by the SyncEngine; stores only mark dirty on mutation.
 
     func isFollowing(_ cardID: String) -> Bool { followed.contains(cardID) }
 
@@ -69,7 +67,6 @@ final class WatchlistStore {
         let alert = PriceAlert(cardID: cardID, target: target)
         alerts.append(alert)
         upsertEntity(alert)
-        syncUpsertAlert(alert)
         save()
     }
 
@@ -83,7 +80,6 @@ final class WatchlistStore {
             entity.dirty = true
             persistence.save()
         }
-        syncDeleteAlert(cardID)
     }
 
     /// Merge remote alerts from a pull. Additive: alerts for cards not already

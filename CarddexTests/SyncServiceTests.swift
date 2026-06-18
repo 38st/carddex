@@ -1,5 +1,6 @@
 import Testing
 import Foundation
+import SwiftData
 @testable import Carddex
 
 @MainActor
@@ -75,59 +76,71 @@ import Foundation
         #expect(pulled?.subscription == sub)
     }
 
-    @Test func collectionStoreSyncsOnAdd() async {
-        let sync = FakeSyncService()
-        let store = CollectionStore(items: [], sync: sync)
+    // MARK: - Store mutations mark entities dirty (SyncEngine owns push)
+    // The old fire-and-forget store→sync calls are gone; the SyncEngine reads
+    // dirty entities and pushes. These tests verify mutations set the dirty flag
+    // and tombstones, which is what the engine consumes.
+
+    @Test func collectionStoreAddMarksEntityDirty() {
+        let controller = PersistenceController.forTesting()
+        let store = CollectionStore(items: [], persistence: controller)
         store.add(SampleData.charizard)
-        // The sync task is fire-and-forget; give it a tick.
-        try? await Task.sleep(for: .milliseconds(50))
-        #expect(sync.collectionUpserts.count == 1)
-        #expect(sync.collectionUpserts.first?.card.id == SampleData.charizard.id)
+        let entities = (try? controller.context.fetch(FetchDescriptor<CollectionItemEntity>())) ?? []
+        #expect(entities.count == 1)
+        #expect(entities.first?.dirty == true)
+        #expect(entities.first?.deletedAt == nil)
     }
 
-    @Test func collectionStoreSyncsOnRemove() async {
-        let sync = FakeSyncService()
-        let item = CollectionItem(card: SampleData.charizard)
-        let store = CollectionStore(items: [item], sync: sync)
+    @Test func collectionStoreRemoveTombstonesAndMarksDirty() {
+        let controller = PersistenceController.forTesting()
+        let store = CollectionStore(items: [], persistence: controller)
+        store.add(SampleData.charizard)
+        guard let item = store.items.first else { Issue.record("item not added"); return }
         store.remove(item)
-        try? await Task.sleep(for: .milliseconds(50))
-        #expect(sync.collectionDeletes == [item.id])
+        let entities = (try? controller.context.fetch(FetchDescriptor<CollectionItemEntity>())) ?? []
+        #expect(entities.count == 1)
+        #expect(entities.first?.deletedAt != nil)
+        #expect(entities.first?.dirty == true)
     }
 
-    @Test func wishlistStoreSyncsOnAdd() async {
-        let sync = FakeSyncService()
-        let store = WishlistStore(sync: sync)
+    @Test func wishlistStoreAddMarksEntityDirty() {
+        let controller = PersistenceController.forTesting()
+        let store = WishlistStore(persistence: controller)
         store.add(cardID: SampleData.charizard.id, target: Money(amount: 200))
-        try? await Task.sleep(for: .milliseconds(50))
-        #expect(sync.wishlistUpserts.count == 1)
-        #expect(sync.wishlistUpserts.first?.cardID == SampleData.charizard.id)
+        let entities = (try? controller.context.fetch(FetchDescriptor<GrailEntryEntity>())) ?? []
+        #expect(entities.count == 1)
+        #expect(entities.first?.dirty == true)
     }
 
-    @Test func watchlistStoreSyncsAlertSetAndRemove() async {
-        let sync = FakeSyncService()
-        let store = WatchlistStore(sync: sync)
+    @Test func watchlistStoreSetAlertMarksDirtyAndRemoveTombstones() {
+        let controller = PersistenceController.forTesting()
+        let store = WatchlistStore(persistence: controller)
         store.setAlert(cardID: "c1", target: Money(amount: 500))
-        try? await Task.sleep(for: .milliseconds(50))
-        #expect(sync.alertUpserts.count == 1)
+        let entities = (try? controller.context.fetch(FetchDescriptor<PriceAlertEntity>())) ?? []
+        #expect(entities.count == 1)
+        #expect(entities.first?.dirty == true)
+        #expect(entities.first?.deletedAt == nil)
+
         store.removeAlert("c1")
-        try? await Task.sleep(for: .milliseconds(50))
-        #expect(sync.alertDeletes == ["c1"])
+        #expect(entities.first?.deletedAt != nil)
+        #expect(entities.first?.dirty == true)
     }
 
-    @Test func subscriptionStoreSyncsOnActivatePro() async {
-        let sync = FakeSyncService()
-        let store = SubscriptionStore(sync: sync)
+    @Test func subscriptionStoreActivateProMarksDirty() {
+        let controller = PersistenceController.forTesting()
+        let store = SubscriptionStore(persistence: controller)
         store.activatePro()
-        try? await Task.sleep(for: .milliseconds(50))
-        #expect(sync.subscriptionUpserts.count == 1)
-        #expect(sync.subscriptionUpserts.first?.isPro == true)
+        let entities = (try? controller.context.fetch(FetchDescriptor<SubscriptionEntity>())) ?? []
+        #expect(entities.count == 1)
+        #expect(entities.first?.isPro == true)
+        #expect(entities.first?.dirty == true)
     }
 
-    @Test func storesWithoutSyncAreSilent() async {
-        let store = CollectionStore(items: [], sync: nil)
+    @Test func storesWithoutPersistenceAreSilent() {
+        let store = CollectionStore(items: [])
         store.add(SampleData.charizard)
         if let first = store.items.first { store.remove(first) }
-        // No crash, no sync = pass.
+        // No crash, no persistence = pass.
         #expect(store.items.isEmpty)
     }
 }

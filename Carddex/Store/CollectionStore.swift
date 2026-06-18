@@ -48,21 +48,19 @@ final class CollectionStore {
         items = Self.fetchLive(from: persistence.context)
     }
 
+    /// Reload the in-memory array from SwiftData. Called by the app after a
+    /// SyncEngine cycle reconciles remote changes into entities.
+    func refresh() {
+        reloadFromStore()
+    }
+
     private func save() {
         persistence?.save()
     }
 
-    // MARK: - Sync (fire-and-forget; the SyncEngine will replace this in Slice 3)
-
-    private func syncUpsert(_ item: CollectionItem) {
-        guard let sync else { return }
-        Task { try? await sync.upsertCollectionItem(item) }
-    }
-
-    private func syncDelete(_ id: UUID) {
-        guard let sync else { return }
-        Task { try? await sync.deleteCollectionItem(id: id) }
-    }
+    // MARK: - Sync
+    // Push is owned by the SyncEngine, which reads dirty entities directly.
+    // Stores only mark entities dirty on mutation (see upsertEntity/remove).
 
     // MARK: - Computed totals (unchanged surface)
 
@@ -123,12 +121,10 @@ final class CollectionStore {
         if let index = items.firstIndex(where: { $0.card.id == card.id }) {
             items[index].quantity += 1
             upsertEntity(items[index])
-            syncUpsert(items[index])
         } else {
             let item = CollectionItem(card: card)
             items.append(item)
             upsertEntity(item)
-            syncUpsert(item)
         }
         save()
     }
@@ -140,12 +136,10 @@ final class CollectionStore {
             items[index].quantity += quantity
             if items[index].purchasePrice == nil { items[index].purchasePrice = purchasePrice }
             upsertEntity(items[index])
-            syncUpsert(items[index])
         } else {
             let item = CollectionItem(card: card, quantity: quantity, purchasePrice: purchasePrice)
             items.append(item)
             upsertEntity(item)
-            syncUpsert(item)
         }
         save()
     }
@@ -161,7 +155,6 @@ final class CollectionStore {
             entity.dirty = true
             persistence.save()
         }
-        syncDelete(item.id)
     }
 
     /// The owned card filling a given set slot, if any.

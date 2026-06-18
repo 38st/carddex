@@ -1,0 +1,150 @@
+import Foundation
+
+/// Wire-layer DTOs for sync. These align to the Supabase table columns
+/// (snake_case) and carry the sync timestamps the `SyncEngine` needs for
+/// last-write-wins + tombstone application. Kept separate from the view
+/// structs (`Card`/`CollectionItem`/…) so the wire format and the UI model
+/// can evolve independently — the plan's "thin toModel()/fromModel()".sendable
+///
+/// Date decoding: Supabase `timestamptz` arrives as ISO8601 strings; the
+/// transport configures `JSONDecoder` with `.iso8601`.
+
+// MARK: - Card
+
+/// The `cards` table shape. Note the gap: the table has no `market_price` or
+/// `sport` column, so a pulled card can't fully reconstruct the view `Card`'s
+/// `marketPrice`/`sport`. Those are filled from the market-data feed / a local
+/// cache when available; otherwise nil. Resolving this fully is part of the
+/// CatalogService work (the cards table or a join needs those fields).
+struct CardDTO: Codable, Sendable {
+    let id: String
+    let game: String
+    let name: String
+    let set_name: String?
+    let number: String?
+    let rarity: String?
+    let image_url: String?
+
+    func toCard() -> Card? {
+        guard let game = CardGame(rawValue: game) else { return nil }
+        return Card(
+            id: id,
+            game: game,
+            name: name,
+            setName: set_name ?? "",
+            number: number ?? "",
+            rarity: rarity,
+            imageURL: image_url.flatMap(URL.init(string:)),
+            marketPrice: nil,
+            sport: nil
+        )
+    }
+}
+
+// MARK: - Collection item
+
+/// `collection_items` row + the joined `card` (PostgREST:
+/// `select=*,card:cards(*)`). The engine reconstructs a `CollectionItem` from
+/// these; if the join is absent or the card can't be parsed, the row is held
+/// aside (logged) rather than crashing.
+struct CollectionItemDTO: Codable, Sendable {
+    let id: UUID
+    let card_id: String
+    let quantity: Int
+    let condition: String
+    let purchase_price: Double?
+    let currency: String?
+    let date_added: Date?
+    let updated_at: Date?
+    let deleted_at: Date?
+    let card: CardDTO?
+
+    func toModel() -> CollectionItem? {
+        let cardModel = card?.toCard()
+        // If the join didn't arrive, we can't fully rebuild the item — the
+        // engine will skip and retry once card data is available.
+        guard let cardModel else { return nil }
+        let price = purchase_price.map {
+            Money(amount: Decimal($0), currencyCode: currency ?? "USD")
+        }
+        return CollectionItem(
+            id: id,
+            card: cardModel,
+            quantity: quantity,
+            condition: CardCondition(rawValue: condition) ?? .nearMint,
+            dateAdded: date_added ?? .now,
+            purchasePrice: price
+        )
+    }
+}
+
+// MARK: - Price alert
+
+struct PriceAlertDTO: Codable, Sendable {
+    let id: UUID?
+    let card_id: String
+    let target_price: Double?
+    let updated_at: Date?
+    let deleted_at: Date?
+
+    func toModel() -> PriceAlert {
+        PriceAlert(
+            cardID: card_id,
+            target: Money(amount: Decimal(target_price ?? 0))
+        )
+    }
+}
+
+// MARK: - Grail / wishlist
+
+struct GrailEntryDTO: Codable, Sendable {
+    let id: UUID?
+    let card_id: String
+    let target: Double?
+    let note: String?
+    let date_added: Date?
+    let updated_at: Date?
+    let deleted_at: Date?
+
+    func toModel() -> GrailEntry {
+        let target = target.map { Money(amount: Decimal($0)) }
+        return GrailEntry(
+            cardID: card_id,
+            target: target,
+            note: note,
+            dateAdded: date_added ?? .now
+        )
+    }
+}
+
+// MARK: - Subscription (1:1 singleton)
+
+struct SubscriptionDTO: Codable, Sendable {
+    // The table uses `tier`/`status`; the client only mirrors isPro + usage.
+    let tier: String?
+    let is_pro: Bool?
+    let scans_this_month: Int?
+    let updated_at: Date?
+
+    func toDTO() -> SubscriptionStateDTO {
+        SubscriptionStateDTO(
+            isPro: is_pro ?? (tier == "pro"),
+            scansThisMonth: scans_this_month ?? 0
+        )
+    }
+
+    var updatedAt: Date? { updated_at }
+}
+
+// MARK: - Aggregate pull result
+
+/// Everything an incremental pull returns. Each array entry carries its own
+/// `updated_at`/`deleted_at` so the `SyncEngine` can do per-row LWW.
+struct RemoteChanges: Sendable {
+    var collectionItems: [CollectionItemDTO]
+    var priceAlerts: [PriceAlertDTO]
+    var wishlistEntries: [GrailEntryDTO]
+    var subscription: SubscriptionDTO?
+
+    static let empty = RemoteChanges(collectionItems: [], priceAlerts: [], wishlistEntries: [], subscription: nil)
+}

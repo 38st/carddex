@@ -37,19 +37,25 @@ final class SubscriptionStore {
     var remainingFreeScans: Int { max(0, freeScanLimit - scansThisMonth) }
     var canScan: Bool { isPro || scansThisMonth < freeScanLimit }
 
+    /// Reload state from SwiftData. Called after a SyncEngine cycle.
+    func refresh() {
+        guard let persistence,
+              let entity = (try? persistence.context.fetch(FetchDescriptor<SubscriptionEntity>()))?.first else { return }
+        isPro = entity.isPro
+        scansThisMonth = entity.scansThisMonth
+    }
+
     func recordScan() {
-        if !isPro { scansThisMonth += 1; save(); syncState() }
+        if !isPro { scansThisMonth += 1; save() }
     }
 
     /// Stub — replaced by a verified StoreKit 2 transaction at go-live.
     func activatePro() {
         isPro = true
         save()
-        syncState()
     }
 
-    /// Apply remote subscription state from a pull (e.g. entitlement verified
-    /// on the server). Does NOT trigger a sync push (the state came from remote).
+    /// Apply remote subscription state from a pull. Does NOT trigger a sync push.
     func applyRemote(_ state: SubscriptionStateDTO) {
         isPro = state.isPro
         scansThisMonth = state.scansThisMonth
@@ -69,11 +75,7 @@ final class SubscriptionStore {
         }
     }
 
-    private func syncState() {
-        guard let sync else { return }
-        let dto = SubscriptionStateDTO(isPro: isPro, scansThisMonth: scansThisMonth)
-        Task { try? await sync.upsertSubscriptionState(dto) }
-    }
+    // Sync push is owned by the SyncEngine; the store only marks dirty on mutation.
 
     private func save() {
         upsertEntity(SubscriptionStateDTO(isPro: isPro, scansThisMonth: scansThisMonth), dirty: true)

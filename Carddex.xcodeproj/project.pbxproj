@@ -22,6 +22,7 @@
 		105A14F37A4F6759E5C88994 /* CollectionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4A16F993AACB48ADD5A8F8 /* CollectionStoreTests.swift */; };
 		153F104711530D0197A30B5C /* CarddexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A108D336F75F134A6B6521FA /* CarddexApp.swift */; };
 		15C5B597BEF2FB25E0B2FACD /* CaseIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763C803C14E173F6DE15795 /* CaseIntents.swift */; };
+		18F620E32284429693BDCC43 /* SyncDTOs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0541F0AAD8E5B5A6FB369F /* SyncDTOs.swift */; };
 		1961FF26ECB359DE879A8B12 /* Money.swift in Sources */ = {isa = PBXBuildFile; fileRef = A509AB568997A722F0896EC9 /* Money.swift */; };
 		199146D63E921C6735E1D89F /* SyncServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81FC9EDD081A35FFDFC8C73 /* SyncServiceTests.swift */; };
 		2210C403D1942B4C2B03BCC0 /* ScanOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DCD0C9D94E9646C2133F3CF /* ScanOverlay.swift */; };
@@ -37,7 +38,9 @@
 		4812D16CD99022984D245662 /* StoreKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AC8DC0FE2BF7ED2E1EDCD1E /* StoreKitService.swift */; };
 		4D0B486C9A50F1E162E7B8F7 /* MarketplaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74586863855F53AF06AC29CF /* MarketplaceTests.swift */; };
 		4EF66C024416274EA827ECFA /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD721849A62838D4E72B51B /* Color+Hex.swift */; };
+		4F75270125371C220796258B /* SyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D044749602A869DF642F0F63 /* SyncEngine.swift */; };
 		50CB8020D544B5DF6B9725D0 /* SampleData+Market.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0CA5228B59BAD88970D085 /* SampleData+Market.swift */; };
+		54FD0E67CB8B6D6B003B5026 /* SyncEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5312EA48F78E0F243ACB43F2 /* SyncEngineTests.swift */; };
 		5704D438B34BD468D3F3DB4E /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B92879482B63511CF239965 /* SyncService.swift */; };
 		581920CEC21F5FE832C48F3C /* VaultBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B092E1888F4F29CBC18B4CE /* VaultBackground.swift */; };
 		5B2F84A1D9416F7F3B383EB6 /* CarddexWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 18DC918D9DE26EDE893AFC3A /* CarddexWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -185,6 +188,7 @@
 		4C504F1F6B870EC541D30495 /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
 		4E0CA5228B59BAD88970D085 /* SampleData+Market.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SampleData+Market.swift"; sourceTree = "<group>"; };
 		4E91C38193031B0D40DEEBA3 /* MarketData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketData.swift; sourceTree = "<group>"; };
+		5312EA48F78E0F243ACB43F2 /* SyncEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngineTests.swift; sourceTree = "<group>"; };
 		58A526867D9D1C1B8D5FA6B6 /* ComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonView.swift; sourceTree = "<group>"; };
 		5ABEE7DCC3D74EF96336A9EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5B092E1888F4F29CBC18B4CE /* VaultBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultBackground.swift; sourceTree = "<group>"; };
@@ -242,10 +246,12 @@
 		C696E523366143606EDD9178 /* SubscriptionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStoreTests.swift; sourceTree = "<group>"; };
 		C6C56B720E530A7D66C52FD1 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
 		C8D95645CD675C1D2C7F08E4 /* CarddexWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarddexWidgets.swift; sourceTree = "<group>"; };
+		CA0541F0AAD8E5B5A6FB369F /* SyncDTOs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncDTOs.swift; sourceTree = "<group>"; };
 		CAF581996BE7C4DE18E7858C /* IndexDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexDetailView.swift; sourceTree = "<group>"; };
 		CB964D2472427C0D8EFC781C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CB9FA29969F1BC99FB176AC7 /* GlassTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassTabBar.swift; sourceTree = "<group>"; };
 		CDE935BB10CBD0BD77396F5A /* Chip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chip.swift; sourceTree = "<group>"; };
+		D044749602A869DF642F0F63 /* SyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngine.swift; sourceTree = "<group>"; };
 		D09449BE08055A2CCACDFCFB /* SportCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SportCategory.swift; sourceTree = "<group>"; };
 		D5F21CF70871EFF3BD3E4A8B /* AddToPortfolioSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToPortfolioSheet.swift; sourceTree = "<group>"; };
 		D7219A81B93471EC6A676AC5 /* MoneyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyTests.swift; sourceTree = "<group>"; };
@@ -320,6 +326,7 @@
 				11524CD0C2F6583B396A6C58 /* PullMergeTests.swift */,
 				C696E523366143606EDD9178 /* SubscriptionStoreTests.swift */,
 				89FFFAE1A060FABBB4AF157C /* SwiftDataPersistenceTests.swift */,
+				5312EA48F78E0F243ACB43F2 /* SyncEngineTests.swift */,
 				D81FC9EDD081A35FFDFC8C73 /* SyncServiceTests.swift */,
 				A7F5F84D55389BBBC6F3FC53 /* WatchlistStoreTests.swift */,
 				95500CAB3EF8BCB94A68D37B /* WidgetSnapshotTests.swift */,
@@ -484,6 +491,8 @@
 				F8A43A7A1CAF3FC080F4F724 /* MarketService.swift */,
 				DECFAD4285A3AD2FD2A804E1 /* MotionManager.swift */,
 				6AC8DC0FE2BF7ED2E1EDCD1E /* StoreKitService.swift */,
+				CA0541F0AAD8E5B5A6FB369F /* SyncDTOs.swift */,
+				D044749602A869DF642F0F63 /* SyncEngine.swift */,
 				3B92879482B63511CF239965 /* SyncService.swift */,
 			);
 			path = Services;
@@ -726,6 +735,7 @@
 				B466DA9B25D11138AE81014B /* PullMergeTests.swift in Sources */,
 				E7C234D6B393F1860EEFC0A6 /* SubscriptionStoreTests.swift in Sources */,
 				6CD661FF6C5F7CA73B06EA17 /* SwiftDataPersistenceTests.swift in Sources */,
+				54FD0E67CB8B6D6B003B5026 /* SyncEngineTests.swift in Sources */,
 				199146D63E921C6735E1D89F /* SyncServiceTests.swift in Sources */,
 				EF502BD244FE9C89E33EC46C /* WatchlistStoreTests.swift in Sources */,
 				D8498B56BC92F163CF02B298 /* WidgetSnapshotTests.swift in Sources */,
@@ -824,6 +834,8 @@
 				4812D16CD99022984D245662 /* StoreKitService.swift in Sources */,
 				DDE0C26F35589CE8BFB99311 /* SubscriptionEntity.swift in Sources */,
 				27BE6EEBAE1195423B00565B /* SubscriptionStore.swift in Sources */,
+				18F620E32284429693BDCC43 /* SyncDTOs.swift in Sources */,
+				4F75270125371C220796258B /* SyncEngine.swift in Sources */,
 				5704D438B34BD468D3F3DB4E /* SyncService.swift in Sources */,
 				475FB3EA40EC8575AE9720A3 /* Theme.swift in Sources */,
 				581920CEC21F5FE832C48F3C /* VaultBackground.swift in Sources */,

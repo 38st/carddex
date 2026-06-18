@@ -7,6 +7,7 @@ struct CarddexApp: App {
     @AppStorage("hasOnboarded") private var hasOnboarded = false
     @State private var environment = AppEnvironment()
     @State private var persistence = PersistenceController.shared
+    @State private var syncEngine: SyncEngine?
     @State private var store = CollectionStore(items: SampleData.collection, persistence: PersistenceController.shared)
     @State private var subscriptions = SubscriptionStore(persistence: PersistenceController.shared)
     @State private var router = AppRouter()
@@ -38,25 +39,29 @@ struct CarddexApp: App {
                 .environment(wishlist)
                 .environment(marketStore)
                 .task {
-                    wireSync()
+                    wireSyncEngine()
                     SpotlightIndexer.index(SampleData.marketCards)
                     consumePendingTab()
                     await verifyEntitlement()
                     await marketStore.refresh()
                     if environment.auth.isSignedIn {
-                        await pullRemoteState()
+                        await runSync()
                     }
                     updateWidget()
                 }
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active {
                         consumePendingTab()
+                        if environment.auth.isSignedIn { Task { await runSync() } }
                     } else {
                         updateWidget()
                     }
                 }
                 .onChange(of: environment.auth.isSignedIn) { _, signedIn in
-                    if signedIn { Task { await pullRemoteState() } }
+                    if signedIn {
+                        syncEngine?.resetWatermark()
+                        Task { await runSync() }
+                    }
                 }
                 .fullScreenCover(isPresented: Binding(
                     get: { !hasOnboarded },
@@ -67,27 +72,27 @@ struct CarddexApp: App {
         }
     }
 
-    /// Connect the stores to the sync service once the composition root is up.
-    /// Stores stay local-only (sync = nil) when no backend is configured.
-    private func wireSync() {
-        store.sync = environment.sync
-        watchlist.sync = environment.sync
-        wishlist.sync = environment.sync
-        subscriptions.sync = environment.sync
+    /// Build the SyncEngine once the composition root is available. The engine
+    /// owns the push/pull cycle; stores only mark entities dirty on mutation.
+    private func wireSyncEngine() {
+        syncEngine = SyncEngine(
+            transport: environment.sync,
+            persistence: persistence,
+            identification: environment.identification
+        )
     }
 
-    /// Pull the user's remote state and merge into local stores. Called on app
-    /// launch (when signed in) and on sign-in. Additive merge: remote items not
-    /// present locally are appended; local items keep their state. A proper LWW
-    /// merge needs `updated_at` timestamps (Phase 2).
-    private func pullRemoteState() async {
-        guard let remote = try? await environment.sync.pullAll() else { return }
-        store.mergeRemote(remote.collectionItems)
-        watchlist.mergeRemote(remote.priceAlerts)
-        wishlist.mergeRemote(remote.wishlistEntries)
-        if let sub = remote.subscription {
-            subscriptions.applyRemote(sub)
-        }
+    /// Run a sync cycle (push dirty + pull incremental + LWW apply), then
+    /// refresh the stores' in-memory arrays from SwiftData. No-op when signed
+    /// out or when no backend is configured (NoOpSyncService → empty pulls).
+    private func runSync() async {
+        guard let syncEngine else { return }
+        await syncEngine.sync()
+        store.refresh()
+        watchlist.refresh()
+        wishlist.refresh()
+        subscriptions.refresh()
+        updateWidget()
     }
 
     /// Verify the StoreKit 2 entitlement on launch. If the user has an active
