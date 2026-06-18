@@ -12,6 +12,12 @@ protocol AuthServiceProtocol: Sendable {
 
     /// Refresh an expired access token via `auth/v1/token?grant_type=refresh_token`.
     func refresh(refreshToken: String) async throws -> AuthSession
+
+    /// Permanently delete the signed-in user's account by calling the
+    /// `account-delete` Edge Function (which uses the service-role key to
+    /// remove the auth user — cascading to all user tables). Requires a valid
+    /// access token; throws on any failure.
+    func deleteAccount(accessToken: String) async throws
 }
 
 /// Calls Supabase Auth over REST (no supabase-swift dependency — keeps the app
@@ -19,11 +25,13 @@ protocol AuthServiceProtocol: Sendable {
 /// `apikey` header (required by GoTrue), and the Apple provider.
 struct SupabaseAuthService: AuthServiceProtocol {
     let baseURL: URL          // https://<ref>.supabase.co
+    let accountDeleteURL: URL // https://<ref>.functions.supabase.co/account-delete
     let apiKey: String        // anon key
     var session: URLSession = .shared
 
     init?(config: SupabaseConfig) {
         self.baseURL = config.baseURL
+        self.accountDeleteURL = config.accountDeleteURL
         self.apiKey = config.anonKey
     }
 
@@ -53,6 +61,23 @@ struct SupabaseAuthService: AuthServiceProtocol {
         let body: [String: Any] = ["refresh_token": refreshToken]
         let data = try await post(url, query: "grant_type=refresh_token", body: body)
         return try Self.decode(data)
+    }
+
+    func deleteAccount(accessToken: String) async throws {
+        var req = URLRequest(url: accountDeleteURL)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue(apiKey, forHTTPHeaderField: "apikey")
+        req.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        let (data, resp) = try await session.data(for: req)
+        guard let http = resp as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            // Surface a best-effort server message for the UI.
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let message = json["error"] as? String {
+                throw AuthError.serverError(message)
+            }
+            throw AuthError.serverError("account deletion failed")
+        }
     }
 
     private func post(_ url: URL, query: String, body: [String: Any]) async throws -> Data {
@@ -104,6 +129,10 @@ struct FakeAuthService: AuthServiceProtocol {
     ) async throws -> AuthSession { session }
 
     func refresh(refreshToken: String) async throws -> AuthSession { session }
+
+    func deleteAccount(accessToken: String) async throws {
+        // Simulates a successful server-side delete; the store clears its session.
+    }
 }
 
 enum AuthError: Error, LocalizedError {

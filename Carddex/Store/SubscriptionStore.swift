@@ -49,6 +49,14 @@ final class SubscriptionStore {
         persist()
     }
 
+    /// Clear all local state and persist the empty snapshot. Used after a
+    /// successful account deletion so a re-launch doesn't restore wiped data.
+    func wipeLocal() {
+        isPro = false
+        scansThisMonth = 0
+        persist()
+    }
+
     private func syncState() {
         guard let sync else { return }
         let dto = SubscriptionStateDTO(isPro: isPro, scansThisMonth: scansThisMonth)

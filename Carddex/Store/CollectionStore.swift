@@ -147,4 +147,12 @@ final class CollectionStore {
         }
         persist()
     }
+
+    /// Clear all local state and persist the empty snapshot. Used after a
+    /// successful account deletion so a re-launch doesn't restore wiped data.
+    /// Does not sync — the server-side rows are gone via cascade.
+    func wipeLocal() {
+        items = []
+        persist()
+    }
 }

@@ -80,6 +80,24 @@ final class AuthSessionStore {
         session = nil
     }
 
+    /// Permanently delete the account server-side, then clear local auth state.
+    /// On success the caller is responsible for resetting the local data stores
+    /// (collection, watchlist, wishlist, subscription) and reloading widgets —
+    /// those live in the app composition root, not here. Records any failure to
+    /// `lastError` and rethrows so the UI can show a confirm/retry state.
+    func deleteAccount() async throws {
+        guard let current = session else { throw AuthError.serverError("not signed in") }
+        do {
+            try await service.deleteAccount(accessToken: current.accessToken)
+        } catch {
+            lastError = error.localizedDescription
+            throw error
+        }
+        // Server-side deletion succeeded — wipe local auth. Local data stores
+        // are reset by the app composition root on the success path.
+        signOut()
+    }
+
     // MARK: - Keychain persistence
 
     private static let keyAccount = "accessToken"

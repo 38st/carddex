@@ -74,6 +74,13 @@ final class WishlistStore {
         }
         persist()
     }
+
+    /// Clear all local state and persist the empty snapshot. Used after a
+    /// successful account deletion so a re-launch doesn't restore wiped data.
+    func wipeLocal() {
+        grails = []
+        persist()
+    }
 }
 
 /// One grail: a card the user wants, with an optional target price and note.

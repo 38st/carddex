@@ -77,6 +77,14 @@ final class WatchlistStore {
         }
         persist()
     }
+
+    /// Clear all local state and persist the empty snapshot. Used after a
+    /// successful account deletion so a re-launch doesn't restore wiped data.
+    func wipeLocal() {
+        followed = []
+        alerts = []
+        persist()
+    }
 }
 
 struct PriceAlert: Identifiable, Hashable, Sendable, Codable {

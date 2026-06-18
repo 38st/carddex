@@ -58,4 +58,7 @@ struct NoOpAuthService: AuthServiceProtocol {
     func refresh(refreshToken: String) async throws -> AuthSession {
         throw AuthError.serverError("auth not configured")
     }
+    func deleteAccount(accessToken: String) async throws {
+        throw AuthError.serverError("auth not configured")
+    }
 }

@@ -1,14 +1,20 @@
 import SwiftUI
 import AuthenticationServices
+import WidgetKit
 
 /// Account, marketplace, and app info. Sign in with Apple + eBay connect are
 /// wired up in later phases.
 struct SettingsView: View {
     @Environment(AppEnvironment.self) private var env
+    @Environment(CollectionStore.self) private var collection
     @Environment(SubscriptionStore.self) private var subs
+    @Environment(WatchlistStore.self) private var watchlist
+    @Environment(WishlistStore.self) private var wishlist
     @Environment(AuthSessionStore.self) private var auth
     @State private var showPaywall = false
     @State private var showDeleteConfirm = false
+    @State private var isDeleting = false
+    @State private var deleteError: String?
 
     var body: some View {
         NavigationStack {
@@ -76,7 +82,9 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Button("Delete account", role: .destructive) { showDeleteConfirm = true }
+                    Button("Delete account", role: .destructive) {
+                        showDeleteConfirm = true
+                    }
                 } footer: {
                     Text("Permanently deletes your collection and account.")
                 }
@@ -90,12 +98,55 @@ struct SettingsView: View {
             }
             .alert("Delete account?", isPresented: $showDeleteConfirm) {
                 Button("Delete", role: .destructive) {
-                    // Phase 1: call the `account-delete` Edge Function.
+                    Task { await deleteAccount() }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("This permanently deletes your collection and account. This can't be undone.")
             }
+            .overlay {
+                if isDeleting {
+                    ZStack {
+                        Color.black.opacity(0.4).ignoresSafeArea()
+                        VStack(spacing: Theme.Spacing.sm) {
+                            ProgressView()
+                            Text("Deleting account…")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(.white)
+                        }
+                        .padding(Theme.Spacing.lg)
+                        .glassCard(cornerRadius: Theme.Radius.lg)
+                    }
+                }
+            }
+            .alert("Couldn't delete account", isPresented: Binding(
+                get: { deleteError != nil },
+                set: { if !$0 { deleteError = nil } }
+            )) {
+                Button("OK", role: .cancel) { deleteError = nil }
+            } message: {
+                Text(deleteError ?? "")
+            }
+        }
+    }
+
+    /// Delete the account server-side, then wipe all local stores + widgets.
+    /// Any failure surfaces as an alert and leaves local state intact (the
+    /// server-side delete is the source of truth; local wipe only on success).
+    private func deleteAccount() async {
+        isDeleting = true
+        defer { isDeleting = false }
+        do {
+            try await auth.deleteAccount()
+            // Server-side deletion succeeded (cascaded all user tables) — wipe
+            // the local mirrors so a re-launch boots into a fresh state.
+            collection.wipeLocal()
+            watchlist.wipeLocal()
+            wishlist.wipeLocal()
+            subs.wipeLocal()
+            WidgetCenter.shared.reloadAllTimelines()
+        } catch {
+            deleteError = error.localizedDescription
         }
     }
 
@@ -151,8 +202,11 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
+        .environment(CollectionStore(items: SampleData.collection))
         .environment(AppEnvironment(identification: FakeIdentificationService()))
         .environment(SubscriptionStore())
         .environment(AuthSessionStore(service: FakeAuthService()))
+        .environment(WatchlistStore())
+        .environment(WishlistStore())
         .preferredColorScheme(.dark)
 }

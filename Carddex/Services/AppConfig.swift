@@ -6,20 +6,23 @@ struct SupabaseConfig {
     let baseURL: URL
     let identifyURL: URL
     let marketDataURL: URL
+    let accountDeleteURL: URL
     let anonKey: String
 
-    /// Builds the three endpoint URLs from a project ref. Returns nil if the ref
+    /// Builds the endpoint URLs from a project ref. Returns nil if the ref
     /// produces any invalid URL — the caller then falls back to the fake backend
     /// instead of crashing on a malformed `Secrets.plist` value.
     init?(projectRef: String, anonKey: String) {
         guard
             let baseURL = URL(string: "https://\(projectRef).supabase.co"),
             let identifyURL = URL(string: "https://\(projectRef).functions.supabase.co/identify"),
-            let marketDataURL = URL(string: "https://\(projectRef).functions.supabase.co/market-data")
+            let marketDataURL = URL(string: "https://\(projectRef).functions.supabase.co/market-data"),
+            let accountDeleteURL = URL(string: "https://\(projectRef).functions.supabase.co/account-delete")
         else { return nil }
         self.baseURL = baseURL
         self.identifyURL = identifyURL
         self.marketDataURL = marketDataURL
+        self.accountDeleteURL = accountDeleteURL
         self.anonKey = anonKey
     }
 }
