@@ -129,7 +129,11 @@ struct ScanView: View {
         isIdentifying = true
         scanPhase = .scanning
         defer { isIdentifying = false; scanPhase = .idle }
-        let input = ScanInput(imageData: Data(), ocrText: recognizedText, gameHint: nil)
+        // Live camera path: grab a real JPEG so the identify function gets the
+        // actual card photo. Simulator (no camera) falls back to empty data
+        // and ships just the OCR hint, matching the prior behavior.
+        let jpeg = CameraScanView.isSupported ? await CameraScanView.capturePhoto() : nil
+        let input = ScanInput(imageData: jpeg ?? Data(), ocrText: recognizedText, gameHint: nil)
         do {
             outcome = try await env.identification.identify(input)
             // Charge a scan only when the call returned an outcome. A thrown
