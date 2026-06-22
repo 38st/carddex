@@ -29,7 +29,7 @@ struct OnboardingView: View {
                 HStack(spacing: Theme.Spacing.sm) {
                     ForEach(pages.indices, id: \.self) { index in
                         Circle()
-                            .fill(index == page ? Theme.accent : Theme.textTertiary.opacity(0.4))
+                            .fill(index == page ? Theme.cream : Theme.textTertiary.opacity(0.4))
                             .frame(width: 8, height: 8)
                     }
                 }
@@ -111,11 +111,11 @@ private struct OnboardingPageView: View {
                             imageURL: SampleData.brady.imageURL, sport: .football)
                     .frame(width: 150)
                 RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
-                    .strokeBorder(Theme.accent, lineWidth: 3)
+                    .strokeBorder(Theme.cream, lineWidth: 3)
                     .frame(width: 208, height: 268)
                 Image(systemName: "viewfinder")
                     .font(.system(size: 36))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.cream)
                     .offset(y: 150)
             }
         case .value:

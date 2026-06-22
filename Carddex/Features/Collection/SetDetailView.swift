@@ -111,7 +111,7 @@ struct SetDetailView: View {
                     }
                 } label: {
                     Image(systemName: isGrail ? "heart.fill" : "heart")
-                        .foregroundStyle(isGrail ? Theme.accent : Theme.textTertiary)
+                        .foregroundStyle(isGrail ? Theme.cream : Theme.textTertiary)
                         .font(.body.weight(.medium))
                 }
                 .buttonStyle(.plain)

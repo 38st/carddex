@@ -27,7 +27,7 @@ struct SettingsView: View {
                         HStack(spacing: Theme.Spacing.md) {
                             Image(systemName: "crown.fill")
                                 .font(.title3)
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.cream)
                             VStack(alignment: .leading) {
                                 Text(subs.isPro ? "Case Pro" : "Upgrade to Case Pro")
                                     .font(.headline)
@@ -90,6 +90,7 @@ struct SettingsView: View {
                 }
             }
                 .scrollContentBackground(.hidden)
+                .listRowBackground(Theme.surface)
                 .tabBarSafeArea()
             }
             .toolbar(.hidden, for: .navigationBar)
@@ -154,7 +155,7 @@ struct SettingsView: View {
         HStack(spacing: Theme.Spacing.md) {
             Image(systemName: "person.crop.circle.fill")
                 .font(.system(size: 40))
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(Theme.cream)
             VStack(alignment: .leading) {
                 Text("Signed in")
                     .font(.headline)

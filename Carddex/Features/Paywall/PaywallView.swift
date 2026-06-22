@@ -52,7 +52,7 @@ struct PaywallView: View {
         VStack(spacing: Theme.Spacing.sm) {
             Image(systemName: "crown.fill")
                 .font(.system(size: 40))
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(Theme.cream)
                 .padding(.top, Theme.Spacing.lg)
             Text("Case Pro")
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
@@ -70,7 +70,7 @@ struct PaywallView: View {
                 HStack(spacing: Theme.Spacing.md) {
                     Image(systemName: perk.0)
                         .font(.system(size: 18))
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(Theme.cream)
                         .frame(width: 28)
                     Text(perk.1)
                         .foregroundStyle(Theme.textPrimary)
@@ -113,9 +113,9 @@ struct PaywallView: View {
                 if isAnnual {
                     Text("Best value")
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.onCream)
                         .padding(.horizontal, 8).padding(.vertical, 3)
-                        .background(Theme.accent, in: Capsule())
+                        .background(Theme.cream, in: Capsule())
                 }
                 Text(isAnnual ? "Annual" : "Monthly")
                     .font(.headline).foregroundStyle(Theme.textPrimary)
@@ -129,7 +129,7 @@ struct PaywallView: View {
             .glassCard(cornerRadius: Theme.Radius.lg)
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
-                    .strokeBorder(selected ? Theme.accent : .clear, lineWidth: selected ? 2 : 0)
+                    .strokeBorder(selected ? Theme.cream : .clear, lineWidth: selected ? 2 : 0)
             )
         }
         .buttonStyle(.plain)
@@ -145,9 +145,9 @@ struct PaywallView: View {
                 if let badge {
                     Text(badge)
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.onCream)
                         .padding(.horizontal, 8).padding(.vertical, 3)
-                        .background(Theme.accent, in: Capsule())
+                        .background(Theme.cream, in: Capsule())
                 }
                 Text(title).font(.headline).foregroundStyle(Theme.textPrimary)
                 Text(price).font(.title2.weight(.bold)).foregroundStyle(Theme.textPrimary).monospacedDigit()
@@ -158,7 +158,7 @@ struct PaywallView: View {
             .glassCard(cornerRadius: Theme.Radius.lg)
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
-                    .strokeBorder(selected ? Theme.accent : .clear, lineWidth: selected ? 2 : 0)
+                    .strokeBorder(selected ? Theme.cream : .clear, lineWidth: selected ? 2 : 0)
             )
         }
         .buttonStyle(.plain)

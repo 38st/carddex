@@ -52,7 +52,7 @@ struct SalesChart: View {
                 if let selected {
                     Text(Money(amount: Decimal(selected.value)).formatted)
                         .font(.subheadline.weight(.bold))
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(Theme.chart)
                         .monospacedDigit()
                 }
                 Text("Sample")
@@ -79,10 +79,10 @@ struct SalesChart: View {
         return Chart {
             ForEach(linePoints) { point in
                 AreaMark(x: .value("day", point.day), yStart: .value("lo", lo), yEnd: .value("value", point.value))
-                    .foregroundStyle(LinearGradient(colors: [Theme.accent.opacity(0.3), .clear], startPoint: .top, endPoint: .bottom))
+                    .foregroundStyle(LinearGradient(colors: [Theme.chart.opacity(0.3), .clear], startPoint: .top, endPoint: .bottom))
                     .interpolationMethod(.catmullRom)
                 LineMark(x: .value("day", point.day), y: .value("value", point.value))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.chart)
                     .interpolationMethod(.catmullRom)
                     .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
             }

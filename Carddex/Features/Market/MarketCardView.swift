@@ -189,12 +189,12 @@ struct MarketCardView: View {
                                 .padding(.trailing, Theme.Spacing.md)
                             Text(graded.price.formatted)
                                 .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(selectedGrade == graded.grade ? Theme.accent : Theme.textPrimary)
+                                .foregroundStyle(selectedGrade == graded.grade ? Theme.cream : Theme.textPrimary)
                                 .monospacedDigit()
                         }
                         .padding(.vertical, 12)
                         .padding(.horizontal, Theme.Spacing.md)
-                        .background(selectedGrade == graded.grade ? Theme.accent.opacity(0.14) : .clear)
+                        .background(selectedGrade == graded.grade ? Theme.cream.opacity(0.14) : .clear)
                     }
                     .buttonStyle(.plain)
                     if graded.id != grades.last?.id {
@@ -232,7 +232,7 @@ struct MarketCardView: View {
                                 Image(systemName: "chevron.right").font(.caption2)
                             }
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(Theme.cream)
                         }
                     }
                 }

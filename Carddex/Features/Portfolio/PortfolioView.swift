@@ -45,6 +45,12 @@ struct PortfolioView: View {
                         }
                     }
                     hero
+                    if let top = store.items.max(by: { $0.estimatedValue.amount < $1.estimatedValue.amount }) {
+                        NavigationLink(value: top) {
+                            FeaturedCard(card: top.card, eyebrow: "Top holding", trailingValue: top.estimatedValue.formatted)
+                        }
+                        .buttonStyle(.plain)
+                    }
                     rangePicker
                     chart
                     insightsRow
@@ -59,6 +65,9 @@ struct PortfolioView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
             .tabBarSafeArea()
+            .navigationDestination(for: CollectionItem.self) { item in
+                CardDetailView(item: item)
+            }
             .onAppear(perform: renderShareImage)
         }
     }
@@ -114,11 +123,11 @@ struct PortfolioView: View {
                 yStart: .value("lo", lo),
                 yEnd: .value("v", point.value)
             )
-            .foregroundStyle(LinearGradient(colors: [Theme.accent.opacity(0.35), .clear], startPoint: .top, endPoint: .bottom))
+            .foregroundStyle(LinearGradient(colors: [Theme.chart.opacity(0.35), .clear], startPoint: .top, endPoint: .bottom))
             .interpolationMethod(.catmullRom)
 
             LineMark(x: .value("t", point.index), y: .value("v", point.value))
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(Theme.chart)
                 .interpolationMethod(.catmullRom)
                 .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
 
@@ -126,7 +135,7 @@ struct PortfolioView: View {
                 RuleMark(x: .value("t", scrub.index))
                     .foregroundStyle(Theme.textTertiary.opacity(0.5))
                 PointMark(x: .value("t", scrub.index), y: .value("v", scrub.value))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.chart)
                     .symbolSize(90)
             }
         }
@@ -160,7 +169,7 @@ struct PortfolioView: View {
                 Text(money(scrub.value))
                     .font(.caption.weight(.bold))
                     .monospacedDigit()
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.chart)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
                     .glassCapsule()

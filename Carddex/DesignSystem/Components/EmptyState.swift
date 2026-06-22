@@ -14,7 +14,7 @@ struct EmptyState: View {
         VStack(spacing: Theme.Spacing.lg) {
             ZStack {
                 Circle()
-                    .fill(RadialGradient(colors: [Theme.accent.opacity(0.20), .clear],
+                    .fill(RadialGradient(colors: [Theme.cream.opacity(0.20), .clear],
                                          center: .center, startRadius: 0, endRadius: 130))
                     .frame(width: 260, height: 260)
 
@@ -30,7 +30,7 @@ struct EmptyState: View {
 
                 Image(systemName: icon)
                     .font(.system(size: 30, weight: .light))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.cream)
             }
             .frame(height: 200)
 

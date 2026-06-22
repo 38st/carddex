@@ -9,11 +9,6 @@ enum Theme {
     static let creamPressed = Color(hex: 0xE3DACE)
     static let onCream = Color(hex: 0x1A1210)
 
-    // `accent` is retained as an alias of `cream` so existing call sites keep
-    // working while the warm repalette lands; new code prefers `cream`/`onCream`.
-    static let accent = cream
-    static let accentPressed = creamPressed
-
     // Vault surfaces — warm taupe/espresso, evenly lit (sampled from the
     // reference: bg ~#261D1D, raised cards ~#2D2424, lighter surfaces ~#453636).
     static let bg = Color(hex: 0x271E1D)
@@ -30,6 +25,8 @@ enum Theme {
     static let gain = Color(hex: 0x34D399)
     static let loss = Color(hex: 0xFB7185)
     static let warning = Color(hex: 0xFBBF24)
+    /// Warm amber for neutral price charts (reads better than cream on the espresso bg).
+    static let chart = Color(hex: 0xF2A35E)
 
     // Hairline stroke on glass — faintly warm.
     static let hairline = Color(hex: 0xFFE9DB).opacity(0.10)

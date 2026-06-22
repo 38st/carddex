@@ -33,7 +33,7 @@ struct CardPriceChart: View {
                 Spacer()
                 Text(Money(amount: Decimal(selected?.value ?? basePrice)).formatted)
                     .font(.subheadline.weight(.bold))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.chart)
                     .monospacedDigit()
                     .contentTransition(.numericText(value: selected?.value ?? basePrice))
             }
@@ -52,10 +52,10 @@ struct CardPriceChart: View {
         return Chart {
             ForEach(points) { point in
                 AreaMark(x: .value("t", point.index), yStart: .value("lo", lo), yEnd: .value("v", point.value))
-                    .foregroundStyle(LinearGradient(colors: [Theme.accent.opacity(0.35), .clear], startPoint: .top, endPoint: .bottom))
+                    .foregroundStyle(LinearGradient(colors: [Theme.chart.opacity(0.35), .clear], startPoint: .top, endPoint: .bottom))
                     .interpolationMethod(.catmullRom)
                 LineMark(x: .value("t", point.index), y: .value("v", point.value))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.chart)
                     .interpolationMethod(.catmullRom)
                     .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
             }
@@ -63,7 +63,7 @@ struct CardPriceChart: View {
                 RuleMark(x: .value("t", selected.index))
                     .foregroundStyle(Theme.textTertiary.opacity(0.6))
                 PointMark(x: .value("t", selected.index), y: .value("v", selected.value))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.chart)
             }
         }
         .chartYScale(domain: lo...hi)

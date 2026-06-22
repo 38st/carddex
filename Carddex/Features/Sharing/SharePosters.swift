@@ -84,7 +84,7 @@ struct ShareableCardPoster: View {
                 .foregroundStyle(.white.opacity(0.6))
             Text(price)
                 .font(.system(size: 40, weight: .bold))
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(Theme.cream)
                 .monospacedDigit()
             Spacer()
             Text("Identified with The Case")

@@ -80,7 +80,7 @@ struct GrailsView: View {
                     .foregroundStyle(Theme.textPrimary)
                     .monospacedDigit()
                 if entry.target != nil {
-                    Image(systemName: "heart.fill").foregroundStyle(Theme.accent).font(.caption)
+                    Image(systemName: "heart.fill").foregroundStyle(Theme.cream).font(.caption)
                 }
             }
         }
@@ -88,7 +88,7 @@ struct GrailsView: View {
         .glassPanel(cornerRadius: Theme.Radius.card)
         .overlay(
             RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                .strokeBorder(Theme.accent.opacity(owned ? 0 : 0.16))
+                .strokeBorder(Theme.cream.opacity(owned ? 0 : 0.16))
         )
     }
 

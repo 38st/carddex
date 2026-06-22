@@ -11,7 +11,6 @@ struct CollectionView: View {
     @State private var mode: Mode = .grid
     @State private var searchText = ""
     @State private var sort: SortOption = .recent
-    @State private var grailsRoute = false
     @Namespace private var cardNamespace
 
     enum Mode: String, CaseIterable, Identifiable {
@@ -277,7 +276,7 @@ private struct SetRow: View {
                     if groundedMissing > 0 {
                         Text("· \(groundedMissing) to grail")
                             .font(.caption)
-                            .foregroundStyle(grailsInSet > 0 ? Theme.accent : Theme.textTertiary)
+                            .foregroundStyle(grailsInSet > 0 ? Theme.cream : Theme.textTertiary)
                             .monospacedDigit()
                     }
                 }

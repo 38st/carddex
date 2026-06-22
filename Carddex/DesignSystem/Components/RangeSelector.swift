@@ -18,7 +18,7 @@ struct RangeSelector: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 7)
                         .foregroundStyle(selected ? .white : Theme.textSecondary)
-                        .background { if selected { Capsule().fill(Theme.accent) } }
+                        .background { if selected { Capsule().fill(Theme.cream) } }
                 }
                 .buttonStyle(.plain)
             }

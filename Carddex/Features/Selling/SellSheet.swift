@@ -49,7 +49,7 @@ struct SellSheet: View {
                                 ForEach(CardCondition.allCases) { Text($0.rawValue).tag($0) }
                             }
                             .pickerStyle(.menu)
-                            .tint(Theme.accent)
+                            .tint(Theme.cream)
                         }
                         field("Quantity") {
                             Stepper("\(quantity)", value: $quantity, in: 1...max(1, item.quantity))
@@ -67,7 +67,7 @@ struct SellSheet: View {
                         } label: {
                             Label("See recent sold prices on eBay", systemImage: "chart.bar")
                                 .font(.subheadline.weight(.medium))
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.cream)
                         }
 
                         Text("Connect your eBay account in Settings to publish listings.")

@@ -56,13 +56,13 @@ struct BulkScanView: View {
     @ViewBuilder private var content: some View {
         if isProcessing {
             VStack(spacing: Theme.Spacing.md) {
-                ProgressView().tint(Theme.accent)
+                ProgressView().tint(Theme.cream)
                 Text("Identifying \(picked.count) cards…").foregroundStyle(Theme.textSecondary)
             }
         } else if results.isEmpty {
             VStack(spacing: Theme.Spacing.md) {
                 Image(systemName: "rectangle.stack.badge.plus")
-                    .font(.system(size: 44)).foregroundStyle(Theme.accent)
+                    .font(.system(size: 44)).foregroundStyle(Theme.cream)
                 Text("Scan a whole stack").font(.headline).foregroundStyle(Theme.textPrimary)
                 Text("Pick several card photos and The Case identifies them all at once.")
                     .font(.subheadline).foregroundStyle(Theme.textSecondary)
@@ -70,7 +70,7 @@ struct BulkScanView: View {
                 PhotosPicker(selection: $picked, maxSelectionCount: 12, matching: .images) {
                     Label("Choose photos", systemImage: "photo.on.rectangle")
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(Theme.cream)
                 }
             }
             .padding(Theme.Spacing.xl)
@@ -86,9 +86,9 @@ struct BulkScanView: View {
                         }
                         Spacer()
                         if let price = result.card.marketPrice {
-                            Text(price.formatted).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.accent).monospacedDigit()
+                            Text(price.formatted).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.cream).monospacedDigit()
                         }
-                        Toggle("", isOn: $result.include).labelsHidden().tint(Theme.accent)
+                        Toggle("", isOn: $result.include).labelsHidden().tint(Theme.cream)
                     }
                     .listRowBackground(Color.clear)
                 }

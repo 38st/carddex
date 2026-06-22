@@ -90,7 +90,7 @@ struct AddToPortfolioSheet: View {
                 Spacer()
                 Button("Use market") { priceText = String(format: "%.0f", NSDecimalNumber(decimal: suggestedPrice.amount).doubleValue) }
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.cream)
             }
             .padding(Theme.Spacing.md)
             .glassPanel(cornerRadius: Theme.Radius.card)

@@ -38,7 +38,7 @@ struct ScanOverlay: View {
     // MARK: - Reticle (L-corners that snap inward when scanning)
 
     private var reticle: some View {
-        let color = phase == .idle ? Theme.accent.opacity(0.5) : Theme.accent.opacity(0.9)
+        let color = phase == .idle ? Theme.cream.opacity(0.5) : Theme.cream.opacity(0.9)
         let width: CGFloat = phase == .idle ? 2 : 3
         return ZStack {
             if phase == .idle {
@@ -83,11 +83,11 @@ struct ScanOverlay: View {
             Spacer()
             HStack {
                 Rectangle()
-                    .fill(Theme.accent)
+                    .fill(Theme.cream)
                     .frame(height: 2)
-                    .shadow(color: Theme.accent.opacity(0.6), radius: 8)
+                    .shadow(color: Theme.cream.opacity(0.6), radius: 8)
                 Rectangle()
-                    .fill(Theme.accent.opacity(0.3))
+                    .fill(Theme.cream.opacity(0.3))
                     .frame(height: 2)
             }
             .frame(height: 60)
@@ -103,7 +103,7 @@ struct ScanOverlay: View {
 
     private var flash: some View {
         RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
-            .fill(Theme.accent)
+            .fill(Theme.cream)
             .opacity(flashOpacity)
             .padding(20)
     }

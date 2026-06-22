@@ -88,7 +88,7 @@ struct CompletionRing: View {
             Circle().stroke(Color.white.opacity(0.1), lineWidth: 6)
             Circle()
                 .trim(from: 0, to: animated)
-                .stroke(fraction >= 1 ? Theme.gain : Theme.accent, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                .stroke(fraction >= 1 ? Theme.gain : Theme.cream, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             Text(label)
                 .font(.caption.weight(.bold))
@@ -120,7 +120,7 @@ struct GhostSlot: View {
             VStack(spacing: 4) {
                 Image(systemName: addable ? "plus" : "questionmark")
                     .font(.title3)
-                    .foregroundStyle(addable ? Theme.accent : Theme.textTertiary)
+                    .foregroundStyle(addable ? Theme.cream : Theme.textTertiary)
                 Text(number)
                     .font(.caption2)
                     .foregroundStyle(Theme.textTertiary)
@@ -131,9 +131,9 @@ struct GhostSlot: View {
                     .font(.system(size: 8, weight: .semibold))
                     .padding(.horizontal, 4)
                     .padding(.vertical, 2)
-                    .background(Theme.accent.opacity(0.2), in: Capsule())
-                    .overlay(Capsule().strokeBorder(Theme.accent.opacity(0.5)))
-                    .foregroundStyle(Theme.accent)
+                    .background(Theme.cream.opacity(0.2), in: Capsule())
+                    .overlay(Capsule().strokeBorder(Theme.cream.opacity(0.5)))
+                    .foregroundStyle(Theme.cream)
                     .padding(4)
             }
         }

@@ -47,7 +47,7 @@ struct ScanView: View {
                 PhotosPicker(selection: $pickedPhoto, matching: .images) {
                     Label("Choose from photos", systemImage: "photo.on.rectangle")
                         .font(.subheadline.weight(.medium))
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(Theme.cream)
                 }
                 .disabled(isIdentifying)
 
@@ -87,7 +87,7 @@ struct ScanView: View {
                 VStack(spacing: Theme.Spacing.sm) {
                     Image(systemName: "camera.viewfinder")
                         .font(.system(size: 56))
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(Theme.cream)
                     Text("Camera runs on a real device")
                         .foregroundStyle(Theme.textSecondary)
                     Text("Tap Scan to simulate identifying a card")
@@ -213,7 +213,7 @@ private struct IdentifyResultSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             }
             .presentationDetents([.medium, .large])
-            .presentationBackground(.regularMaterial)
+            .presentationBackground { VaultBackground() }
         }
     }
 
@@ -230,7 +230,7 @@ private struct IdentifyResultSheet: View {
         return VStack(spacing: Theme.Spacing.md) {
             ZStack {
                 Circle()
-                    .fill(RadialGradient(colors: [Theme.accent.opacity(0.35), .clear],
+                    .fill(RadialGradient(colors: [Theme.cream.opacity(0.35), .clear],
                                          center: .center, startRadius: 0, endRadius: 150))
                     .frame(width: 300, height: 300)
                     .opacity(revealOpacity)
@@ -250,7 +250,7 @@ private struct IdentifyResultSheet: View {
             if card.marketPrice != nil {
                 Text(Money(amount: Decimal(shownPrice)).formatted)
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.cream)
                     .monospacedDigit()
                     .contentTransition(.numericText(value: shownPrice))
             }

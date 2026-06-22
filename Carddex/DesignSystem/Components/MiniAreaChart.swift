@@ -5,7 +5,7 @@ import SwiftUI
 /// all-time high/low.
 struct MiniAreaChart: View {
     var values: [Double]
-    var tint: Color = Theme.accent
+    var tint: Color = Theme.cream
     var interactive: Bool = false
     var valueFormat: (Double) -> String = { $0.formatted(.number.precision(.fractionLength(2))) }
 

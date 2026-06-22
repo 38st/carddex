@@ -8,7 +8,7 @@ struct ComparisonView: View {
     @Environment(MarketStore.self) private var marketStore
     @State private var selected: [String] = []
 
-    private let palette: [Color] = [Theme.accent, Theme.gain, Color(hex: 0xF0997B)]
+    private let palette: [Color] = [Theme.chart, Theme.gain, Color(hex: 0xF0997B)]
 
     private var selectedCards: [Card] {
         selected.compactMap { id in SampleData.marketCards.first { $0.id == id } }
@@ -104,7 +104,7 @@ struct ComparisonView: View {
         } label: {
             HStack(spacing: Theme.Spacing.md) {
                 Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(isOn ? Theme.accent : Theme.textTertiary)
+                    .foregroundStyle(isOn ? Theme.cream : Theme.textTertiary)
                 CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport)
                     .frame(width: 36)
                 Text(card.name).foregroundStyle(Theme.textPrimary).lineLimit(1)
