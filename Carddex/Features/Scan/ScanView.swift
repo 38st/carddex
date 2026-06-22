@@ -252,7 +252,6 @@ private struct IdentifyResultSheet: View {
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(Theme.cream)
                     .monospacedDigit()
-                    .contentTransition(.numericText(value: shownPrice))
             }
             Spacer()
             PrimaryButton(title: "Add to collection", systemImage: "plus") { onAdd(card) }
@@ -264,9 +263,7 @@ private struct IdentifyResultSheet: View {
                 revealScale = 1
                 revealOpacity = 1
             }
-            withAnimation(.easeOut(duration: 0.7).delay(0.15)) {
-                shownPrice = priceValue
-            }
+            shownPrice = priceValue
         }
     }
 

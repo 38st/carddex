@@ -122,7 +122,6 @@ struct SellSheet: View {
                 .font(.title3.weight(.bold))
                 .foregroundStyle(Theme.gain)
                 .monospacedDigit()
-                .contentTransition(.numericText(value: estimatedPayout))
         }
         .padding(Theme.Spacing.md)
         .glassPanel(cornerRadius: Theme.Radius.card)

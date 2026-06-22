@@ -249,7 +249,6 @@ struct MarketView: View {
                     .padding(.horizontal, 9)
                     .padding(.vertical, 4)
                     .background(accent.opacity(0.16), in: Capsule())
-                    .contentTransition(.numericText())
             }
             RollingNumber(
                 index.value,

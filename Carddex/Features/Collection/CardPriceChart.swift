@@ -35,7 +35,6 @@ struct CardPriceChart: View {
                     .font(.subheadline.weight(.bold))
                     .foregroundStyle(Theme.chart)
                     .monospacedDigit()
-                    .contentTransition(.numericText(value: selected?.value ?? basePrice))
             }
             chart
             Picker("Range", selection: $range) {

@@ -136,12 +136,10 @@ struct MarketCardView: View {
                 .font(.system(size: 36, weight: .bold))
                 .foregroundStyle(Theme.textPrimary)
                 .monospacedDigit()
-                .contentTransition(.numericText())
             if market != nil {
                 Text("\(change >= 0 ? "▲ +" : "▼ ")\(String(format: "%.1f", abs(change)))% · \(priceRange.rawValue)")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(change >= 0 ? Theme.gain : Theme.loss)
-                    .contentTransition(.numericText())
             }
         }
     }

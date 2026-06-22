@@ -66,7 +66,6 @@ struct IndexDetailView: View {
                 Text("\(change >= 0 ? "▲ +" : "▼ ")\(String(format: "%.1f", abs(change)))% · \(range.rawValue)")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(change >= 0 ? Theme.gain : Theme.loss)
-                    .contentTransition(.numericText())
             }
             Spacer()
         }
