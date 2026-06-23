@@ -297,19 +297,32 @@ private struct IdentifyResultSheet: View {
                     .foregroundStyle(Theme.textPrimary)
 
                 labeled("Card name") {
-                    TextField("e.g. Charizard", text: $manualName).textFieldStyle(.roundedBorder)
+                    TextField("e.g. Charizard", text: $manualName)
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal, 14).padding(.vertical, 11)
+                        .glassCard(cornerRadius: Theme.Radius.md)
                 }
                 labeled("Set") {
-                    TextField("e.g. Base Set", text: $manualSet).textFieldStyle(.roundedBorder)
+                    TextField("e.g. Base Set", text: $manualSet)
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal, 14).padding(.vertical, 11)
+                        .glassCard(cornerRadius: Theme.Radius.md)
                 }
                 labeled("Game") {
-                    Picker("Game", selection: $manualGame) {
-                        ForEach(CardGame.allCases) { Text($0.displayName).tag($0) }
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: Theme.Spacing.sm) {
+                            ForEach(CardGame.allCases) { game in
+                                Chip(title: game.displayName, isSelected: manualGame == game) { manualGame = game }
+                            }
+                        }
                     }
-                    .pickerStyle(.segmented)
                 }
                 labeled("Price (USD, optional)") {
-                    TextField("0.00", text: $manualPrice).keyboardType(.decimalPad).textFieldStyle(.roundedBorder)
+                    TextField("0.00", text: $manualPrice)
+                        .keyboardType(.decimalPad)
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal, 14).padding(.vertical, 11)
+                        .glassCard(cornerRadius: Theme.Radius.md)
                 }
 
                 PrimaryButton(title: "Add card", systemImage: "plus") {

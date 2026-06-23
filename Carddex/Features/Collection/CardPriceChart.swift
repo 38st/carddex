@@ -37,10 +37,7 @@ struct CardPriceChart: View {
                     .monospacedDigit()
             }
             chart
-            Picker("Range", selection: $range) {
-                ForEach(Range.allCases) { Text($0.rawValue).tag($0) }
-            }
-            .pickerStyle(.segmented)
+            SegmentTabs(selection: $range, items: Range.allCases.map { (value: $0, label: $0.rawValue) })
         }
     }
 
