@@ -36,7 +36,7 @@ enum KeychainStore {
     }
 
     static func clearAll() {
-        let accounts = ["accessToken", "refreshToken", "userId"]
+        let accounts = ["accessToken", "refreshToken", "userId", "expiry"]
         for account in accounts { setString(nil, for: account) }
     }
 }
