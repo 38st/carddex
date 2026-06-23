@@ -173,16 +173,16 @@ struct LiveSyncService: SyncServiceProtocol {
     }
 
     func pushCollectionItem(_ dto: CollectionItemDTO) async throws {
-        try await upsert("collection_items", body: try encoder().encode(dto))
+        try await upsert("collection_items", body: try encoder().encode(dto), onConflict: "id")
     }
     func pushPriceAlert(_ dto: PriceAlertDTO) async throws {
-        try await upsert("price_alerts", body: try encoder().encode(dto))
+        try await upsert("price_alerts", body: try encoder().encode(dto), onConflict: "user_id,card_id")
     }
     func pushGrailEntry(_ dto: GrailEntryDTO) async throws {
-        try await upsert("wishlists", body: try encoder().encode(dto))
+        try await upsert("wishlists", body: try encoder().encode(dto), onConflict: "user_id,card_id")
     }
     func pushSubscription(_ dto: SubscriptionDTO) async throws {
-        try await upsert("subscriptions", body: try encoder().encode(dto))
+        try await upsert("subscriptions", body: try encoder().encode(dto), onConflict: "user_id")
     }
 
     /// PostgREST select with an optional `updated_at=gt.<since>` filter and a
@@ -205,13 +205,20 @@ struct LiveSyncService: SyncServiceProtocol {
 
     // MARK: - REST helpers
 
-    private func upsert(_ table: String, body: Data) async throws {
+    private func upsert(_ table: String, body: Data, onConflict: String? = nil) async throws {
         guard !body.isEmpty else { return }
         var req = try await authedRequest(table: table)
         req.httpMethod = "POST"
         req.setValue("return=minimal", forHTTPHeaderField: "Prefer")
         req.setValue("resolution=merge-duplicates", forHTTPHeaderField: "Prefer")
         req.httpBody = body
+        if let onConflict {
+            guard var comps = URLComponents(url: req.url!, resolvingAgainstBaseURL: false) else {
+                throw URLError(.badURL)
+            }
+            comps.query = "on_conflict=\(onConflict)"
+            req.url = comps.url
+        }
         try await send(req)
     }
 
