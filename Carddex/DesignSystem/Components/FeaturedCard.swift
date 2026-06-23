@@ -21,10 +21,10 @@ struct FeaturedCard: View {
                 game: card.game, rarity: card.rarity, price: card.marketPrice,
                 imageURL: card.imageURL, sport: card.sport
             )
-            .frame(maxWidth: 186)
-            .shadow(color: .black.opacity(0.45), radius: 24, y: 16)
-            .padding(.top, 30)
-            .padding(.bottom, 78)
+            .frame(maxWidth: 212)
+            .shadow(color: .black.opacity(0.45), radius: 26, y: 18)
+            .padding(.top, 38)
+            .padding(.bottom, 86)
 
             VStack(alignment: .leading, spacing: 6) {
                 if let eyebrow {
@@ -60,7 +60,7 @@ struct FeaturedCard: View {
                 LinearGradient(colors: [.clear, .black.opacity(0.6)], startPoint: .top, endPoint: .bottom)
             )
         }
-        .frame(height: 360)
+        .frame(height: 420)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
@@ -73,6 +73,7 @@ struct FeaturedCard: View {
                 .frame(width: 40, height: 40)
                 .background(Circle().fill(.black.opacity(0.28)))
                 .padding(Theme.Spacing.md)
+                .accessibilityHidden(true)
         }
     }
 }

@@ -40,7 +40,7 @@ struct PortfolioView: View {
                     ScreenHeader(title: "Portfolio") {
                         if let shareImage {
                             ShareLink(item: shareImage, preview: SharePreview("My collection · The Case", image: shareImage)) {
-                                Image(systemName: "square.and.arrow.up").circleIconChip()
+                                Image(systemName: "square.and.arrow.up").circleIconChip(label: "Share")
                             }
                         }
                     }

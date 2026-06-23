@@ -59,7 +59,7 @@ extension ScreenHeader where Trailing == EmptyView {
 #Preview {
     VStack(spacing: 24) {
         ScreenHeader(avatarSystemImage: "person.fill", title: "Helo Pamaddog", subtitle: "1.2k cards") {
-            CircleIconButton(systemImage: "square.grid.2x2") {}
+            CircleIconButton(systemImage: "square.grid.2x2", label: "Grid") {}
         }
         ScreenHeader(title: "Market")
     }

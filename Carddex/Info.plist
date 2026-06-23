@@ -31,6 +31,12 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Carddex uses the camera to scan and identify your trading cards.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>SpaceGrotesk-Bold.ttf</string>
+		<string>SpaceGrotesk-SemiBold.ttf</string>
+		<string>SpaceGrotesk-Medium.ttf</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

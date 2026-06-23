@@ -21,7 +21,7 @@ struct SetDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                 HStack {
-                    CircleIconButton(systemImage: "chevron.left") { dismiss() }
+                    CircleIconButton(systemImage: "chevron.left", label: "Back") { dismiss() }
                     Spacer()
                     Text(cardSet.name)
                         .font(.display(17))

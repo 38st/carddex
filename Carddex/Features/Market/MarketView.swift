@@ -73,18 +73,6 @@ struct MarketView: View {
         SampleData.marketCards.filter { watchlist.isFollowing($0.id) }
     }
 
-    struct SaleEntry: Identifiable {
-        let card: Card
-        let sale: Sale
-        var id: UUID { sale.id }
-    }
-
-    private var recentSales: [SaleEntry] {
-        SampleData.marketCards
-            .flatMap { card in (marketStore.market[card.id]?.recentSales ?? []).map { SaleEntry(card: card, sale: $0) } }
-            .sorted { $0.sale.date > $1.sale.date }
-    }
-
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -92,10 +80,10 @@ struct MarketView: View {
                     ScreenHeader(title: "Market") {
                         GlassGroup(spacing: 10) {
                             HStack(spacing: 10) {
-                                CircleIconButton(systemImage: watchlist.alerts.isEmpty ? "bell" : "bell.badge.fill") {
+                                CircleIconButton(systemImage: watchlist.alerts.isEmpty ? "bell" : "bell.badge.fill", label: "Alerts") {
                                     showAlerts = true
                                 }
-                                CircleIconButton(systemImage: "rectangle.portrait.on.rectangle.portrait") {
+                                CircleIconButton(systemImage: "rectangle.portrait.on.rectangle.portrait", label: "Compare") {
                                     showCompare = true
                                 }
                             }
@@ -169,16 +157,6 @@ struct MarketView: View {
                         sortMenu.padding(.trailing)
                     }
                     cardList(results, ranked: true)
-
-                    if search.isEmpty {
-                        sectionTitle("Recent sales")
-                        VStack(spacing: Theme.Spacing.sm) {
-                            ForEach(recentSales.prefix(8)) { entry in
-                                SaleRow(card: entry.card, sale: entry.sale)
-                            }
-                        }
-                        .padding(.horizontal)
-                    }
                 }
                 .padding(.vertical)
             }
@@ -394,33 +372,6 @@ private struct MoverCard: View {
     }
 }
 
-private struct SaleRow: View {
-    let card: Card
-    let sale: Sale
-
-    var body: some View {
-        HStack(spacing: Theme.Spacing.md) {
-            CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport)
-                .frame(width: 34)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(card.name).font(.subheadline).foregroundStyle(Theme.textPrimary).lineLimit(1)
-                Text("\(sale.grade) · \(sale.platform)").font(.caption).foregroundStyle(Theme.textSecondary)
-            }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(sale.price.formatted)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Theme.textPrimary)
-                    .monospacedDigit()
-                Text(sale.date.formatted(date: .abbreviated, time: .omitted))
-                    .font(.caption2)
-                    .foregroundStyle(Theme.textTertiary)
-            }
-        }
-        .padding(Theme.Spacing.sm)
-        .glassPanel(cornerRadius: Theme.Radius.card)
-    }
-}
 
 private struct IndexTile: View {
     @Environment(MarketStore.self) private var marketStore

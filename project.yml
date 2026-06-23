@@ -23,6 +23,10 @@ targets:
         CFBundleDisplayName: "The Case"
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UIAppFonts:
+          - SpaceGrotesk-Bold.ttf
+          - SpaceGrotesk-SemiBold.ttf
+          - SpaceGrotesk-Medium.ttf
         LSRequiresIPhoneOS: true
         NSCameraUsageDescription: "Carddex uses the camera to scan and identify your trading cards."
         # App Store export compliance: the app contains no non-exempt encryption

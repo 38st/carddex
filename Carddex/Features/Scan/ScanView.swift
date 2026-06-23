@@ -22,7 +22,7 @@ struct ScanView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 ScreenHeader(title: "Scan") {
-                    CircleIconButton(systemImage: "rectangle.stack") { showBulk = true }
+                    CircleIconButton(systemImage: "rectangle.stack", label: "Bulk scan") { showBulk = true }
                 }
                 VStack(spacing: Theme.Spacing.lg) {
                 Spacer(minLength: 0)

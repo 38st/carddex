@@ -60,7 +60,7 @@ struct MarketCardView: View {
         ScrollView {
             VStack(spacing: Theme.Spacing.lg) {
                 HStack {
-                    CircleIconButton(systemImage: "chevron.left") { dismiss() }
+                    CircleIconButton(systemImage: "chevron.left", label: "Back") { dismiss() }
                     Spacer()
                     Text(card.name)
                         .font(.display(17))
@@ -68,7 +68,7 @@ struct MarketCardView: View {
                         .lineLimit(1)
                     Spacer()
                     HStack(spacing: 10) {
-                        CircleIconButton(systemImage: watchlist.hasAlert(card.id) ? "bell.fill" : "bell") {
+                        CircleIconButton(systemImage: watchlist.hasAlert(card.id) ? "bell.fill" : "bell", label: "Price alert") {
                             if watchlist.hasAlert(card.id) {
                                 watchlist.removeAlert(card.id)
                             } else {
@@ -76,7 +76,7 @@ struct MarketCardView: View {
                                 Haptics.success()
                             }
                         }
-                        CircleIconButton(systemImage: watchlist.isFollowing(card.id) ? "star.fill" : "star") {
+                        CircleIconButton(systemImage: watchlist.isFollowing(card.id) ? "star.fill" : "star", label: "Watchlist") {
                             watchlist.toggleFollow(card.id)
                         }
                     }

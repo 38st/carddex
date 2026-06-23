@@ -20,7 +20,7 @@ struct CardDetailView: View {
         ScrollView {
             VStack(spacing: Theme.Spacing.lg) {
                 HStack {
-                    CircleIconButton(systemImage: "chevron.left") { dismiss() }
+                    CircleIconButton(systemImage: "chevron.left", label: "Back") { dismiss() }
                     Spacer()
                     Text(item.card.name)
                         .font(.display(17))
@@ -29,7 +29,7 @@ struct CardDetailView: View {
                     Spacer()
                     if let shareImage {
                         ShareLink(item: shareImage, preview: SharePreview(item.card.name, image: shareImage)) {
-                            Image(systemName: "square.and.arrow.up").circleIconChip()
+                            Image(systemName: "square.and.arrow.up").circleIconChip(label: "Share")
                         }
                     } else {
                         Color.clear.frame(width: 44, height: 44)

@@ -64,14 +64,14 @@ struct CollectionView: View {
                                     GrailsView()
                                 } label: {
                                     Image(systemName: wishlist.grails.isEmpty ? "heart" : "heart.fill")
-                                        .circleIconChip()
+                                        .circleIconChip(label: "Grails")
                                 }
                                 Menu {
                                     Picker("Sort", selection: $sort) {
                                         ForEach(SortOption.allCases) { Text($0.rawValue).tag($0) }
                                     }
                                 } label: {
-                                    Image(systemName: "arrow.up.arrow.down").circleIconChip()
+                                    Image(systemName: "arrow.up.arrow.down").circleIconChip(label: "Sort")
                                 }
                             }
                         }

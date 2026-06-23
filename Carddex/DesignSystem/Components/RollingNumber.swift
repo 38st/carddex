@@ -28,7 +28,7 @@ struct RollingNumber: View {
 
     var body: some View {
         Text(format(value))
-            .font(.system(size: fontSize, weight: fontWeight, design: fontDesign))
+            .font(.custom("SpaceGrotesk-Bold", size: fontSize, relativeTo: .largeTitle))
             .foregroundStyle(color)
             .monospacedDigit()
             .lineLimit(1)
