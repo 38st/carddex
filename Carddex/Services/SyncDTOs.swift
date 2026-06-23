@@ -120,16 +120,19 @@ struct GrailEntryDTO: Codable, Sendable {
 // MARK: - Subscription (1:1 singleton)
 
 struct SubscriptionDTO: Codable, Sendable {
-    // The table uses `tier`/`status`; the client only mirrors isPro + usage.
+    // The `subscriptions` table only has `tier`/`status`/`updated_at` — it has
+    // no `is_pro` or `scans_this_month` column (scan usage lives in
+    // `scan_usage`). Pushing those columns 400'd every subscription sync, so
+    // the wire DTO carries only the entitlement (`tier`) the server stores.
+    // `isPro` is derived from `tier == "pro"` on pull; `scansThisMonth` is a
+    // local-only quota counter (the server is the source of truth via scans).
     let tier: String?
-    let is_pro: Bool?
-    let scans_this_month: Int?
     let updated_at: Date?
 
     func toDTO() -> SubscriptionStateDTO {
         SubscriptionStateDTO(
-            isPro: is_pro ?? (tier == "pro"),
-            scansThisMonth: scans_this_month ?? 0
+            isPro: tier == "pro",
+            scansThisMonth: 0
         )
     }
 

@@ -144,8 +144,6 @@ actor SyncEngine {
         guard let entity = dirty.first else { return }
         let dto = SubscriptionDTO(
             tier: entity.isPro ? "pro" : "free",
-            is_pro: entity.isPro,
-            scans_this_month: entity.scansThisMonth,
             updated_at: entity.remoteUpdatedAt ?? .now
         )
         try await transport.pushSubscription(dto)
