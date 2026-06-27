@@ -1,5 +1,14 @@
-.PHONY: gen build test run shot watch review
+.PHONY: gen build test run shot watch review secrets
 
+secrets: ## Bootstrap Carddex/Resources/Secrets.plist from the example (then add real values)
+	@if [ -f Carddex/Resources/Secrets.plist ]; then \
+		echo "Carddex/Resources/Secrets.plist already exists — leaving it untouched."; \
+	else \
+		mkdir -p Carddex/Resources && cp Secrets.example.plist Carddex/Resources/Secrets.plist && \
+		echo "Created Carddex/Resources/Secrets.plist (gitignored)."; \
+		echo "-> Edit SUPABASE_PROJECT_REF + SUPABASE_ANON_KEY, then run 'make gen'."; \
+		echo "   Without it the app runs on sample data (fake identify, no sync/StoreKit)."; \
+	fi
 gen:    ## Regenerate the Xcode project
 	@bash scripts/dev.sh gen
 build:  ## Build for the simulator

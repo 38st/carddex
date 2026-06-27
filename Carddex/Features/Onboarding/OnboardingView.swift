@@ -122,7 +122,7 @@ private struct OnboardingPageView: View {
             VStack(spacing: Theme.Spacing.md) {
                 VStack(spacing: 4) {
                     Text("$20,188")
-                        .font(.system(size: 46, weight: .bold, design: .rounded))
+                        .font(.display(46))
                         .foregroundStyle(Theme.textPrimary)
                         .monospacedDigit()
                     Text("▲ $3,098 (18%) all-time")

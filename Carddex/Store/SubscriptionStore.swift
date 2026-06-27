@@ -49,7 +49,9 @@ final class SubscriptionStore {
         if !isPro { scansThisMonth += 1; save() }
     }
 
-    /// Stub — replaced by a verified StoreKit 2 transaction at go-live.
+    /// Grant Pro. Call ONLY after a verified StoreKit 2 transaction
+    /// (`StoreKitService.purchase` / `verifyEntitlement`). The paywall's no-products
+    /// fallback that calls this directly is gated to DEBUG builds.
     func activatePro() {
         isPro = true
         save()

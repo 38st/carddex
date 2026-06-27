@@ -100,7 +100,9 @@ struct MarketView: View {
                                 eyebrow: moverSide == .gainers ? "Top mover" : "Biggest dip",
                                 trailingValue: (marketStore.market[top.id]?.topPrice ?? top.marketPrice ?? .zero).formatted,
                                 trailingDelta: "\(change(top) >= 0 ? "+" : "")\(String(format: "%.1f", change(top)))%",
-                                deltaUp: change(top) >= 0
+                                deltaUp: change(top) >= 0,
+                                isLiked: watchlist.isFollowing(top.id),
+                                onLike: { Haptics.impact(.light); watchlist.toggleFollow(top.id) }
                             )
                         }
                         .buttonStyle(.plain)

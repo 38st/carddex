@@ -133,7 +133,7 @@ struct MarketCardView: View {
         let change = first > 0 ? ((series.last ?? 0) - first) / first * 100 : (market?.change30d ?? 0)
         return VStack(spacing: 2) {
             Text(selectedPrice.formatted)
-                .font(.system(size: 36, weight: .bold))
+                .font(.display(36))
                 .foregroundStyle(Theme.textPrimary)
                 .monospacedDigit()
             if market != nil {

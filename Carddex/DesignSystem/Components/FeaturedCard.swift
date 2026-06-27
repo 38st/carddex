@@ -9,6 +9,9 @@ struct FeaturedCard: View {
     var trailingValue: String? = nil
     var trailingDelta: String? = nil
     var deltaUp: Bool = true
+    /// When set, shows an interactive watchlist heart reflecting `isLiked`.
+    var isLiked: Bool = false
+    var onLike: (() -> Void)? = nil
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -67,13 +70,18 @@ struct FeaturedCard: View {
                 .strokeBorder(Theme.hairline)
         )
         .overlay(alignment: .topTrailing) {
-            Image(systemName: "heart.fill")
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.92))
-                .frame(width: 40, height: 40)
-                .background(Circle().fill(.black.opacity(0.28)))
-                .padding(Theme.Spacing.md)
-                .accessibilityHidden(true)
+            if let onLike {
+                Button(action: onLike) {
+                    Image(systemName: isLiked ? "heart.fill" : "heart")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(isLiked ? Theme.loss : .white)
+                        .frame(width: 40, height: 40)
+                        .background(Circle().fill(.black.opacity(0.32)))
+                        .padding(Theme.Spacing.md)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(isLiked ? "Remove from watchlist" : "Add to watchlist")
+            }
         }
     }
 }

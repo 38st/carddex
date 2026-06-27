@@ -176,11 +176,19 @@ struct PaywallView: View {
             PrimaryButton(title: "Select a plan", systemImage: "crown") {}
                 .disabled(true)
         } else {
-            PrimaryButton(title: "Start 7-day free trial", systemImage: "crown") {
+            // No StoreKit products loaded. Never grant Pro for free in release —
+            // Pro is only activated by a verified transaction (see purchase()).
+            #if DEBUG
+            PrimaryButton(title: "Activate Pro (debug)", systemImage: "crown") {
                 subs.activatePro()
                 Haptics.success()
                 dismiss()
             }
+            #else
+            PrimaryButton(title: "Plans unavailable — retry", systemImage: "arrow.clockwise") {
+                Task { await fetchProducts() }
+            }
+            #endif
         }
 
         if let purchaseError {
