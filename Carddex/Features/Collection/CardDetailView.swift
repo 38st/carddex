@@ -5,6 +5,7 @@ import UIKit
 /// stats, and actions.
 struct CardDetailView: View {
     @Environment(CollectionStore.self) private var store
+    @Environment(MarketStore.self) private var marketStore
     @Environment(\.dismiss) private var dismiss
     @State private var showSell = false
     @State private var showRemoveConfirm = false
@@ -88,9 +89,12 @@ struct CardDetailView: View {
                     }
                 }
 
-                CardPriceChart(basePrice: NSDecimalNumber(decimal: item.card.marketPrice?.amount ?? 0).doubleValue)
-                    .padding(Theme.Spacing.md)
-                    .glassPanel(cornerRadius: Theme.Radius.card)
+                CardPriceChart(
+                    basePrice: NSDecimalNumber(decimal: item.card.marketPrice?.amount ?? 0).doubleValue,
+                    series: marketStore.market[item.card.id]?.priceSeries
+                )
+                .padding(Theme.Spacing.md)
+                .glassPanel(cornerRadius: Theme.Radius.card)
 
                 VStack(spacing: Theme.Spacing.sm) {
                     LabeledContent("Condition", value: item.condition.rawValue)
@@ -147,6 +151,7 @@ struct CardDetailView: View {
     NavigationStack {
         CardDetailView(item: SampleData.collection[0])
             .environment(CollectionStore(items: SampleData.collection))
+            .environment(MarketStore())
     }
     .preferredColorScheme(.dark)
 }

@@ -32,6 +32,7 @@ final class PersistenceController {
             GrailEntryEntity.self,
             SubscriptionEntity.self,
             PendingScanEntity.self,
+            PortfolioSnapshotEntity.self,
         ])
         let config: ModelConfiguration
         if inMemory {

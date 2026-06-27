@@ -48,12 +48,14 @@
 		5B2F84A1D9416F7F3B383EB6 /* CarddexWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 18DC918D9DE26EDE893AFC3A /* CarddexWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		61700A1960A3138E997ED2E9 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75D7BC2E7A21E4EBF139228 /* CollectionView.swift */; };
 		618A33AB5CF2A17FBEDD8395 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F1684A467DD1A178BC7310 /* KeychainStore.swift */; };
+		672F95749F6B7926BB991E1B /* PortfolioSnapshotEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35188C461AFA6E6529F7AD96 /* PortfolioSnapshotEntity.swift */; };
 		67DBE634474BAEFF979AB1B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB964D2472427C0D8EFC781C /* Assets.xcassets */; };
 		6AE064B96DB0B9A31A9BA7BF /* IdentificationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E71CFCFD5E72A8222B9C380 /* IdentificationServiceTests.swift */; };
 		6CD661FF6C5F7CA73B06EA17 /* SwiftDataPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FFFAE1A060FABBB4AF157C /* SwiftDataPersistenceTests.swift */; };
 		6EA8BB24CF8F79E84B21105B /* LiveIdentificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E614259B52E7A8AE90DDCEA /* LiveIdentificationService.swift */; };
 		72150FAE787739BE708B0677 /* Chip.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE935BB10CBD0BD77396F5A /* Chip.swift */; };
 		72A001F8CC687446805BF207 /* ScreenHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B21CC68AE15A69B0D2E7FFE /* ScreenHeader.swift */; };
+		741DDF7064C862944D801ADC /* PortfolioHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A83319465EDAF5BE3BB1C94 /* PortfolioHistoryStore.swift */; };
 		75D7EA1410B0803EC1E3975A /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CAC76FE966C257D84BC4052 /* SectionHeader.swift */; };
 		772602228544119EA49EE33F /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F9A8F39FFB78DEC1DD2EE4 /* PrimaryButton.swift */; };
 		776D1012C007CA566A78CF37 /* GlassTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9FA29969F1BC99FB176AC7 /* GlassTabBar.swift */; };
@@ -175,6 +177,7 @@
 		2DBCC8AADADB125C30C59456 /* CardGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardGame.swift; sourceTree = "<group>"; };
 		2E71CFCFD5E72A8222B9C380 /* IdentificationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentificationServiceTests.swift; sourceTree = "<group>"; };
 		33296CD9469A347C30B77CC2 /* CameraScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraScanView.swift; sourceTree = "<group>"; };
+		35188C461AFA6E6529F7AD96 /* PortfolioSnapshotEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortfolioSnapshotEntity.swift; sourceTree = "<group>"; };
 		35FE7A202296FDACB9D0952D /* CarddexWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CarddexWidgets.entitlements; sourceTree = "<group>"; };
 		3617587A04CE5CFE2223FA98 /* BinderPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinderPageView.swift; sourceTree = "<group>"; };
 		3A7F3A53A20BA1A096FBF84E /* LiquidGlass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlass.swift; sourceTree = "<group>"; };
@@ -195,6 +198,7 @@
 		4E91C38193031B0D40DEEBA3 /* MarketData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketData.swift; sourceTree = "<group>"; };
 		5312EA48F78E0F243ACB43F2 /* SyncEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngineTests.swift; sourceTree = "<group>"; };
 		58A526867D9D1C1B8D5FA6B6 /* ComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonView.swift; sourceTree = "<group>"; };
+		5A83319465EDAF5BE3BB1C94 /* PortfolioHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortfolioHistoryStore.swift; sourceTree = "<group>"; };
 		5ABEE7DCC3D74EF96336A9EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5B092E1888F4F29CBC18B4CE /* VaultBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultBackground.swift; sourceTree = "<group>"; };
 		5CD721849A62838D4E72B51B /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
@@ -455,6 +459,8 @@
 				7A3B7B0D7A8C5B47CB112DDC /* PendingScanEntity.swift */,
 				838AA1EBA29A332D8059295F /* Persistence.swift */,
 				FDD9BB8ABB4ABFBBCDF1BA26 /* PersistenceController.swift */,
+				5A83319465EDAF5BE3BB1C94 /* PortfolioHistoryStore.swift */,
+				35188C461AFA6E6529F7AD96 /* PortfolioSnapshotEntity.swift */,
 				A420A923C6A0572DA99E758C /* PriceAlertEntity.swift */,
 				EBB482D4082E58FB4AB042AB /* SubscriptionEntity.swift */,
 				C6C56B720E530A7D66C52FD1 /* SubscriptionStore.swift */,
@@ -832,6 +838,8 @@
 				991DAB1B62F18855FBB5C0CE /* PendingScanEntity.swift in Sources */,
 				F9BEA4793AE626F1B930A98C /* Persistence.swift in Sources */,
 				C75409C4A074D46E471A8ED6 /* PersistenceController.swift in Sources */,
+				741DDF7064C862944D801ADC /* PortfolioHistoryStore.swift in Sources */,
+				672F95749F6B7926BB991E1B /* PortfolioSnapshotEntity.swift in Sources */,
 				D26B11A7C5B99E908BC8FCC5 /* PortfolioView.swift in Sources */,
 				E86D323C138F725800410DCD /* PressableStyle.swift in Sources */,
 				0C06232C8B8FFD8457A9DF6B /* PriceAlertEntity.swift in Sources */,

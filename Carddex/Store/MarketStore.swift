@@ -93,12 +93,18 @@ final class MarketStore {
                  grade: dto.grade,
                  platform: dto.platform)
         }
+        // Prefer the real captured history; fall back to a synthetic curve only
+        // when the backend hasn't accrued at least two snapshots yet.
+        let historyValues = (b.history ?? []).map(\.price)
+        let series = historyValues.count >= 2
+            ? sampled(historyValues)
+            : SampleData.priceSeries(change30d: b.change30d, range: .month, seed: b.cardId)
         return CardMarket(
             cardId: b.cardId,
             change30d: b.change30d,
             gradedPrices: graded,
             recentSales: sales,
-            priceSeries: SampleData.priceSeries(change30d: b.change30d, range: .month, seed: b.cardId),
+            priceSeries: series,
             population: b.population ?? 0
         )
     }

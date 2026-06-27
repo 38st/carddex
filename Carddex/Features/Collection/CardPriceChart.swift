@@ -6,6 +6,9 @@ import Charts
 /// land in Phase 2.
 struct CardPriceChart: View {
     let basePrice: Double
+    /// Real captured price history (oldest → newest). When it has ≥2 points the
+    /// chart plots it; otherwise it falls back to an illustrative curve.
+    var series: [Double]? = nil
     @State private var range: Range = .month
     @State private var selected: Point?
 
@@ -20,8 +23,23 @@ struct CardPriceChart: View {
         var id: Int { index }
     }
 
+    private var usingRealHistory: Bool { (series?.count ?? 0) >= 2 }
+
     private var points: [Point] {
-        shape(for: range).enumerated().map { Point(index: $0.offset, value: $0.element * basePrice) }
+        if let series, series.count >= 2 {
+            let sliced = Array(series.suffix(rangeCount(range)))
+            return sliced.enumerated().map { Point(index: $0.offset, value: $0.element) }
+        }
+        return shape(for: range).enumerated().map { Point(index: $0.offset, value: $0.element * basePrice) }
+    }
+
+    private func rangeCount(_ r: Range) -> Int {
+        switch r {
+        case .week: 7
+        case .month: 30
+        case .quarter: 90
+        case .year: 365
+        }
     }
 
     var body: some View {

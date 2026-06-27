@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
     const cardId = url.searchParams.get("cardId");
     if (!cardId) return json({ error: "pass ?cardId=<id> or ?index[=category]" }, 400);
 
-    const [grades, sales] = await Promise.all([
+    const [grades, sales, history] = await Promise.all([
       supabase
         .from("card_grade_values")
         .select("grade, market_price, population, change_30d")
@@ -65,9 +65,18 @@ Deno.serve(async (req) => {
         .eq("card_id", cardId)
         .order("sold_at", { ascending: false })
         .limit(RECENT_SALES_LIMIT),
+      // Real price history (one point per captured snapshot), oldest → newest.
+      supabase
+        .from("price_snapshots")
+        .select("market_price, captured_at")
+        .eq("card_id", cardId)
+        .not("market_price", "is", null)
+        .order("captured_at", { ascending: true })
+        .limit(365),
     ]);
     if (grades.error) throw grades.error;
     if (sales.error) throw sales.error;
+    if (history.error) throw history.error;
 
     // Population and 30d change are taken from the top (most valuable) grade.
     const gradedPrices = (grades.data ?? [])
@@ -89,6 +98,10 @@ Deno.serve(async (req) => {
         platform: s.platform,
         soldAt: s.sold_at,
       })),
+      history: (history.data ?? []).map((h: HistoryRow) => ({
+        asOf: h.captured_at,
+        price: Number(h.market_price),
+      })),
     });
   } catch (err) {
     // deno-lint-ignore no-explicit-any
@@ -109,6 +122,10 @@ interface SaleRow {
   currency: string;
   platform: string;
   sold_at: string;
+}
+interface HistoryRow {
+  market_price: number;
+  captured_at: string;
 }
 
 // deno-lint-ignore no-explicit-any

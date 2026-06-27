@@ -85,6 +85,9 @@ struct CardBundleDTO: Decodable {
     let population: Int?
     let change30d: Double
     let recentSales: [SaleDTO]
+    /// Real captured price history, oldest → newest. Optional for back-compat
+    /// with `market-data` responses that predate the `history` field.
+    let history: [PricePointDTO]?
 
     struct Graded: Decodable { let grade: String; let price: Double }
     struct SaleDTO: Decodable {
@@ -94,4 +97,5 @@ struct CardBundleDTO: Decodable {
         let platform: String
         let soldAt: String
     }
+    struct PricePointDTO: Decodable { let asOf: String; let price: Double }
 }

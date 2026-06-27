@@ -1,5 +1,6 @@
 import SwiftUI
 import WidgetKit
+import Foundation
 
 @main
 struct CarddexApp: App {
@@ -12,6 +13,7 @@ struct CarddexApp: App {
     @State private var subscriptions = SubscriptionStore(persistence: PersistenceController.shared)
     @State private var router = AppRouter()
     @State private var marketStore = MarketStore(service: AppConfig.marketService)
+    @State private var portfolioHistory = PortfolioHistoryStore(persistence: PersistenceController.shared)
     @State private var watchlist = WatchlistStore(
         followed: [SampleData.jordan.id, SampleData.brady.id],
         alerts: [
@@ -38,6 +40,7 @@ struct CarddexApp: App {
                 .environment(watchlist)
                 .environment(wishlist)
                 .environment(marketStore)
+                .environment(portfolioHistory)
                 .task {
                     wireSyncEngine()
                     SpotlightIndexer.index(SampleData.marketCards)
@@ -47,6 +50,7 @@ struct CarddexApp: App {
                     if environment.auth.isSignedIn {
                         await runSync()
                     }
+                    portfolioHistory.record(value: NSDecimalNumber(decimal: store.totalValue.amount).doubleValue)
                     updateWidget()
                 }
                 .onChange(of: scenePhase) { _, phase in

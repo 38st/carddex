@@ -3,9 +3,11 @@ import Charts
 import UIKit
 
 /// Portfolio: total value, a value-over-time chart, and a by-game breakdown.
-/// History is illustrative until real price snapshots land in Phase 2.
+/// The value chart shows real recorded daily history once a few days accrue;
+/// until then it falls back to an illustrative curve.
 struct PortfolioView: View {
     @Environment(CollectionStore.self) private var store
+    @Environment(PortfolioHistoryStore.self) private var history
     @State private var range: Range = .month
     @State private var shareImage: Image?
     @State private var scrub: PricePoint?
@@ -23,8 +25,32 @@ struct PortfolioView: View {
         NSDecimalNumber(decimal: store.totalValue.amount).doubleValue
     }
 
+    /// Real recorded snapshots within the selected range.
+    private var recordedPoints: [PortfolioHistoryStore.Snapshot] {
+        history.points(since: rangeStart(range))
+    }
+
+    /// True once we have enough real history to chart it (≥2 days).
+    private var usingRealHistory: Bool { recordedPoints.count >= 2 }
+
     private var series: [PricePoint] {
-        shape(for: range).enumerated().map { PricePoint(index: $0.offset, value: $0.element * totalDouble) }
+        if usingRealHistory {
+            return recordedPoints.enumerated().map { PricePoint(index: $0.offset, value: $0.element.value) }
+        }
+        // Not enough recorded days yet — illustrative curve scaled to today's value.
+        return shape(for: range).enumerated().map { PricePoint(index: $0.offset, value: $0.element * totalDouble) }
+    }
+
+    private func rangeStart(_ r: Range) -> Date? {
+        let cal = Calendar.current
+        let now = Date()
+        switch r {
+        case .week: return cal.date(byAdding: .day, value: -7, to: now)
+        case .month: return cal.date(byAdding: .month, value: -1, to: now)
+        case .quarter: return cal.date(byAdding: .month, value: -3, to: now)
+        case .year: return cal.date(byAdding: .year, value: -1, to: now)
+        case .all: return nil
+        }
     }
 
     private var deltaAbs: Double { (series.last?.value ?? 0) - (series.first?.value ?? 0) }
@@ -57,9 +83,11 @@ struct PortfolioView: View {
                     if !gamesWithValue.isEmpty { byGame }
                     if !gamesWithValue.isEmpty { attribution }
                     if !store.movers.isEmpty { moversSection }
-                    Text("Value history is illustrative — live snapshots arrive in Phase 2.")
-                        .font(.footnote)
-                        .foregroundStyle(Theme.textTertiary)
+                    if !usingRealHistory {
+                        Text("Value history is illustrative for now — it becomes real as daily snapshots accrue.")
+                            .font(.footnote)
+                            .foregroundStyle(Theme.textTertiary)
+                    }
                 }
                 .padding()
             }
@@ -173,7 +201,7 @@ struct PortfolioView: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
                     .glassCapsule()
-            } else {
+            } else if !usingRealHistory {
                 Text("Sample")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(Theme.textTertiary)
@@ -301,5 +329,6 @@ private struct PricePoint: Identifiable {
 #Preview {
     PortfolioView()
         .environment(CollectionStore(items: SampleData.collection))
+        .environment(PortfolioHistoryStore())
         .preferredColorScheme(.dark)
 }
