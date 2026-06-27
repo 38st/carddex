@@ -26,9 +26,10 @@ struct CardPriceChart: View {
     private var usingRealHistory: Bool { (series?.count ?? 0) >= 2 }
 
     private var points: [Point] {
+        // `series` is normalized 0…1 (ending at the current price); scale to dollars.
         if let series, series.count >= 2 {
             let sliced = Array(series.suffix(rangeCount(range)))
-            return sliced.enumerated().map { Point(index: $0.offset, value: $0.element) }
+            return sliced.enumerated().map { Point(index: $0.offset, value: $0.element * basePrice) }
         }
         return shape(for: range).enumerated().map { Point(index: $0.offset, value: $0.element * basePrice) }
     }

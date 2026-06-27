@@ -94,11 +94,16 @@ final class MarketStore {
                  platform: dto.platform)
         }
         // Prefer the real captured history; fall back to a synthetic curve only
-        // when the backend hasn't accrued at least two snapshots yet.
+        // when the backend hasn't accrued at least two snapshots yet. `priceSeries`
+        // is contractually normalized 0…1 (ending at the current price), so divide
+        // the absolute history by its last value before sampling.
         let historyValues = (b.history ?? []).map(\.price)
-        let series = historyValues.count >= 2
-            ? sampled(historyValues)
-            : SampleData.priceSeries(change30d: b.change30d, range: .month, seed: b.cardId)
+        let series: [Double]
+        if historyValues.count >= 2, let base = historyValues.last, base > 0 {
+            series = sampled(historyValues.map { $0 / base })
+        } else {
+            series = SampleData.priceSeries(change30d: b.change30d, range: .month, seed: b.cardId)
+        }
         return CardMarket(
             cardId: b.cardId,
             change30d: b.change30d,
