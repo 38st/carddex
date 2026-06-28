@@ -22,6 +22,8 @@ final class CollectionItemEntity {
     var dateAdded: Date
     var purchasePriceAmount: Double?   // `Money.amount` as Double (SwiftData-friendly)
     var purchasePriceCurrency: String?
+    var certNumber: String?
+    var gradingCompany: String?
 
     // Sync metadata
     var dirty: Bool
@@ -36,6 +38,8 @@ final class CollectionItemEntity {
         dateAdded: Date,
         purchasePriceAmount: Double?,
         purchasePriceCurrency: String?,
+        certNumber: String? = nil,
+        gradingCompany: String? = nil,
         dirty: Bool = true,
         remoteUpdatedAt: Date? = nil,
         deletedAt: Date? = nil
@@ -47,6 +51,8 @@ final class CollectionItemEntity {
         self.dateAdded = dateAdded
         self.purchasePriceAmount = purchasePriceAmount
         self.purchasePriceCurrency = purchasePriceCurrency
+        self.certNumber = certNumber
+        self.gradingCompany = gradingCompany
         self.dirty = dirty
         self.remoteUpdatedAt = remoteUpdatedAt
         self.deletedAt = deletedAt
@@ -77,7 +83,9 @@ extension CollectionItemEntity {
             quantity: quantity,
             condition: CardCondition(rawValue: conditionRaw) ?? .nearMint,
             dateAdded: dateAdded,
-            purchasePrice: price
+            purchasePrice: price,
+            certNumber: certNumber,
+            gradingCompany: gradingCompany
         )
     }
 
@@ -91,7 +99,9 @@ extension CollectionItemEntity {
             conditionRaw: item.condition.rawValue,
             dateAdded: item.dateAdded,
             purchasePriceAmount: item.purchasePrice.map { NSDecimalNumber(decimal: $0.amount).doubleValue },
-            purchasePriceCurrency: item.purchasePrice?.currencyCode
+            purchasePriceCurrency: item.purchasePrice?.currencyCode,
+            certNumber: item.certNumber,
+            gradingCompany: item.gradingCompany
         )
         context.insert(entity)
         return entity
@@ -105,6 +115,8 @@ extension CollectionItemEntity {
         dateAdded = item.dateAdded
         purchasePriceAmount = item.purchasePrice.map { NSDecimalNumber(decimal: $0.amount).doubleValue }
         purchasePriceCurrency = item.purchasePrice?.currencyCode
+        certNumber = item.certNumber
+        gradingCompany = item.gradingCompany
         self.remoteUpdatedAt = remoteUpdatedAt
         self.deletedAt = deletedAt
         dirty = false

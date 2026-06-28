@@ -15,6 +15,7 @@ struct SettingsView: View {
     @State private var showDeleteConfirm = false
     @State private var isDeleting = false
     @State private var deleteError: String?
+    @State private var showTools = false
 
     var body: some View {
         NavigationStack {
@@ -75,6 +76,25 @@ struct SettingsView: View {
                         .foregroundStyle(Theme.textSecondary)
                 }
 
+                Section("Tools") {
+                    Button { showTools = true } label: {
+                        HStack(spacing: Theme.Spacing.md) {
+                            Image(systemName: "wrench.and.screwdriver.fill")
+                                .font(.title3)
+                                .foregroundStyle(Theme.cream)
+                            VStack(alignment: .leading) {
+                                Text("Collector Tools")
+                                    .font(.headline)
+                                Text("Health score, PSA calculator, insurance report, cert lookup, CSV")
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.textSecondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right").foregroundStyle(Theme.textTertiary)
+                        }
+                    }
+                }
+
                 Section("About") {
                     LabeledContent("Version", value: "0.1.0")
                     LabeledContent("Backend", value: "Supabase")
@@ -96,6 +116,9 @@ struct SettingsView: View {
             .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
+            }
+            .sheet(isPresented: $showTools) {
+                ToolsView()
             }
             .alert("Delete account?", isPresented: $showDeleteConfirm) {
                 Button("Delete", role: .destructive) {

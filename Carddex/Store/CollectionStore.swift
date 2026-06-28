@@ -212,6 +212,8 @@ final class CollectionStore {
             existing.dateAdded = item.dateAdded
             existing.purchasePriceAmount = item.purchasePrice.map { NSDecimalNumber(decimal: $0.amount).doubleValue }
             existing.purchasePriceCurrency = item.purchasePrice?.currencyCode
+            existing.certNumber = item.certNumber
+            existing.gradingCompany = item.gradingCompany
             existing.dirty = dirty
             existing.deletedAt = nil
         } else {

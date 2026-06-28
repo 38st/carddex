@@ -8,6 +8,8 @@ struct CollectionItem: Identifiable, Codable, Hashable, Sendable {
     var condition: CardCondition
     var dateAdded: Date
     var purchasePrice: Money?
+    var certNumber: String?
+    var gradingCompany: String?
 
     init(
         id: UUID = UUID(),
@@ -15,7 +17,9 @@ struct CollectionItem: Identifiable, Codable, Hashable, Sendable {
         quantity: Int = 1,
         condition: CardCondition = .nearMint,
         dateAdded: Date = .now,
-        purchasePrice: Money? = nil
+        purchasePrice: Money? = nil,
+        certNumber: String? = nil,
+        gradingCompany: String? = nil
     ) {
         self.id = id
         self.card = card
@@ -23,6 +27,8 @@ struct CollectionItem: Identifiable, Codable, Hashable, Sendable {
         self.condition = condition
         self.dateAdded = dateAdded
         self.purchasePrice = purchasePrice
+        self.certNumber = certNumber
+        self.gradingCompany = gradingCompany
     }
 
     /// Current estimated value: market price × quantity.

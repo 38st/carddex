@@ -8,9 +8,12 @@ import UIKit
 struct PortfolioView: View {
     @Environment(CollectionStore.self) private var store
     @Environment(PortfolioHistoryStore.self) private var history
+    @Environment(MarketStore.self) private var marketStore
     @State private var range: Range = .month
     @State private var shareImage: Image?
     @State private var scrub: PricePoint?
+    @State private var showHealthScore = false
+    @State private var depreciationAlert: DepreciationMonitor.Alert?
 
     enum Range: String, CaseIterable, Identifiable {
         case week = "1W", month = "1M", quarter = "3M", year = "1Y", all = "All"
@@ -64,11 +67,19 @@ struct PortfolioView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
                     ScreenHeader(title: "Portfolio") {
-                        if let shareImage {
-                            ShareLink(item: shareImage, preview: SharePreview("My collection · The Case", image: shareImage)) {
-                                Image(systemName: "square.and.arrow.up").circleIconChip(label: "Share")
+                        HStack(spacing: 10) {
+                            CircleIconButton(systemImage: "heart.text.clipboard", label: "Health") {
+                                showHealthScore = true
+                            }
+                            if let shareImage {
+                                ShareLink(item: shareImage, preview: SharePreview("My collection · The Case", image: shareImage)) {
+                                    Image(systemName: "square.and.arrow.up").circleIconChip(label: "Share")
+                                }
                             }
                         }
+                    }
+                    if let depreciationAlert {
+                        depreciationBanner
                     }
                     hero
                     if let top = store.items.max(by: { $0.estimatedValue.amount < $1.estimatedValue.amount }) {
@@ -97,6 +108,10 @@ struct PortfolioView: View {
                 CardDetailView(item: item)
             }
             .onAppear(perform: renderShareImage)
+            .onAppear { depreciationAlert = DepreciationMonitor.checkAll(history: history) }
+            .sheet(isPresented: $showHealthScore) {
+                HealthScoreView()
+            }
         }
     }
 
@@ -218,6 +233,25 @@ struct PortfolioView: View {
 
     private var allTimeGain: Double { NSDecimalNumber(decimal: store.totalGainLoss.amount).doubleValue }
 
+    private var depreciationBanner: some View {
+        HStack(spacing: Theme.Spacing.md) {
+            Image(systemName: "arrow.down.right.circle.fill")
+                .font(.title2)
+                .foregroundStyle(Theme.loss)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Portfolio alert")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Theme.loss)
+                Text(depreciationAlert?.message ?? "")
+                    .font(.caption)
+                    .foregroundStyle(Theme.textSecondary)
+            }
+            Spacer()
+        }
+        .padding(Theme.Spacing.md)
+        .glassPanel(cornerRadius: Theme.Radius.card)
+    }
+
     private var insightsRow: some View {
         HStack(spacing: Theme.Spacing.md) {
             StatTile(title: "Cost basis", value: store.totalCost.formatted)
@@ -330,5 +364,6 @@ private struct PricePoint: Identifiable {
     PortfolioView()
         .environment(CollectionStore(items: SampleData.collection))
         .environment(PortfolioHistoryStore())
+        .environment(MarketStore())
         .preferredColorScheme(.dark)
 }

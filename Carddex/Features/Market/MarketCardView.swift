@@ -93,7 +93,7 @@ struct MarketCardView: View {
                 value
                 keyStats
                 gradeMatrix
-                gradingHint
+                GradeOrSellCard(market: market)
                 VStack(spacing: Theme.Spacing.sm) {
                     SalesChart(
                         series: priceSeries(priceRange),

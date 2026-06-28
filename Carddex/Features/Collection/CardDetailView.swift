@@ -7,8 +7,10 @@ struct CardDetailView: View {
     @Environment(CollectionStore.self) private var store
     @Environment(MarketStore.self) private var marketStore
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @State private var showSell = false
     @State private var showRemoveConfirm = false
+    @State private var showCertLookup = false
     @State private var shareImage: Image?
     let item: CollectionItem
 
@@ -100,6 +102,19 @@ struct CardDetailView: View {
                     LabeledContent("Condition", value: item.condition.rawValue)
                     Divider().overlay(Theme.hairline)
                     LabeledContent("Added", value: item.dateAdded.formatted(date: .abbreviated, time: .omitted))
+                    if let cert = item.certNumber {
+                        Divider().overlay(Theme.hairline)
+                        LabeledContent("Cert #", value: cert)
+                        if let company = item.gradingCompany,
+                           let url = CertLookupService.lookupURL(company: CertLookupService.GradingCompany(rawValue: company) ?? .psa, certNumber: cert) {
+                            Button { openURL(url) } label: {
+                                Label("Verify on \(company)", systemImage: "checkmark.seal")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(Theme.cream)
+                            }
+                            .padding(.top, 4)
+                        }
+                    }
                 }
                 .font(.subheadline)
                 .foregroundStyle(Theme.textPrimary)
@@ -107,6 +122,12 @@ struct CardDetailView: View {
                 .glassPanel(cornerRadius: Theme.Radius.card)
 
                 PrimaryButton(title: "List on eBay", systemImage: "tag") { showSell = true }
+
+                Button { showCertLookup = true } label: {
+                    Label("Verify a graded card", systemImage: "checkmark.seal")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Theme.cream)
+                }
 
                 Button(role: .destructive) {
                     showRemoveConfirm = true
@@ -128,6 +149,7 @@ struct CardDetailView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $showSell) { SellSheet(item: item) }
+        .sheet(isPresented: $showCertLookup) { CertLookupView() }
         .onAppear { renderShareImage() }
     }
 

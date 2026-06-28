@@ -3,12 +3,16 @@
 // Turns a card photo (+ on-device OCR hints) into ranked, catalog-grounded
 // candidates, minimizing paid vision calls. Holds all secrets server-side.
 //
-// Cost guardrails (so one Anthropic key safely serves every user):
+// Cost guardrails (so one vision key safely serves every user):
 //   - OCR-first fast path resolves clean scans for $0.
 //   - Result cache (scan_cache) → never re-bill the same photo.
 //   - Per-user DAILY vision cap → bounds any single account.
 //   - Global DAILY spend circuit-breaker → if today's spend exceeds the ceiling,
 //     stop calling the model and fall back to OCR-only.
+//
+// Vision provider is configurable via VISION_PROVIDER env var:
+//   - "anthropic" (default) — Claude Haiku, ~$0.004/scan
+//   - "deepseek"            — DeepSeek VL2, ~$0.001/scan (4× cheaper)
 //
 // Request:  { scanId, gameHint?, ocr: { lines, topToken?, numberGuess? }, imageBase64? }
 // Response: { scanId, usedVision, cached?, candidates: [{ card, confidence, matchReasons }], lowConfidence }
@@ -21,10 +25,11 @@ const cors = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const VISION_MODEL = Deno.env.get("VISION_MODEL") ?? "claude-haiku-4-5-20251001";
+const VISION_PROVIDER = (Deno.env.get("VISION_PROVIDER") ?? "anthropic").toLowerCase();
+const VISION_MODEL = Deno.env.get("VISION_MODEL") ?? (VISION_PROVIDER === "deepseek" ? "deepseek-vl2" : "claude-haiku-4-5-20251001");
 const DAILY_VISION_CAP = Number(Deno.env.get("DAILY_VISION_CAP") ?? "8");
 const SPEND_CEILING_USD = Number(Deno.env.get("DAILY_SPEND_CEILING_USD") ?? "50");
-const VISION_COST_USD = Number(Deno.env.get("VISION_COST_USD") ?? "0.004");
+const VISION_COST_USD = Number(Deno.env.get("VISION_COST_USD") ?? (VISION_PROVIDER === "deepseek" ? "0.001" : "0.004"));
 const CACHE_TTL_DAYS = Number(Deno.env.get("CACHE_TTL_DAYS") ?? "7");
 
 Deno.serve(async (req) => {
@@ -148,7 +153,7 @@ async function recordScan(supabase: any, scanId: string, userId: string | null, 
       id: scanId,
       user_id: userId,
       used_vision: true,
-      vision_provider: "anthropic",
+      vision_provider: VISION_PROVIDER,
       confidence,
       cost_usd: VISION_COST_USD,
       result,
@@ -192,15 +197,8 @@ interface Extraction {
   confidence: number;
 }
 
-async function callVisionModel(
-  imageBase64: string,
-  ocrLines: string[],
-  gameHint?: string,
-): Promise<Extraction | null> {
-  const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
-  if (!apiKey) return null;
-
-  const prompt = [
+function buildPrompt(ocrLines: string[], gameHint?: string): string {
+  return [
     "You identify trading cards (Pokémon, Magic: The Gathering, Yu-Gi-Oh!, sports).",
     "Return ONLY a JSON object, no prose, with this exact shape:",
     '{"game":"pokemon|magic|yugioh|sports|unknown","name":string|null,"setName":string|null,',
@@ -211,6 +209,44 @@ async function callVisionModel(
     gameHint ? `The user thinks this is a ${gameHint} card.` : "",
     ocrLines.length ? `OCR hints: ${ocrLines.slice(0, 12).join(" | ")}` : "No OCR hints.",
   ].join("\n");
+}
+
+function parseExtraction(text: string): Extraction | null {
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) return null;
+  try {
+    const parsed = JSON.parse(match[0]);
+    return {
+      game: parsed.game ?? null,
+      name: parsed.name ?? null,
+      setName: parsed.setName ?? null,
+      setCode: parsed.setCode ?? null,
+      number: parsed.number ?? null,
+      variantCues: Array.isArray(parsed.variantCues) ? parsed.variantCues : [],
+      confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.5,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function callVisionModel(
+  imageBase64: string,
+  ocrLines: string[],
+  gameHint?: string,
+): Promise<Extraction | null> {
+  const prompt = buildPrompt(ocrLines, gameHint);
+
+  if (VISION_PROVIDER === "deepseek") {
+    return callDeepSeek(imageBase64, prompt);
+  } else {
+    return callAnthropic(imageBase64, prompt);
+  }
+}
+
+async function callAnthropic(imageBase64: string, prompt: string): Promise<Extraction | null> {
+  const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
+  if (!apiKey) return null;
 
   let response: Response;
   try {
@@ -240,22 +276,43 @@ async function callVisionModel(
 
   const data = await response.json();
   const text: string = data?.content?.[0]?.text ?? "";
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) return null;
+  return parseExtraction(text);
+}
+
+async function callDeepSeek(imageBase64: string, prompt: string): Promise<Extraction | null> {
+  const apiKey = Deno.env.get("DEEPSEEK_API_KEY");
+  if (!apiKey) return null;
+
+  const baseUrl = Deno.env.get("DEEPSEEK_BASE_URL") ?? "https://api.deepseek.com/v1";
+
+  let response: Response;
   try {
-    const parsed = JSON.parse(match[0]);
-    return {
-      game: parsed.game ?? null,
-      name: parsed.name ?? null,
-      setName: parsed.setName ?? null,
-      setCode: parsed.setCode ?? null,
-      number: parsed.number ?? null,
-      variantCues: Array.isArray(parsed.variantCues) ? parsed.variantCues : [],
-      confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.5,
-    };
+    response = await fetch(`${baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: VISION_MODEL,
+        max_tokens: 400,
+        messages: [{
+          role: "user",
+          content: [
+            { type: "image_url", image_url: { url: `data:image/jpeg;base64,${imageBase64}` } },
+            { type: "text", text: prompt },
+          ],
+        }],
+      }),
+    });
   } catch {
     return null;
   }
+  if (!response.ok) return null;
+
+  const data = await response.json();
+  const text: string = data?.choices?.[0]?.message?.content ?? "";
+  return parseExtraction(text);
 }
 
 // ---- Catalog grounding ------------------------------------------------------
