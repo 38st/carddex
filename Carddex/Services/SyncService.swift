@@ -189,7 +189,7 @@ struct LiveSyncService: SyncServiceProtocol {
     /// custom `select` projection (used for the card join on collection_items).
     private func selectDTO<T: Decodable>(_ table: String, select: String, since: String?) async throws -> [T] {
         var req = try await authedRequest(table: table)
-        guard var comps = URLComponents(url: req.url!, resolvingAgainstBaseURL: false) else {
+        guard let url = req.url, var comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
             throw URLError(.badURL)
         }
         var query = "select=\(select)"
@@ -213,7 +213,7 @@ struct LiveSyncService: SyncServiceProtocol {
         req.setValue("resolution=merge-duplicates", forHTTPHeaderField: "Prefer")
         req.httpBody = body
         if let onConflict {
-            guard var comps = URLComponents(url: req.url!, resolvingAgainstBaseURL: false) else {
+            guard let url = req.url, var comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
                 throw URLError(.badURL)
             }
             comps.query = "on_conflict=\(onConflict)"
@@ -225,7 +225,7 @@ struct LiveSyncService: SyncServiceProtocol {
     private func delete(_ table: String, filter: String) async throws {
         var req = try await authedRequest(table: table)
         req.httpMethod = "DELETE"
-        guard var comps = URLComponents(url: req.url!, resolvingAgainstBaseURL: false) else {
+        guard let url = req.url, var comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
             throw URLError(.badURL)
         }
         comps.query = filter
@@ -235,7 +235,7 @@ struct LiveSyncService: SyncServiceProtocol {
 
     private func select<T: Decodable>(_ table: String) async throws -> [T] {
         var req = try await authedRequest(table: table)
-        guard var comps = URLComponents(url: req.url!, resolvingAgainstBaseURL: false) else {
+        guard let url = req.url, var comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
             throw URLError(.badURL)
         }
         comps.query = "select=*"

@@ -96,8 +96,8 @@ actor SyncEngine {
             try await transport.pushCollectionItem(dto)
             entity.dirty = false
             entity.remoteUpdatedAt = .now
+            persistence.save()
         }
-        persistence.save()
     }
 
     @MainActor private func pushDirtyAlerts() async throws {
@@ -114,8 +114,8 @@ actor SyncEngine {
             try await transport.pushPriceAlert(dto)
             entity.dirty = false
             entity.remoteUpdatedAt = .now
+            persistence.save()
         }
-        persistence.save()
     }
 
     @MainActor private func pushDirtyGrails() async throws {
@@ -133,8 +133,8 @@ actor SyncEngine {
             try await transport.pushGrailEntry(dto)
             entity.dirty = false
             entity.remoteUpdatedAt = .now
+            persistence.save()
         }
-        persistence.save()
     }
 
     @MainActor private func pushDirtySubscription() async throws {

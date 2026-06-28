@@ -13,6 +13,7 @@ struct BulkScanView: View {
     @State private var picked: [PhotosPickerItem] = []
     @State private var results: [BulkResult] = []
     @State private var isProcessing = false
+    @State private var scanLimitHit = false
 
     struct BulkResult: Identifiable {
         let id = UUID()
@@ -67,6 +68,11 @@ struct BulkScanView: View {
                 Text("Pick several card photos and The Case identifies them all at once.")
                     .font(.subheadline).foregroundStyle(Theme.textSecondary)
                     .multilineTextAlignment(.center)
+                if scanLimitHit {
+                    Text("Free scan limit reached — upgrade to Pro for unlimited bulk scans.")
+                        .font(.caption).foregroundStyle(Theme.warning)
+                        .multilineTextAlignment(.center)
+                }
                 PhotosPicker(selection: $picked, maxSelectionCount: 12, matching: .images) {
                     Label("Choose photos", systemImage: "photo.on.rectangle")
                         .font(.subheadline.weight(.semibold))
@@ -104,7 +110,7 @@ struct BulkScanView: View {
         isProcessing = true
         var output: [BulkResult] = []
         for item in items {
-            guard subs.canScan else { break }
+            guard subs.canScan else { scanLimitHit = true; break }
             guard
                 let data = try? await item.loadTransferable(type: Data.self),
                 let image = UIImage(data: data),

@@ -26,7 +26,8 @@ struct MarketCardView: View {
 
     /// Other tracked cards in the same sport (or game, for TCG).
     private var relatedCards: [Card] {
-        SampleData.marketCards.filter { other in
+        let pool = SampleData.marketCards + store.items.map(\.card)
+        return pool.filter { other in
             guard other.id != card.id else { return false }
             return card.game == .sports
                 ? (other.game == .sports && other.sport == card.sport)

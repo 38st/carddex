@@ -171,16 +171,26 @@ struct CSVService {
         var fields: [String] = []
         var current = ""
         var inQuotes = false
+        let chars = Array(line)
+        var i = 0
 
-        for char in line {
+        while i < chars.count {
+            let char = chars[i]
             if char == "\"" {
-                inQuotes.toggle()
+                if inQuotes && i + 1 < chars.count && chars[i + 1] == "\"" {
+                    current.append("\"")
+                    i += 2
+                    continue
+                } else {
+                    inQuotes.toggle()
+                }
             } else if char == "," && !inQuotes {
                 fields.append(current)
                 current = ""
             } else {
                 current.append(char)
             }
+            i += 1
         }
         fields.append(current)
 

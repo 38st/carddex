@@ -14,7 +14,8 @@ enum Disk {
         if let shared = fm.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) {
             return shared
         }
-        let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? fm.temporaryDirectory
         try? fm.createDirectory(at: appSupport, withIntermediateDirectories: true)
         return appSupport
     }()

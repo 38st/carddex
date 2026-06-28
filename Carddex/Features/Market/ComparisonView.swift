@@ -6,12 +6,19 @@ import Charts
 struct ComparisonView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(MarketStore.self) private var marketStore
+    @Environment(CollectionStore.self) private var collection
     @State private var selected: [String] = []
 
     private let palette: [Color] = [Theme.chart, Theme.gain, Color(hex: 0xF0997B)]
 
+    private var allCards: [Card] {
+        let marketIDs = Set(SampleData.marketCards.map(\.id))
+        let extra = collection.items.map(\.card).filter { !marketIDs.contains($0.id) }
+        return SampleData.marketCards + extra
+    }
+
     private var selectedCards: [Card] {
-        selected.compactMap { id in SampleData.marketCards.first { $0.id == id } }
+        selected.compactMap { id in allCards.first { $0.id == id } }
     }
 
     var body: some View {
@@ -34,7 +41,7 @@ struct ComparisonView: View {
                         Text("Cards")
                             .font(.headline)
                             .foregroundStyle(Theme.textPrimary)
-                        ForEach(SampleData.marketCards) { card in
+                        ForEach(allCards) { card in
                             row(card)
                         }
                     }

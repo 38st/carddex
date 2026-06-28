@@ -133,8 +133,12 @@ struct InsuranceReportView: View {
 
         let pdfData = buildPDF()
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("Carddex_Insurance_\(Date().timeIntervalSince1970).pdf")
-        try? pdfData.write(to: url)
-        pdfURL = url
+        do {
+            try pdfData.write(to: url)
+            pdfURL = url
+        } catch {
+            pdfURL = nil
+        }
     }
 
     @MainActor

@@ -156,13 +156,15 @@ final class PersistenceController {
     private static func storeURL() -> URL {
         let fm = FileManager.default
         let dir = fm.containerURL(forSecurityApplicationGroupIdentifier: appGroupID)
-            ?? fm.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            ?? fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? fm.temporaryDirectory
         return dir.appendingPathComponent("Carddex.store")
     }
 
     private func appSupportDir() -> URL? {
         let fm = FileManager.default
-        let dir = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let dir = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? fm.temporaryDirectory
         try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
     }

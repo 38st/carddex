@@ -4,11 +4,18 @@ import SwiftUI
 /// with its current value and distance to the target.
 struct AlertsView: View {
     @Environment(WatchlistStore.self) private var watchlist
+    @Environment(CollectionStore.self) private var collection
     @Environment(\.dismiss) private var dismiss
 
     private var rows: [(card: Card, alert: PriceAlert)] {
         watchlist.alerts.compactMap { alert in
-            SampleData.marketCards.first { $0.id == alert.cardID }.map { (card: $0, alert: alert) }
+            if let card = SampleData.marketCards.first(where: { $0.id == alert.cardID }) {
+                return (card, alert)
+            }
+            if let item = collection.items.first(where: { $0.card.id == alert.cardID }) {
+                return (item.card, alert)
+            }
+            return nil
         }
     }
 

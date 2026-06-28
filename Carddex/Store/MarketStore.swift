@@ -49,11 +49,11 @@ final class MarketStore {
         }
         guard let first = lists.first else { return [] }
         return (0..<first.count).map { i in
-            lists.map { $0[i] }.reduce(0, +) / Double(lists.count)
+            lists.compactMap { $0.indices.contains(i) ? $0[i] : nil }.reduce(0, +) / Double(lists.count)
         }
     }
 
-    func indexChange(_ memberIDs: [String], range: IndexRange) -> Double {
+    @MainActor func indexChange(_ memberIDs: [String], range: IndexRange) -> Double {
         let s = indexSeries(memberIDs, range: range)
         guard let first = s.first, let last = s.last, first != 0 else { return 0 }
         return (last - first) / first * 100
