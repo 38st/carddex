@@ -126,6 +126,7 @@
 		D8A322320269648D53124204 /* MiniAreaChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45964136E933A7B84200BAD /* MiniAreaChart.swift */; };
 		DDE0C26F35589CE8BFB99311 /* SubscriptionEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB482D4082E58FB4AB042AB /* SubscriptionEntity.swift */; };
 		E01E45E112C6729462FE4981 /* CollectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9CC3A66CA9ED81A958412F /* CollectionStore.swift */; };
+		E0DFB98E966F64C6560E0EDF /* TradeModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5B2FE2BBAFC25CE792D2F /* TradeModeView.swift */; };
 		E7C234D6B393F1860EEFC0A6 /* SubscriptionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C696E523366143606EDD9178 /* SubscriptionStoreTests.swift */; };
 		E86D323C138F725800410DCD /* PressableStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 712C3A6F21FC665B0294A90E /* PressableStyle.swift */; };
 		E889519F72241D7B7492D225 /* GamePill.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF19D95A1447D88D0B089130 /* GamePill.swift */; };
@@ -269,6 +270,7 @@
 		A420A923C6A0572DA99E758C /* PriceAlertEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceAlertEntity.swift; sourceTree = "<group>"; };
 		A509AB568997A722F0896EC9 /* Money.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Money.swift; sourceTree = "<group>"; };
 		A7F5F84D55389BBBC6F3FC53 /* WatchlistStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchlistStoreTests.swift; sourceTree = "<group>"; };
+		A9E5B2FE2BBAFC25CE792D2F /* TradeModeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeModeView.swift; sourceTree = "<group>"; };
 		AA8F04774E0D43F60A439C60 /* CardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCell.swift; sourceTree = "<group>"; };
 		ABCBC7C41558503CFFD5D191 /* AlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsView.swift; sourceTree = "<group>"; };
 		B0DFCF0BFF9C5F57462DA2FA /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
@@ -546,6 +548,7 @@
 				F93ACFB4612F0CBEF2A2DAD9 /* ToolsView.swift */,
 				8DCC1DC23E5C7BBD6BCB513E /* GradingTrackerView.swift */,
 				580A852264D0A4C7C858C953 /* SetCompletionView.swift */,
+				A9E5B2FE2BBAFC25CE792D2F /* TradeModeView.swift */,
 			);
 			name = Tools;
 			path = Tools;
@@ -937,6 +940,7 @@
 				25F437358A92D11CE212A54F /* GradeOrSellCard.swift in Sources */,
 				D25A8FC1A930C17797833698 /* GradingTrackerView.swift in Sources */,
 				A7D727D1842F8041BA964632 /* SetCompletionView.swift in Sources */,
+				E0DFB98E966F64C6560E0EDF /* TradeModeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
