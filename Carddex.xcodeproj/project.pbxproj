@@ -50,6 +50,7 @@
 		50CB8020D544B5DF6B9725D0 /* SampleData+Market.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0CA5228B59BAD88970D085 /* SampleData+Market.swift */; };
 		51173DA2A7ABA4BEB7220C02 /* DepreciationMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5DEA4FC6BDC6708BF7FFE1 /* DepreciationMonitor.swift */; };
 		54FD0E67CB8B6D6B003B5026 /* SyncEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5312EA48F78E0F243ACB43F2 /* SyncEngineTests.swift */; };
+		56CE00A07166FE334F1D9EA4 /* AllocationChartsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D68EB87B69DED264F5314D /* AllocationChartsView.swift */; };
 		5704D438B34BD468D3F3DB4E /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B92879482B63511CF239965 /* SyncService.swift */; };
 		581920CEC21F5FE832C48F3C /* VaultBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B092E1888F4F29CBC18B4CE /* VaultBackground.swift */; };
 		592C228A6755EA339C6172B1 /* CollectionHealthScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A7178CD03D1942E1C4E21C /* CollectionHealthScore.swift */; };
@@ -180,6 +181,7 @@
 
 /* Begin PBXFileReference section */
 		01EDBC0F174AC957E35849E2 /* CardPriceChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPriceChart.swift; sourceTree = "<group>"; };
+		07D68EB87B69DED264F5314D /* AllocationChartsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AllocationChartsView.swift; sourceTree = "<group>"; };
 		0D6BFD98907DFC2E6956DB9A /* RangeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeSelector.swift; sourceTree = "<group>"; };
 		0DD9EAB1CDDA11F741B98815 /* CSVService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CSVService.swift; sourceTree = "<group>"; };
 		11524CD0C2F6583B396A6C58 /* PullMergeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullMergeTests.swift; sourceTree = "<group>"; };
@@ -549,6 +551,7 @@
 				8DCC1DC23E5C7BBD6BCB513E /* GradingTrackerView.swift */,
 				580A852264D0A4C7C858C953 /* SetCompletionView.swift */,
 				A9E5B2FE2BBAFC25CE792D2F /* TradeModeView.swift */,
+				07D68EB87B69DED264F5314D /* AllocationChartsView.swift */,
 			);
 			name = Tools;
 			path = Tools;
@@ -941,6 +944,7 @@
 				D25A8FC1A930C17797833698 /* GradingTrackerView.swift in Sources */,
 				A7D727D1842F8041BA964632 /* SetCompletionView.swift in Sources */,
 				E0DFB98E966F64C6560E0EDF /* TradeModeView.swift in Sources */,
+				56CE00A07166FE334F1D9EA4 /* AllocationChartsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

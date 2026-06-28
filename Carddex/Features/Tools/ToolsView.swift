@@ -12,6 +12,7 @@ struct ToolsView: View {
     @State private var showGrading = false
     @State private var showCompletion = false
     @State private var showTrade = false
+    @State private var showAllocation = false
 
     var body: some View {
         NavigationStack {
@@ -42,6 +43,7 @@ struct ToolsView: View {
         .sheet(isPresented: $showGrading) { GradingTrackerView() }
         .sheet(isPresented: $showCompletion) { SetCompletionView() }
         .sheet(isPresented: $showTrade) { TradeModeView() }
+        .sheet(isPresented: $showAllocation) { AllocationChartsView() }
     }
 
     private struct Tool: Identifiable {
@@ -59,6 +61,7 @@ struct ToolsView: View {
             Tool(icon: "shippingbox", title: "Grading Tracker", subtitle: "Track PSA / CGC / BGS submissions", badge: "NEW", action: { showGrading = true }),
             Tool(icon: "square.stack.3d.up.fill", title: "Set Completion", subtitle: "Track set progress across your collection", badge: "NEW", action: { showCompletion = true }),
             Tool(icon: "arrow.left.arrow.right.square.fill", title: "Trade Mode", subtitle: "Compare trade values with fairness check", badge: "NEW", action: { showTrade = true }),
+            Tool(icon: "chart.pie.fill", title: "Allocation Charts", subtitle: "Diversification by game, set, condition", badge: "NEW", action: { showAllocation = true }),
             Tool(icon: "wand.and.stars", title: "PSA Profit Calculator", subtitle: "Should you grade or sell raw?", badge: nil, action: { showPSA = true }),
             Tool(icon: "doc.text.fill", title: "Insurance Report", subtitle: "PDF valuation for underwriters", badge: "PRO", action: { showInsurance = true }),
             Tool(icon: "checkmark.seal.fill", title: "Cert Lookup", subtitle: "Verify PSA / CGC / BGS slabs", badge: nil, action: { showCert = true }),
