@@ -11,11 +11,9 @@ import Foundation
 
 // MARK: - Card
 
-/// The `cards` table shape. Note the gap: the table has no `market_price` or
-/// `sport` column, so a pulled card can't fully reconstruct the view `Card`'s
-/// `marketPrice`/`sport`. Those are filled from the market-data feed / a local
-/// cache when available; otherwise nil. Resolving this fully is part of the
-/// CatalogService work (the cards table or a join needs those fields).
+/// The `cards` table shape. `market_price` and `sport` are populated by the
+/// catalog-sync / rollup jobs; they may be nil for cards that haven't been
+/// priced yet or non-sports cards (sport is nil for pokemon/magic/yugioh).
 struct CardDTO: Codable, Sendable {
     let id: String
     let game: String
@@ -24,6 +22,8 @@ struct CardDTO: Codable, Sendable {
     let number: String?
     let rarity: String?
     let image_url: String?
+    let market_price: Double?
+    let sport: String?
 
     func toCard() -> Card? {
         guard let game = CardGame(rawValue: game) else { return nil }
@@ -35,8 +35,8 @@ struct CardDTO: Codable, Sendable {
             number: number ?? "",
             rarity: rarity,
             imageURL: image_url.flatMap(URL.init(string:)),
-            marketPrice: nil,
-            sport: nil
+            marketPrice: market_price.map { Money(amount: Decimal($0)) },
+            sport: sport.flatMap(SportCategory.init(rawValue:))
         )
     }
 }
