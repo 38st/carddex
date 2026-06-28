@@ -63,7 +63,7 @@ struct DepreciationMonitor {
         var worst: Alert?
         for window in windows {
             if let alert = check(history: history, threshold: window.threshold, days: window.days) {
-                if worst == nil || alert.dropPercent > worst!.dropPercent {
+                if worst == nil || alert.dropPercent > (worst?.dropPercent ?? -Double.infinity) {
                     worst = alert
                 }
             }

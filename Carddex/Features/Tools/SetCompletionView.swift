@@ -25,6 +25,9 @@ struct SetCompletionView: View {
             }
             .navigationTitle("Set Completion")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: CardSet.self) { set in
+                SetDetailView(cardSet: set)
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
             }
@@ -186,8 +189,5 @@ private struct SetProgressRow: View {
             )
         }
         .buttonStyle(.plain)
-        .navigationDestination(for: CardSet.self) { set in
-            SetDetailView(cardSet: set)
-        }
     }
 }

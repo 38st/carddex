@@ -97,6 +97,13 @@ struct GradingSubmission: Identifiable, Codable, Hashable, Sendable {
     /// Estimated days remaining based on expected return date.
     var daysRemaining: Int? {
         guard let expected = expectedReturnDate else { return nil }
-        return Calendar.current.dateComponents([.day], from: Date(), to: expected).day
+        let days = Calendar.current.dateComponents([.day], from: Date(), to: expected).day ?? 0
+        return days
+    }
+
+    /// True when the expected return date has passed and the card hasn't been graded.
+    var isOverdue: Bool {
+        guard let expected = expectedReturnDate, !isCompleted else { return false }
+        return Date() > expected
     }
 }

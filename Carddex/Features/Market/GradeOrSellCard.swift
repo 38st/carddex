@@ -26,11 +26,12 @@ struct GradeOrSellCard: View {
         let rawValue = NSDecimalNumber(decimal: raw.price.amount).doubleValue
         let psa9Value = NSDecimalNumber(decimal: psa9.price.amount).doubleValue
         let psa10Value = NSDecimalNumber(decimal: psa10.price.amount).doubleValue
-        let gradingFee = 25.0 // PSA Regular
+        let gradingFee = 25.0 // PSA Regular — TODO: make configurable per company/service level
 
-        // Expected value: weighted average of PSA 9 (60%) and PSA 10 (25%) and PSA 8/below (15%).
-        // This is a conservative estimate — most raw cards don't gem.
-        let expectedGradedValue = psa9Value * 0.60 + psa10Value * 0.25 + psa9Value * 0.65 * 0.15
+        // Expected value: weighted average of PSA 10 (20%), PSA 9 (55%), PSA 8 (25%).
+        // Conservative — most raw cards don't gem. Weights sum to 1.0.
+        let psa8Value = psa9Value * 0.65 // estimate PSA 8 at 65% of PSA 9 when no explicit data
+        let expectedGradedValue = psa10Value * 0.20 + psa9Value * 0.55 + psa8Value * 0.25
         let totalCost = rawValue + gradingFee
         let netProfit = expectedGradedValue - totalCost
         let roi = totalCost > 0 ? netProfit / totalCost * 100 : 0

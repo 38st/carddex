@@ -50,7 +50,8 @@ final class PersistenceController {
             Self.logger.error("ModelContainer init failed: \(String(describing: error), privacy: .public)")
             // Fall back to in-memory so a corrupt on-disk store never blocks launch.
             let fallback = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-            // `try?` would shadow the container type; this is a last resort.
+            // Last-resort fallback: in-memory store. `try!` is intentional —
+            // if even an in-memory ModelContainer fails, the app cannot function.
             container = try! ModelContainer(for: schema, configurations: [fallback])
         }
 

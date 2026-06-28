@@ -311,7 +311,13 @@ async function callDeepSeek(imageBase64: string, prompt: string): Promise<Extrac
   if (!response.ok) return null;
 
   const data = await response.json();
-  const text: string = data?.choices?.[0]?.message?.content ?? "";
+  // DeepSeek may return content as a string or an array of content blocks.
+  const rawContent: unknown = data?.choices?.[0]?.message?.content;
+  const text: string = typeof rawContent === "string"
+    ? rawContent
+    : Array.isArray(rawContent)
+      ? rawContent.map((b: any) => b?.text ?? "").join("")
+      : "";
   return parseExtraction(text);
 }
 
@@ -342,9 +348,12 @@ async function groundFromOCR(supabase: any, ocr: any, gameHint?: string) {
 // deno-lint-ignore no-explicit-any
 async function queryCatalog(supabase: any, name: string | null, number: string | null, game?: string) {
   if (!name) return [];
-  let query = supabase.from("cards").select("*").ilike("name", `%${name}%`).limit(8);
+  // Escape LIKE wildcards in user-supplied input to prevent unexpected matches.
+  const safeName = name.replace(/[%_]/g, "\\$&");
+  const safeNumber = number ? number.replace(/[%_]/g, "\\$&") : null;
+  let query = supabase.from("cards").select("*").ilike("name", `%${safeName}%`).limit(8);
   if (game) query = query.eq("game", game);
-  if (number) query = query.ilike("number", `%${number}%`);
+  if (safeNumber) query = query.ilike("number", `%${safeNumber}%`);
   const { data, error } = await query;
   if (error || !data) return [];
   return data

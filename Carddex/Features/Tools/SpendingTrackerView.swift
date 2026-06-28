@@ -103,6 +103,7 @@ struct SpendingTrackerView: View {
 
     private struct MonthlySpend: Identifiable {
         let month: String
+        let sortDate: Date
         let spent: Double
         let count: Int
         var id: String { month }
@@ -119,10 +120,11 @@ struct SpendingTrackerView: View {
         return grouped.map { (date, items) in
             MonthlySpend(
                 month: formatter.string(from: date),
+                sortDate: date,
                 spent: items.reduce(0.0) { $0 + $1.costBasis.amount.doubleValue },
                 count: items.count
             )
-        }.sorted { $0.month > $1.month }
+        }.sorted { $0.sortDate > $1.sortDate }
     }
 
     @ViewBuilder private var monthlyBreakdown: some View {
@@ -180,8 +182,8 @@ struct SpendingTrackerView: View {
 
     @ViewBuilder private var winsAndLosses: some View {
         let sorted = sortedByGain
-        let wins = sorted.prefix(3).filter { $0.gain > 0 }
-        let losses = sorted.suffix(3).filter { $0.gain < 0 }.reversed()
+        let wins = sorted.filter { $0.gain > 0 }.prefix(3)
+        let losses = sorted.filter { $0.gain < 0 }.suffix(3).reversed()
 
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             if !wins.isEmpty {
@@ -273,11 +275,5 @@ struct SpendingTrackerView: View {
                 .foregroundStyle(Theme.textPrimary)
                 .monospacedDigit()
         }
-    }
-}
-
-private extension Decimal {
-    var doubleValue: Double {
-        NSDecimalNumber(decimal: self).doubleValue
     }
 }

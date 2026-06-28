@@ -112,10 +112,17 @@ struct GradingTrackerView: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(statusColor(sub.status))
                     if let days = sub.daysRemaining {
-                        Text("\(days)d left")
-                            .font(.caption2)
-                            .foregroundStyle(Theme.textTertiary)
-                            .monospacedDigit()
+                        if sub.isOverdue {
+                            Text("Overdue \(-days)d")
+                                .font(.caption2)
+                                .foregroundStyle(Theme.loss)
+                                .monospacedDigit()
+                        } else {
+                            Text("\(days)d left")
+                                .font(.caption2)
+                                .foregroundStyle(Theme.textTertiary)
+                                .monospacedDigit()
+                        }
                     }
                 }
             }
@@ -203,6 +210,7 @@ struct AddSubmissionSheet: View {
     let store: GradingStore
     @State private var cardName = ""
     @State private var company: GradingSubmission.GradingCompany = .psa
+    @State private var game: CardGame = .pokemon
     @State private var serviceLevel = "Regular"
     @State private var costText = "25"
     @State private var expectedWeeks = 6
@@ -226,6 +234,17 @@ struct AddSubmissionSheet: View {
                             }
                             .padding(Theme.Spacing.md)
                             .glassPanel(cornerRadius: Theme.Radius.card)
+                        }
+
+                        field("Game") {
+                            Picker("Game", selection: $game) {
+                                Text("Pokémon").tag(CardGame.pokemon)
+                                Text("Magic").tag(CardGame.magic)
+                                Text("Yu-Gi-Oh!").tag(CardGame.yugioh)
+                                Text("Sports").tag(CardGame.sports)
+                            }
+                            .pickerStyle(.segmented)
+                            .tint(Theme.cream)
                         }
 
                         field("Grading company") {
@@ -281,7 +300,7 @@ struct AddSubmissionSheet: View {
                         }
 
                         PrimaryButton(title: "Add submission", systemImage: "plus") {
-                            let card = Card(id: "manual-\(cardName.lowercased().replacingOccurrences(of: " ", with: "-"))", game: .pokemon, name: cardName, setName: "", number: "")
+                            let card = Card(id: "manual-\(cardName.lowercased().replacingOccurrences(of: " ", with: "-"))", game: game, name: cardName, setName: "", number: "")
                             let expected = Calendar.current.date(byAdding: .weekOfYear, value: expectedWeeks, to: Date())
                             store.add(GradingSubmission(
                                 card: card,

@@ -54,32 +54,43 @@ struct AllocationChartsView: View {
     private var slices: [Slice] {
         let items = store.items
         guard !items.isEmpty else { return [] }
-        let total = items.reduce(0.0) { $0 + $1.estimatedValue.amount.doubleValue }
 
         switch selectedBreakdown {
         case .game:
             let palette: [Color] = [Theme.cream, Theme.gain, Theme.loss, Theme.warning]
             let groups = Dictionary(grouping: items) { $0.card.game }
-            return groups.enumerated().map { idx, entry in
-                let val = entry.value.reduce(0.0) { $0 + $1.estimatedValue.amount.doubleValue }
-                return Slice(label: entry.key.displayName, value: val, color: palette[idx % palette.count])
-            }.sorted { $0.value > $1.value }
+            return groups.map { key, groupItems in
+                let val = groupItems.reduce(0.0) { $0 + $1.estimatedValue.amount.doubleValue }
+                return Slice(label: key.displayName, value: val, color: .clear)
+            }
+            .sorted { $0.value > $1.value }
+            .enumerated().map { idx, slice in
+                Slice(label: slice.label, value: slice.value, color: palette[idx % palette.count])
+            }
 
         case .set:
             let palette: [Color] = [Theme.cream, Theme.gain, Theme.loss, Theme.warning, .purple, .teal, .indigo, .orange]
             let groups = Dictionary(grouping: items) { $0.card.setName }
-            return groups.enumerated().map { idx, entry in
-                let val = entry.value.reduce(0.0) { $0 + $1.estimatedValue.amount.doubleValue }
-                return Slice(label: entry.key.isEmpty ? "Unknown" : entry.key, value: val, color: palette[idx % palette.count])
-            }.sorted { $0.value > $1.value }
+            return groups.map { key, groupItems in
+                let val = groupItems.reduce(0.0) { $0 + $1.estimatedValue.amount.doubleValue }
+                return Slice(label: key.isEmpty ? "Unknown" : key, value: val, color: .clear)
+            }
+            .sorted { $0.value > $1.value }
+            .enumerated().map { idx, slice in
+                Slice(label: slice.label, value: slice.value, color: palette[idx % palette.count])
+            }
 
         case .condition:
             let palette: [Color] = [Theme.gain, Theme.cream, Theme.warning, Theme.loss, .gray]
             let groups = Dictionary(grouping: items) { $0.condition.rawValue }
-            return groups.enumerated().map { idx, entry in
-                let val = entry.value.reduce(0.0) { $0 + $1.estimatedValue.amount.doubleValue }
-                return Slice(label: entry.key, value: val, color: palette[idx % palette.count])
-            }.sorted { $0.value > $1.value }
+            return groups.map { key, groupItems in
+                let val = groupItems.reduce(0.0) { $0 + $1.estimatedValue.amount.doubleValue }
+                return Slice(label: key, value: val, color: .clear)
+            }
+            .sorted { $0.value > $1.value }
+            .enumerated().map { idx, slice in
+                Slice(label: slice.label, value: slice.value, color: palette[idx % palette.count])
+            }
 
         case .grading:
             let graded = items.filter { $0.certNumber != nil }
@@ -104,6 +115,7 @@ struct AllocationChartsView: View {
                     var startAngle = Angle.degrees(-90)
 
                     for slice in slices {
+                        if slice.value <= 0 { continue }
                         let fraction = slice.value / total
                         let endAngle = startAngle + .degrees(360 * fraction)
                         let path = Path { p in
@@ -177,7 +189,7 @@ struct AllocationChartsView: View {
     }
 }
 
-private extension Decimal {
+extension Decimal {
     var doubleValue: Double {
         NSDecimalNumber(decimal: self).doubleValue
     }

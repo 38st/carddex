@@ -8,7 +8,7 @@ struct FakeIdentificationService: IdentificationService {
         let pool = input.gameHint.map { hint in
             SampleData.cards.filter { $0.game == hint }
         } ?? SampleData.cards
-        let card = pool.randomElement() ?? SampleData.cards[0]
+        let card = pool.randomElement() ?? SampleData.cards.first ?? Card(id: "unknown", game: .pokemon, name: "Unknown", setName: "", number: "")
         return .confident(IdentificationCandidate(card: card, confidence: 0.95))
     }
 }

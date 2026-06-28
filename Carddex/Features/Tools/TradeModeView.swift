@@ -49,9 +49,13 @@ struct TradeModeView: View {
                         price: marketStore.market[card.id]?.topPrice ?? card.marketPrice ?? .zero
                     )
                     if activeSide == .you {
-                        youCards.append(tradeCard)
+                        if !youCards.contains(where: { $0.id == card.id }) {
+                            youCards.append(tradeCard)
+                        }
                     } else {
-                        themCards.append(tradeCard)
+                        if !themCards.contains(where: { $0.id == card.id }) {
+                            themCards.append(tradeCard)
+                        }
                     }
                     Haptics.selection()
                 }
@@ -280,14 +284,19 @@ struct TradeModeView: View {
 
 private struct TradeCardPicker: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(CollectionStore.self) private var store
     let side: TradeModeView.TradeSide
     let onPick: (Card) -> Void
     @State private var searchText = ""
 
-    private var filteredCards: [Card] {
-        let cards = SampleData.marketCards
-        guard !searchText.isEmpty else { return cards }
-        return cards.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+    private func filteredCards() -> [Card] {
+        let collectionCards = store.items.map(\.card)
+        let marketCards = SampleData.marketCards
+        let seen = Set(marketCards.map(\.id))
+        let extra = collectionCards.filter { !seen.contains($0.id) }
+        let all = marketCards + extra
+        guard !searchText.isEmpty else { return all }
+        return all.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
     }
 
     var body: some View {
@@ -308,7 +317,7 @@ private struct TradeCardPicker: View {
 
                     ScrollView {
                         LazyVStack(spacing: Theme.Spacing.xs) {
-                            ForEach(filteredCards) { card in
+                            ForEach(filteredCards()) { card in
                                 Button {
                                     onPick(card)
                                     dismiss()
