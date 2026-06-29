@@ -1,5 +1,6 @@
 import Foundation
 import UserNotifications
+import UIKit
 
 /// Local price-alert notifications. No push server / APNs needed: when a market
 /// refresh reveals a watched card has reached its target, we fire a *local*
@@ -18,8 +19,13 @@ final class NotificationService {
     }
 
     /// Ask once for permission. Safe to call on every launch (no-op if decided).
+    /// When granted, also register with APNs so the server can push alerts while
+    /// the app is closed (delivered to `AppDelegate`).
     func requestAuthorization() async {
-        _ = try? await center.requestAuthorization(options: [.alert, .sound, .badge])
+        let granted = (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+        if granted {
+            UIApplication.shared.registerForRemoteNotifications()
+        }
     }
 
     /// Evaluate alerts against current prices and fire a notification for any

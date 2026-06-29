@@ -4,9 +4,11 @@ import Foundation
 
 @main
 struct CarddexApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("hasOnboarded") private var hasOnboarded = false
     @State private var environment = AppEnvironment()
+    @State private var pushCenter = PushRegistrationCenter.shared
     @State private var persistence = PersistenceController.shared
     @State private var syncEngine: SyncEngine?
     @State private var store = CollectionStore(items: SampleData.collection, persistence: PersistenceController.shared)
@@ -67,6 +69,9 @@ struct CarddexApp: App {
                         updateWidget()
                     }
                 }
+                .onChange(of: pushCenter.deviceTokenHex) { _, _ in
+                    Task { await uploadDeviceToken() }
+                }
                 .onChange(of: environment.auth.isSignedIn) { _, signedIn in
                     // A fresh sign-in (new device / reinstall) must do a FULL pull
                     // to restore the account. Reset the watermark and run the sync
@@ -78,7 +83,10 @@ struct CarddexApp: App {
                         Task {
                             await syncEngine?.resetWatermark()
                             await runSync()
+                            await uploadDeviceToken()
                         }
+                    } else {
+                        pushCenter.reset()
                     }
                 }
                 .fullScreenCover(isPresented: Binding(
@@ -122,6 +130,15 @@ struct CarddexApp: App {
             market: marketStore,
             name: { SampleData.card(id: $0)?.name ?? "Your card" }
         )
+    }
+
+    /// Upload the APNs device token to the backend so the server can push price
+    /// alerts while the app is closed. No-op until signed in + token received.
+    private func uploadDeviceToken() async {
+        guard environment.auth.isSignedIn else { return }
+        await environment.auth.refreshIfNeeded()
+        let jwt = environment.auth.session?.accessToken
+        await pushCenter.upload(endpoint: AppConfig.supabase?.registerDeviceURL, jwt: jwt)
     }
 
     /// Verify the StoreKit 2 entitlement on launch. If the user has an active

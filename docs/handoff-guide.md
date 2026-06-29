@@ -154,6 +154,7 @@ These are the steps that require human accounts/credentials — the code is read
 5. **Secrets.plist** — `cp Secrets.example.plist Carddex/Resources/Secrets.plist`, fill in `SUPABASE_PROJECT_REF` + `SUPABASE_ANON_KEY` + `EBAY_AFFILIATE_CAMPAIGN_ID`.
 6. **StoreKit** — App Store Connect → create subscription products → set IDs in `StoreKitService`.
 7. **eBay (Phase 3)** — `EBAY_CLIENT_ID` / `EBAY_CLIENT_SECRET` / `EBAY_REDIRECT_URI` + the `ebay-oauth` / `ebay-list` functions.
+8. **APNs (price-alert push)** — enable Push Notifications on the App ID; create an APNs Auth Key (.p8) and set `supabase secrets set APNS_KEY_P8=@AuthKey.p8 APNS_KEY_ID=<id> APNS_TEAM_ID=<team> APNS_BUNDLE_ID=com.carddex.app APNS_HOST=api.sandbox.push.apple.com` (use `api.push.apple.com` for release). Deploy `register-device` + `push-price-alerts`; run migrations through 0016 (schedules the hourly push). Flip `aps-environment` to `production` in `Carddex.entitlements` for the App Store build. Code is ready; until these exist, the in-app local notifications still fire while the app is open.
 
 ## 5. Test & build commands
 

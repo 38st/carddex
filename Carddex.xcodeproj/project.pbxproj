@@ -25,6 +25,8 @@
 		12DE74AF60DE0D5FB57FE783 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = B0DFCF0BFF9C5F57462DA2FA /* OFL.txt */; };
 		135B5CDE091A005518DE8293 /* GradingSubmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2059ECF049D317DA5DFD8C74 /* GradingSubmission.swift */; };
 		153F104711530D0197A30B5C /* CarddexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A108D336F75F134A6B6521FA /* CarddexApp.swift */; };
+		A1A1A1A1A1A1A1A1A1A1A1A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A2A2A2A2A2A2A2A2A2A2A2 /* AppDelegate.swift */; };
+		A3A3A3A3A3A3A3A3A3A3A3A3 /* PushRegistrationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A4A4A4A4A4A4A4A4A4A4A4 /* PushRegistrationCenter.swift */; };
 		15C5B597BEF2FB25E0B2FACD /* CaseIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = F763C803C14E173F6DE15795 /* CaseIntents.swift */; };
 		18F620E32284429693BDCC43 /* SyncDTOs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0541F0AAD8E5B5A6FB369F /* SyncDTOs.swift */; };
 		1961FF26ECB359DE879A8B12 /* Money.swift in Sources */ = {isa = PBXBuildFile; fileRef = A509AB568997A722F0896EC9 /* Money.swift */; };
@@ -272,6 +274,8 @@
 		9E614259B52E7A8AE90DDCEA /* LiveIdentificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveIdentificationService.swift; sourceTree = "<group>"; };
 		A0C867666CD3C8B620FC2B2C /* CollectionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionItem.swift; sourceTree = "<group>"; };
 		A108D336F75F134A6B6521FA /* CarddexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarddexApp.swift; sourceTree = "<group>"; };
+		A2A2A2A2A2A2A2A2A2A2A2A2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A4A4A4A4A4A4A4A4A4A4A4A4 /* PushRegistrationCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushRegistrationCenter.swift; sourceTree = "<group>"; };
 		A3672CAE8531685F917C83C8 /* GrailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrailsView.swift; sourceTree = "<group>"; };
 		A420A923C6A0572DA99E758C /* PriceAlertEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceAlertEntity.swift; sourceTree = "<group>"; };
 		A509AB568997A722F0896EC9 /* Money.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Money.swift; sourceTree = "<group>"; };
@@ -393,6 +397,7 @@
 				913E5E48832603A6B4238A3D /* AppEnvironment.swift */,
 				14F4FB1E29E55D21AB1A0747 /* AppRouter.swift */,
 				A108D336F75F134A6B6521FA /* CarddexApp.swift */,
+				A2A2A2A2A2A2A2A2A2A2A2A2 /* AppDelegate.swift */,
 				6641D60939CA82CD0B026D90 /* RootView.swift */,
 			);
 			path = App;
@@ -576,6 +581,7 @@
 				64F1684A467DD1A178BC7310 /* KeychainStore.swift */,
 				9E614259B52E7A8AE90DDCEA /* LiveIdentificationService.swift */,
 				FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */,
+				A4A4A4A4A4A4A4A4A4A4A4A4 /* PushRegistrationCenter.swift */,
 				F5F5F5F5F5F5F5F5F5F5F5F5 /* NotificationService.swift */,
 				F8A43A7A1CAF3FC080F4F724 /* MarketService.swift */,
 				DECFAD4285A3AD2FD2A804E1 /* MotionManager.swift */,
@@ -861,6 +867,8 @@
 				AA2E9C19D851F0BCF570521F /* CardSet.swift in Sources */,
 				08B8A308209E7BF1EE8901ED /* CardTextRecognizer.swift in Sources */,
 				153F104711530D0197A30B5C /* CarddexApp.swift in Sources */,
+				A1A1A1A1A1A1A1A1A1A1A1A1 /* AppDelegate.swift in Sources */,
+				A3A3A3A3A3A3A3A3A3A3A3A3 /* PushRegistrationCenter.swift in Sources */,
 				15C5B597BEF2FB25E0B2FACD /* CaseIntents.swift in Sources */,
 				72150FAE787739BE708B0677 /* Chip.swift in Sources */,
 				99448162D54E299777620591 /* CircleIconButton.swift in Sources */,
