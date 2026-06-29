@@ -46,7 +46,9 @@ struct CarddexApp: App {
                     SpotlightIndexer.index(SampleData.marketCards)
                     consumePendingTab()
                     await verifyEntitlement()
+                    await NotificationService.shared.requestAuthorization()
                     await marketStore.refresh()
+                    await evaluatePriceAlerts()
                     if environment.auth.isSignedIn {
                         await runSync()
                     }
@@ -56,7 +58,11 @@ struct CarddexApp: App {
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active {
                         consumePendingTab()
-                        if environment.auth.isSignedIn { Task { await runSync() } }
+                        Task {
+                            await marketStore.refresh()
+                            await evaluatePriceAlerts()
+                            if environment.auth.isSignedIn { await runSync() }
+                        }
                     } else {
                         updateWidget()
                     }
@@ -106,6 +112,16 @@ struct CarddexApp: App {
         wishlist.refresh()
         subscriptions.refresh()
         updateWidget()
+    }
+
+    /// Fire local notifications for any watched card that just reached its target
+    /// price (best-effort; no-op until the user grants notification permission).
+    private func evaluatePriceAlerts() async {
+        await NotificationService.shared.evaluate(
+            alerts: watchlist.alerts,
+            market: marketStore,
+            name: { SampleData.card(id: $0)?.name ?? "Your card" }
+        )
     }
 
     /// Verify the StoreKit 2 entitlement on launch. If the user has an active

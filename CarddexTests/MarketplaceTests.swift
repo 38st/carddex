@@ -39,4 +39,12 @@ import Foundation
         #expect(!url.absoluteString.contains("campid"))
         #expect(url.absoluteString.contains("LH_Sold=1"))
     }
+
+    @Test func buyURLIsActiveListingsNotSold() throws {
+        let url = try #require(Marketplace.ebayBuySearchURL(for: makeCard(), campaignID: "53378012345"))
+        let s = url.absoluteString
+        #expect(!s.contains("LH_Sold"))          // active listings, not comps
+        #expect(s.contains("_sop=15"))           // lowest price + shipping
+        #expect(s.contains("campid=53378012345"))
+    }
 }

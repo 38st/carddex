@@ -43,3 +43,37 @@ import Foundation
         #expect(store.hasAlert(SampleData.brady.id))
     }
 }
+
+/// Decision logic behind local price-alert notifications.
+@Suite struct AlertReconcilerTests {
+    private let alert = PriceAlert(cardID: "c1", target: Money(amount: 100))
+
+    @Test func reachedAlertNotifiesOnceThenSuppresses() {
+        let price: (PriceAlert) -> Decimal? = { _ in 120 } // above target
+        let first = AlertReconciler.evaluate(alerts: [alert], price: price, notified: [])
+        #expect(first.notify.count == 1)
+        #expect(first.notified.contains(AlertReconciler.key(alert)))
+        // Same elevated price again → already notified, stays quiet.
+        let second = AlertReconciler.evaluate(alerts: [alert], price: price, notified: first.notified)
+        #expect(second.notify.isEmpty)
+    }
+
+    @Test func belowTargetDoesNotNotify() {
+        let result = AlertReconciler.evaluate(alerts: [alert], price: { _ in 80 }, notified: [])
+        #expect(result.notify.isEmpty)
+    }
+
+    @Test func dropBelowReArmsForNextCrossing() {
+        let notified: Set<String> = [AlertReconciler.key(alert)]
+        let dropped = AlertReconciler.evaluate(alerts: [alert], price: { _ in 80 }, notified: notified)
+        #expect(!dropped.notified.contains(AlertReconciler.key(alert)))
+        let recrossed = AlertReconciler.evaluate(alerts: [alert], price: { _ in 130 }, notified: dropped.notified)
+        #expect(recrossed.notify.count == 1)
+    }
+
+    @Test func removedAlertKeysArePruned() {
+        let stale: Set<String> = ["gone@50", AlertReconciler.key(alert)]
+        let result = AlertReconciler.evaluate(alerts: [alert], price: { _ in 90 }, notified: stale)
+        #expect(!result.notified.contains("gone@50"))
+    }
+}

@@ -7,6 +7,7 @@ struct MarketCardView: View {
     @Environment(WatchlistStore.self) private var watchlist
     @Environment(MarketStore.self) private var marketStore
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     let card: Card
     @State private var selectedGrade: String
     @State private var priceRange: IndexRange = .month
@@ -117,6 +118,17 @@ struct MarketCardView: View {
                 PrimaryButton(title: isOwned ? "Add another to portfolio" : "Add to portfolio",
                               systemImage: isOwned ? "plus.rectangle.on.rectangle" : "plus") {
                     showAdd = true
+                }
+
+                if let buyURL = Marketplace.ebayBuySearchURL(for: card) {
+                    Button { openURL(buyURL) } label: {
+                        Label("Find on eBay", systemImage: "cart")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(Theme.cream)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, Theme.Spacing.sm)
+                            .glassCapsule()
+                    }
                 }
             }
             .padding()
