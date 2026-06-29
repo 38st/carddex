@@ -25,7 +25,7 @@ struct RootView: View {
                 tab { SettingsView() }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
         .tint(Theme.cream)
     }
 

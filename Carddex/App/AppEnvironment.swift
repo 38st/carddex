@@ -20,6 +20,7 @@ final class AppEnvironment {
             self.auth = auth
             self.identification = LiveIdentificationService(
                 endpoint: config.identifyURL,
+                searchEndpoint: config.catalogSearchURL,
                 tokenProvider: { [auth] in
                     await auth.refreshIfNeeded()
                     return await MainActor.run { auth.session?.accessToken }

@@ -40,7 +40,7 @@ struct CSVImportExportView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
         .fileImporter(isPresented: $showFilePicker, allowedContentTypes: [.commaSeparatedText]) { result in
             handleImport(result)
         }

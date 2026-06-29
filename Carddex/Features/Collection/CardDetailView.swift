@@ -19,6 +19,12 @@ struct CardDetailView: View {
         return store.completion(for: set)
     }
 
+    /// The live copy from the store, so condition edits (which mutate the store)
+    /// reflect immediately. Falls back to the passed-in item if it's been removed.
+    private var liveItem: CollectionItem {
+        store.items.first { $0.id == item.id } ?? item
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: Theme.Spacing.lg) {
@@ -51,7 +57,7 @@ struct CardDetailView: View {
                 } back: {
                     CardBackView(
                         card: item.card,
-                        condition: item.condition,
+                        condition: liveItem.condition,
                         setCompletion: setCompletion
                     )
                     .frame(maxWidth: 220)
@@ -99,7 +105,18 @@ struct CardDetailView: View {
                 .glassPanel(cornerRadius: Theme.Radius.card)
 
                 VStack(spacing: Theme.Spacing.sm) {
-                    LabeledContent("Condition", value: item.condition.rawValue)
+                    Picker("Condition", selection: Binding(
+                        get: { liveItem.condition },
+                        set: { store.setCondition($0, for: liveItem); Haptics.selection() }
+                    )) {
+                        ForEach(CardCondition.allCases) { Text($0.rawValue).tag($0) }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(Theme.cream)
+                    if liveItem.card.marketPrice != nil {
+                        Divider().overlay(Theme.hairline)
+                        LabeledContent("Condition value", value: liveItem.conditionAdjustedValue.formatted)
+                    }
                     Divider().overlay(Theme.hairline)
                     LabeledContent("Added", value: item.dateAdded.formatted(date: .abbreviated, time: .omitted))
                     if let cert = item.certNumber {
@@ -175,5 +192,5 @@ struct CardDetailView: View {
             .environment(CollectionStore(items: SampleData.collection))
             .environment(MarketStore())
     }
-    .preferredColorScheme(.dark)
+    .preferredColorScheme(Theme.appColorScheme)
 }

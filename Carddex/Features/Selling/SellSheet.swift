@@ -84,7 +84,7 @@ struct SellSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
     }
 
     private var header: some View {

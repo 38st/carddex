@@ -166,6 +166,6 @@ struct AddGrailSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
     }
 }

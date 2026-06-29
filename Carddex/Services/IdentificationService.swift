@@ -34,4 +34,11 @@ enum IdentificationError: Error, Sendable, Equatable {
 /// Swappable so the cloud provider can change and previews/tests use a fake.
 protocol IdentificationService: Sendable {
     func identify(_ input: ScanInput) async throws -> IdentificationOutcome
+
+    /// Free-text catalog search, used by the manual fallback when a scan can't be
+    /// identified. Returns real, catalog-grounded cards (with stable ids, set,
+    /// number, rarity) ranked by match quality — never untracked orphans.
+    /// Unlike `identify`, this makes no vision call and costs nothing, so it's
+    /// safe to call on every keystroke (debounced by the caller).
+    func searchCatalog(query: String, gameHint: CardGame?) async throws -> [IdentificationCandidate]
 }

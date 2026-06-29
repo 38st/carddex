@@ -106,14 +106,4 @@ import SwiftData
         let entities = (try? controller.context.fetch(FetchDescriptor<CollectionItemEntity>())) ?? []
         #expect(entities.first?.dirty == true)
     }
-
-    @Test func mergeRemoteMarksEntitiesNotDirty() {
-        let controller = makeController()
-        let store = CollectionStore(items: [], persistence: controller)
-        store.mergeRemote([CollectionItem(card: SampleData.jordan)])
-
-        let entities = (try? controller.context.fetch(FetchDescriptor<CollectionItemEntity>())) ?? []
-        // Remote-origin rows are not dirty (already on the server).
-        #expect(entities.first?.dirty == false)
-    }
 }

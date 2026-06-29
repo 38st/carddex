@@ -37,6 +37,13 @@ struct CollectionItem: Identifiable, Codable, Hashable, Sendable {
         return Money(amount: unit * Decimal(quantity))
     }
 
+    /// Estimated value discounted for condition (mint = full market). Makes the
+    /// portfolio honest instead of assuming every card is mint.
+    var conditionAdjustedValue: Money {
+        Money(amount: estimatedValue.amount * condition.multiplier,
+              currencyCode: estimatedValue.currencyCode)
+    }
+
     var hasCostBasis: Bool { purchasePrice != nil }
 
     /// What the user paid: purchase price × quantity.

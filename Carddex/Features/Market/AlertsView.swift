@@ -128,5 +128,5 @@ private struct AlertRow: View {
             PriceAlert(cardID: SampleData.brady.id, target: Money(amount: 60000)),
         ]))
         .environment(MarketStore())
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
 }

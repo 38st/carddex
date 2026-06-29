@@ -5,6 +5,7 @@ import Foundation
 struct SupabaseConfig {
     let baseURL: URL
     let identifyURL: URL
+    let catalogSearchURL: URL
     let marketDataURL: URL
     let accountDeleteURL: URL
     let anonKey: String
@@ -16,11 +17,13 @@ struct SupabaseConfig {
         guard
             let baseURL = URL(string: "https://\(projectRef).supabase.co"),
             let identifyURL = URL(string: "https://\(projectRef).functions.supabase.co/identify"),
+            let catalogSearchURL = URL(string: "https://\(projectRef).functions.supabase.co/catalog-search"),
             let marketDataURL = URL(string: "https://\(projectRef).functions.supabase.co/market-data"),
             let accountDeleteURL = URL(string: "https://\(projectRef).functions.supabase.co/account-delete")
         else { return nil }
         self.baseURL = baseURL
         self.identifyURL = identifyURL
+        self.catalogSearchURL = catalogSearchURL
         self.marketDataURL = marketDataURL
         self.accountDeleteURL = accountDeleteURL
         self.anonKey = anonKey

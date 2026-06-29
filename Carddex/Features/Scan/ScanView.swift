@@ -190,13 +190,18 @@ private struct IdentifyResultSheet: View {
     let outcome: IdentificationOutcome
     let onAdd: (Card) -> Void
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppEnvironment.self) private var env
     @State private var revealScale: CGFloat = 0.85
     @State private var revealOpacity: Double = 0
     @State private var shownPrice: Double = 0
     @State private var manualName = ""
     @State private var manualSet = ""
-    @State private var manualGame: CardGame = .pokemon
+    @State private var manualGame: CardGame? = nil
     @State private var manualPrice = ""
+    @State private var searchResults: [IdentificationCandidate] = []
+    @State private var isSearching = false
+    @State private var didSearch = false
+    @State private var showUntracked = false
 
     var body: some View {
         NavigationStack {
@@ -292,30 +297,129 @@ private struct IdentifyResultSheet: View {
     private func manual(_ ocr: [String]) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                Text("Couldn't identify it — add it manually")
+                Text("Couldn't auto-identify — search the catalog")
                     .font(.headline)
                     .foregroundStyle(Theme.textPrimary)
+                Text("Pick the real card so it tracks price, set, and grade.")
+                    .font(.caption)
+                    .foregroundStyle(Theme.textSecondary)
 
-                labeled("Card name") {
-                    TextField("e.g. Charizard", text: $manualName)
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal, 14).padding(.vertical, 11)
-                        .glassCard(cornerRadius: Theme.Radius.md)
+                searchField
+                gameFilter
+                results
+
+                untrackedFallback
+
+                Button("Try scanning again") { dismiss() }
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.textSecondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, Theme.Spacing.sm)
+            }
+            .padding()
+        }
+        // Re-runs (auto-cancelling the prior task) whenever the query or game
+        // filter changes; runSearch() debounces before hitting the network.
+        .task(id: SearchKey(query: manualName, game: manualGame)) {
+            await runSearch()
+        }
+        .onAppear {
+            if manualName.isEmpty, let first = ocr.first { manualName = first }
+        }
+    }
+
+    private var searchField: some View {
+        HStack(spacing: Theme.Spacing.sm) {
+            Image(systemName: "magnifyingglass").foregroundStyle(Theme.textTertiary)
+            TextField("Card name or number", text: $manualName)
+                .textFieldStyle(.plain)
+                .autocorrectionDisabled()
+                .submitLabel(.search)
+            if !manualName.isEmpty {
+                Button { manualName = "" } label: {
+                    Image(systemName: "xmark.circle.fill").foregroundStyle(Theme.textTertiary)
                 }
-                labeled("Set") {
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 14).padding(.vertical, 11)
+        .glassCard(cornerRadius: Theme.Radius.md)
+    }
+
+    private var gameFilter: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: Theme.Spacing.sm) {
+                Chip(title: "All games", isSelected: manualGame == nil) { manualGame = nil }
+                ForEach(CardGame.allCases) { game in
+                    Chip(title: game.displayName, isSelected: manualGame == game) { manualGame = game }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder private var results: some View {
+        if isSearching {
+            HStack(spacing: Theme.Spacing.sm) {
+                ProgressView()
+                Text("Searching…").font(.caption).foregroundStyle(Theme.textSecondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, Theme.Spacing.md)
+        } else if !searchResults.isEmpty {
+            VStack(spacing: Theme.Spacing.sm) {
+                ForEach(searchResults) { candidate in
+                    Button { onAdd(candidate.card) } label: { resultRow(candidate.card) }
+                        .buttonStyle(.plain)
+                }
+            }
+        } else if didSearch && manualName.trimmingCharacters(in: .whitespaces).count >= 2 {
+            Text("No catalog match for “\(manualName)”.")
+                .font(.subheadline)
+                .foregroundStyle(Theme.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, Theme.Spacing.sm)
+        }
+    }
+
+    private func resultRow(_ card: Card) -> some View {
+        HStack(spacing: Theme.Spacing.md) {
+            CardArtwork(game: card.game, rarity: card.rarity, price: card.marketPrice, imageURL: card.imageURL, sport: card.sport)
+                .frame(width: 40)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(card.name).foregroundStyle(Theme.textPrimary)
+                Text([card.setName, card.number].filter { !$0.isEmpty }.joined(separator: " · "))
+                    .font(.caption).foregroundStyle(Theme.textSecondary)
+            }
+            Spacer()
+            Image(systemName: "plus.circle.fill").foregroundStyle(Theme.cream)
+        }
+        .padding(.horizontal, 12).padding(.vertical, 8)
+        .glassCard(cornerRadius: Theme.Radius.md)
+    }
+
+    @ViewBuilder private var untrackedFallback: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { showUntracked.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: showUntracked ? "chevron.down" : "chevron.right")
+                        .font(.caption2)
+                    Text("Can't find it? Add as an untracked card")
+                }
+                .font(.subheadline)
+                .foregroundStyle(Theme.textSecondary)
+            }
+            .buttonStyle(.plain)
+
+            if showUntracked {
+                Text("Untracked cards appear in your dex but get no price updates or set tracking.")
+                    .font(.caption).foregroundStyle(Theme.textTertiary)
+                labeled("Set (optional)") {
                     TextField("e.g. Base Set", text: $manualSet)
                         .textFieldStyle(.plain)
                         .padding(.horizontal, 14).padding(.vertical, 11)
                         .glassCard(cornerRadius: Theme.Radius.md)
-                }
-                labeled("Game") {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: Theme.Spacing.sm) {
-                            ForEach(CardGame.allCases) { game in
-                                Chip(title: game.displayName, isSelected: manualGame == game) { manualGame = game }
-                            }
-                        }
-                    }
                 }
                 labeled("Price (USD, optional)") {
                     TextField("0.00", text: $manualPrice)
@@ -324,27 +428,41 @@ private struct IdentifyResultSheet: View {
                         .padding(.horizontal, 14).padding(.vertical, 11)
                         .glassCard(cornerRadius: Theme.Radius.md)
                 }
-
-                PrimaryButton(title: "Add card", systemImage: "plus") {
+                PrimaryButton(title: "Add untracked card", systemImage: "plus") {
                     onAdd(manualCard())
                 }
-                .disabled(manualName.isEmpty)
-
-                Button("Try again") { dismiss() }
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.textSecondary)
-                    .frame(maxWidth: .infinity)
+                .disabled(manualName.trimmingCharacters(in: .whitespaces).isEmpty)
             }
-            .padding()
         }
-        .onAppear {
-            if manualName.isEmpty, let first = ocr.first { manualName = first }
-        }
+        .padding(.top, Theme.Spacing.sm)
     }
 
+    /// Debounced catalog search. `.task(id:)` cancels the in-flight task when the
+    /// query/filter changes, so the sleep both debounces typing and the
+    /// `Task.isCancelled` checks drop stale results.
+    private func runSearch() async {
+        let q = manualName.trimmingCharacters(in: .whitespaces)
+        guard q.count >= 2 else {
+            searchResults = []
+            didSearch = false
+            isSearching = false
+            return
+        }
+        try? await Task.sleep(for: .milliseconds(300))
+        if Task.isCancelled { return }
+        isSearching = true
+        let found = (try? await env.identification.searchCatalog(query: q, gameHint: manualGame)) ?? []
+        if Task.isCancelled { return }
+        searchResults = found
+        isSearching = false
+        didSearch = true
+    }
+
+    /// Last-resort orphan card when nothing in the catalog matches. The
+    /// `manual-` id prefix marks it untracked (no price/set grounding).
     private func manualCard() -> Card {
         let price = Double(manualPrice).map { Money(amount: Decimal($0)) }
-        return Card(id: "manual-\(UUID().uuidString)", game: manualGame, name: manualName,
+        return Card(id: "manual-\(UUID().uuidString)", game: manualGame ?? .pokemon, name: manualName,
                     setName: manualSet, number: "", rarity: nil, imageURL: nil, marketPrice: price)
     }
 
@@ -354,6 +472,13 @@ private struct IdentifyResultSheet: View {
             content()
         }
     }
+}
+
+/// Identity for the debounced catalog search `.task(id:)` — re-runs only when
+/// the typed query or the selected game filter actually changes.
+private struct SearchKey: Equatable {
+    let query: String
+    let game: CardGame?
 }
 
 #Preview {

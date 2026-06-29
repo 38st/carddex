@@ -232,5 +232,5 @@ struct SettingsView: View {
         .environment(AuthSessionStore(service: FakeAuthService()))
         .environment(WatchlistStore())
         .environment(WishlistStore())
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
 }

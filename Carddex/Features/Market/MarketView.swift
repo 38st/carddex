@@ -403,5 +403,5 @@ private struct IndexTile: View {
         .environment(CollectionStore(items: SampleData.collection))
         .environment(WatchlistStore(followed: [SampleData.jordan.id]))
         .environment(MarketStore())
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
 }

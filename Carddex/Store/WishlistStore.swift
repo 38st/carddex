@@ -76,17 +76,6 @@ final class WishlistStore {
         save()
     }
 
-    /// Merge remote grails from a pull. Additive: entries for cards not already
-    /// tracked locally are appended. The LWW variant lands in Slice 3.
-    func mergeRemote(_ remote: [GrailEntry]) {
-        let localCardIDs = Set(grails.map(\.cardID))
-        for entry in remote where !localCardIDs.contains(entry.cardID) {
-            grails.append(entry)
-            upsertEntity(entry, dirty: false)
-        }
-        save()
-    }
-
     /// Clear all local state and persist the empty snapshot. Used after a
     /// successful account deletion so a re-launch doesn't restore wiped data.
     func wipeLocal() {

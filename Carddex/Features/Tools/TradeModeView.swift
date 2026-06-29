@@ -68,7 +68,7 @@ struct TradeModeView: View {
                 )
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
     }
 
     enum TradeSide {
@@ -357,7 +357,7 @@ private struct TradeCardPicker: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
     }
 }
 
@@ -419,7 +419,7 @@ private struct TradeResultSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
     }
 
     private func summaryRow(_ label: String, _ value: String) -> some View {

@@ -38,7 +38,7 @@ struct InsuranceReportView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
         .sheet(isPresented: $showPaywall) { PaywallView() }
         .sheet(isPresented: $showShareSheet) {
             if let pdfURL { ShareSheet(items: [pdfURL]) }

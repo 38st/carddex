@@ -50,7 +50,7 @@ struct GradingTrackerView: View {
                 AddSubmissionSheet(store: store)
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
     }
 
     private var summaryCard: some View {
@@ -324,7 +324,7 @@ struct AddSubmissionSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
     }
 
     @ViewBuilder private func field<Content: View>(_ label: String, @ViewBuilder _ content: () -> Content) -> some View {

@@ -141,5 +141,5 @@ struct AddToPortfolioSheet: View {
 #Preview {
     AddToPortfolioSheet(card: SampleData.jordan, suggestedPrice: Money(amount: 95000))
         .environment(CollectionStore())
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
 }

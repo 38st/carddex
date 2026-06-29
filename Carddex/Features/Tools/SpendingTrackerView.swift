@@ -26,7 +26,7 @@ struct SpendingTrackerView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
     }
 
     private var itemsWithCost: [CollectionItem] {

@@ -82,17 +82,6 @@ final class WatchlistStore {
         }
     }
 
-    /// Merge remote alerts from a pull. Additive: alerts for cards not already
-    /// tracked locally are appended. The LWW variant lands in Slice 3.
-    func mergeRemote(_ remote: [PriceAlert]) {
-        let localCardIDs = Set(alerts.map(\.cardID))
-        for alert in remote where !localCardIDs.contains(alert.cardID) {
-            alerts.append(alert)
-            upsertEntity(alert, dirty: false)
-        }
-        save()
-    }
-
     /// Clear all local state and persist the empty snapshot. Used after a
     /// successful account deletion so a re-launch doesn't restore wiped data.
     func wipeLocal() {

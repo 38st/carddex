@@ -92,7 +92,8 @@ import SwiftData
 
         let cardDTO = CardDTO(id: SampleData.jordan.id, game: "sports",
                               name: SampleData.jordan.name, set_name: SampleData.jordan.setName,
-                              number: SampleData.jordan.number, rarity: nil, image_url: nil)
+                              number: SampleData.jordan.number, rarity: nil, image_url: nil,
+                              market_price: nil, sport: nil)
         transport.remoteChanges = RemoteChanges(
             collectionItems: [CollectionItemDTO(
                 id: UUID(), card_id: SampleData.jordan.id, quantity: 1,
@@ -123,7 +124,8 @@ import SwiftData
         let newerTimestamp = (localEntity?.remoteUpdatedAt ?? .now).addingTimeInterval(60)
         let cardDTO = CardDTO(id: SampleData.charizard.id, game: "pokemon",
                               name: SampleData.charizard.name, set_name: SampleData.charizard.setName,
-                              number: SampleData.charizard.number, rarity: nil, image_url: nil)
+                              number: SampleData.charizard.number, rarity: nil, image_url: nil,
+                              market_price: nil, sport: nil)
         let existingID = localEntity?.id ?? UUID()
         transport.remoteChanges = RemoteChanges(
             collectionItems: [CollectionItemDTO(
@@ -155,7 +157,8 @@ import SwiftData
         // Remote arrives with an OLDER timestamp and different quantity.
         let cardDTO = CardDTO(id: SampleData.charizard.id, game: "pokemon",
                               name: SampleData.charizard.name, set_name: SampleData.charizard.setName,
-                              number: SampleData.charizard.number, rarity: nil, image_url: nil)
+                              number: SampleData.charizard.number, rarity: nil, image_url: nil,
+                              market_price: nil, sport: nil)
         transport.remoteChanges = RemoteChanges(
             collectionItems: [CollectionItemDTO(
                 id: localEntity?.id ?? UUID(), card_id: SampleData.charizard.id, quantity: 99,
@@ -309,6 +312,42 @@ import SwiftData
         #expect(transport.pullSinceArgs[2] == nil)  // full pull again after reset
     }
 
+    /// Mirrors the CarddexApp sign-in path on a new device/reinstall: after a
+    /// prior incremental watermark exists, `resetWatermark()` must precede the
+    /// pull so the account is restored via a FULL pull. Guards the ordering fix
+    /// in `CarddexApp.onChange(of: isSignedIn)`.
+    @Test func resetThenSyncRestoresCollectionOnNewDevice() async {
+        let transport = FakeSyncService()
+        let (engine, controller, _) = makeEngine(transport: transport)
+
+        // Establish a non-nil watermark (as if this install had synced before).
+        await engine.sync()
+        #expect(transport.pullSinceArgs[0] == nil)  // first pull = full
+
+        // Remote now holds the user's collection; the local device is empty.
+        let cardDTO = CardDTO(id: SampleData.jordan.id, game: "sports",
+                              name: SampleData.jordan.name, set_name: SampleData.jordan.setName,
+                              number: SampleData.jordan.number, rarity: nil, image_url: nil,
+                              market_price: nil, sport: nil)
+        transport.remoteChanges = RemoteChanges(
+            collectionItems: [CollectionItemDTO(
+                id: UUID(), card_id: SampleData.jordan.id, quantity: 1,
+                condition: "Near Mint", purchase_price: nil, currency: nil,
+                date_added: .now, updated_at: .now, deleted_at: nil, card: cardDTO
+            )],
+            priceAlerts: [], wishlistEntries: [], subscription: nil
+        )
+
+        // Sign-in sequence: reset (full pull) THEN sync.
+        await engine.resetWatermark()
+        await engine.sync()
+
+        #expect(transport.pullSinceArgs[1] == nil)  // restore pull was full, not incremental
+        let store = CollectionStore(items: [], persistence: controller)
+        #expect(store.items.count == 1)
+        #expect(store.items.first?.card.id == SampleData.jordan.id)
+    }
+
     // MARK: - Pending scan replay
 
     @Test func pendingScanReplayedAndDeletedOnSuccess() async {
@@ -337,6 +376,7 @@ import SwiftData
             func identify(_ input: ScanInput) async throws -> IdentificationOutcome {
                 throw IdentificationError.server("vision down")
             }
+            func searchCatalog(query: String, gameHint: CardGame?) async throws -> [IdentificationCandidate] { [] }
         }
         let transport = FakeSyncService()
         let controller = PersistenceController.forTesting()

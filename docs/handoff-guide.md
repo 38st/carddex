@@ -11,7 +11,7 @@ Read this to understand what's built, the patterns to follow, and what's next.*
 | **Sets browser + Grail List** | Done | `Store/WishlistStore.swift`, `Features/Collection/SetDetailView.swift`, `Features/Grails/GrailsView.swift`, `DesignSystem/Components/BinderPageView.swift` |
 | **UI uplifts** | Done | `DesignSystem/Components/RollingNumber.swift`, `FlipCardView.swift`, `ScanOverlay.swift` |
 | **Auth (Sign in with Apple)** | Done (client-side) | `Services/KeychainStore.swift`, `AuthService.swift`, `Store/AuthSessionStore.swift`, `App/AppEnvironment.swift` |
-| **Sync (PostgREST CRUD)** | Push-only done; **pull not wired** | `Services/SyncService.swift`, `Store/CollectionStore.swift`, `WatchlistStore.swift`, `WishlistStore.swift`, `SubscriptionStore.swift` |
+| **Sync (PostgREST CRUD)** | Done — bidirectional via `SyncEngine` (push dirty + incremental pull + LWW apply); new-device restore wired | `Services/SyncEngine.swift`, `Services/SyncService.swift`, `App/CarddexApp.swift`, `Store/CollectionStore.swift`, `WatchlistStore.swift`, `WishlistStore.swift`, `SubscriptionStore.swift` |
 | **StoreKit 2** | Stub (`activatePro()` flips a bool) | `Store/SubscriptionStore.swift`, `Features/Paywall/PaywallView.swift` |
 | **Condition tracking** | Read-only display; no editor | `Features/Collection/CardDetailView.swift`, `Models/CollectionItem.swift` |
 | **Account deletion** | Stub (empty button handler) | `Features/Settings/SettingsView.swift` |
@@ -55,48 +55,35 @@ The entire app uses raw `URLSession` for all network calls (Supabase Auth, Postg
 
 ## 3. Remaining work — implementation guides
 
-### 3.1 Wire `pullAll()` — complete cross-device sync (HIGH PRIORITY)
+### 3.1 Cross-device sync — DONE (via `SyncEngine`, not legacy `pullAll()`)
 
-**What**: When a user signs in (or app launches with an existing session), pull their remote state from PostgREST and merge into the local stores.
+**Status**: Bidirectional sync is implemented and wired. This section originally
+described wiring the legacy `pullAll()` → `store.mergeRemote(...)` path, but the
+app moved to a more capable `SyncEngine` and that plan is now stale.
 
-**Why**: Sync is currently push-only. A second device can push but can't pull. This is the missing half.
+**What's actually built**:
+- `Services/SyncEngine.swift` owns the cycle: push dirty entities → incremental
+  pull (`pullChanges(since: lastSyncAt)`) → **last-writer-wins** apply into
+  SwiftData (inserts new remote rows, updates by `updated_at`, applies
+  tombstones) → stores refresh from SwiftData.
+- `App/CarddexApp.runSync()` runs the engine then refreshes the in-memory stores.
+  It fires on launch `.task` (if signed in), on `scenePhase == .active`, and on
+  the `isSignedIn` transition.
+- **New-device / reinstall restore**: on sign-in, `CarddexApp.onChange(of:isSignedIn)`
+  awaits `syncEngine.resetWatermark()` (drops `lastSyncAt`) *before* `runSync()`,
+  forcing a full pull that reconstructs the account. On a fresh install
+  `lastSyncAt` is already nil, so the launch path does the full pull too.
 
-**How**:
-1. In `CarddexApp.swift`, inside `.task` (after `wireSync()`), add:
-```swift
-if environment.auth.isSignedIn {
-    await pullRemoteState()
-}
-```
-2. Also trigger on sign-in state change — add `.onChange(of: environment.auth.isSignedIn)`:
-```swift
-.onChange(of: environment.auth.isSignedIn) { _, signedIn in
-    if signedIn { Task { await pullRemoteState() } }
-}
-```
-3. Implement `pullRemoteState()`:
-```swift
-private func pullRemoteState() async {
-    guard let remote = try? await environment.sync.pullAll() else { return }
-    // Merge strategy: remote wins for items the local store doesn't have;
-    // keep local for items that exist locally (they may have unsynced changes).
-    // A full LWW merge is Phase 2; for now, additive merge:
-    let localIDs = Set(store.items.map(\.id))
-    for item in remote.collectionItems where !localIDs.contains(item.id) {
-        store.items.append(item)
-    }
-    // Same pattern for watchlist.alerts, wishlist.grails, subscription state.
-    if let sub = remote.subscription {
-        subscriptions.isPro = sub.isPro
-        subscriptions.scansThisMonth = sub.scansThisMonth
-    }
-    store.persist() // save merged state to disk
-}
-```
+**Tests**: `SyncEngineTests` covers push/pull/LWW/tombstones, full-vs-incremental
+watermark behavior, and `resetThenSyncRestoresCollectionOnNewDevice` (the
+new-device restore). `PullMergeTests` still covers the legacy store-merge
+primitives.
 
-**Gotcha**: The merge is intentionally simple (additive). A proper last-writer-wins merge needs `updated_at` timestamps (the `0003_collection_hardening.sql` migration adds these). Don't over-engineer the first version — additive merge covers the "new device" case, which is the primary use case.
-
-**Test**: Add a `PullSyncTests` suite that creates a `FakeSyncService` with `remoteState` set, calls `pullAll()`, and asserts the stores received the remote items.
+**Legacy dead code — removed**: the old `pullAll()` / `RemoteState` /
+`store.mergeRemote(...)` / `SubscriptionStore.applyRemote(...)` path (plus the
+legacy view-struct `upsert*`/`delete*` `SyncServiceProtocol` methods and their
+`PullMergeTests`) has been deleted. The DTO-based `SyncEngine` path is the only
+sync mechanism now.
 
 ### 3.2 StoreKit 2 — replace the paywall stub (HIGH PRIORITY)
 

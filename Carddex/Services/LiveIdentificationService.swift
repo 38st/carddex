@@ -7,11 +7,13 @@ import Foundation
 /// capturing a non-Sendable store.
 struct LiveIdentificationService: IdentificationService {
     let endpoint: URL
+    let searchEndpoint: URL
     let tokenProvider: @Sendable () async -> String?
     var session: URLSession = .shared
 
-    init(endpoint: URL, tokenProvider: @escaping @Sendable () async -> String?, session: URLSession = .shared) {
+    init(endpoint: URL, searchEndpoint: URL, tokenProvider: @escaping @Sendable () async -> String?, session: URLSession = .shared) {
         self.endpoint = endpoint
+        self.searchEndpoint = searchEndpoint
         self.tokenProvider = tokenProvider
         self.session = session
     }
@@ -49,6 +51,45 @@ struct LiveIdentificationService: IdentificationService {
         }
         return decoded.outcome
     }
+
+    func searchCatalog(query: String, gameHint: CardGame?) async throws -> [IdentificationCandidate] {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return [] }
+
+        var request = URLRequest(url: searchEndpoint)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let token = await tokenProvider() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        request.httpBody = try JSONEncoder().encode(
+            CatalogSearchRequest(query: trimmed, gameHint: gameHint?.rawValue)
+        )
+
+        let (data, response): (Data, URLResponse)
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            throw IdentificationError.offline
+        }
+        guard let http = response as? HTTPURLResponse else {
+            throw IdentificationError.server("no response")
+        }
+        guard http.statusCode == 200 else {
+            throw IdentificationError.server("status \(http.statusCode)")
+        }
+        guard let decoded = try? JSONDecoder().decode(IdentifyResponse.self, from: data) else {
+            throw IdentificationError.decoding
+        }
+        return decoded.candidates.map {
+            IdentificationCandidate(card: $0.card, confidence: $0.confidence)
+        }
+    }
+}
+
+private struct CatalogSearchRequest: Encodable {
+    let query: String
+    let gameHint: String?
 }
 
 private struct IdentifyRequest: Encodable {

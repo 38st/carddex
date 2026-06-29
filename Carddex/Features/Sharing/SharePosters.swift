@@ -53,6 +53,53 @@ struct ShareableCollectionCard: View {
     }
 }
 
+/// Branded poster of a freshly-scanned shoebox's value — the bulk-scan growth
+/// loop ("I just scanned my shoebox and it's worth $X").
+struct ShareableShoeboxPoster: View {
+    let totalValue: String
+    let cardCount: Int
+    let tiles: [CardGame]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("The Case")
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                Spacer()
+            }
+            Spacer()
+            Text("I just scanned my shoebox")
+                .font(.title3)
+                .foregroundStyle(.white.opacity(0.7))
+            Text(totalValue)
+                .font(.system(size: 68, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+                .monospacedDigit()
+            Text("\(cardCount) card\(cardCount == 1 ? "" : "s") in one scan")
+                .font(.body)
+                .foregroundStyle(.white.opacity(0.6))
+                .padding(.top, 2)
+            Spacer()
+            HStack(spacing: 12) {
+                ForEach(Array(tiles.enumerated()), id: \.offset) { _, game in
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(LinearGradient(colors: game.artGradient, startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .frame(width: 78, height: 109)
+                        .overlay(Image(systemName: game.symbol).font(.title2).foregroundStyle(.white.opacity(0.55)))
+                }
+            }
+            Spacer()
+            Text("Scan a whole stack with The Case")
+                .font(.footnote)
+                .foregroundStyle(.white.opacity(0.5))
+        }
+        .padding(44)
+        .frame(width: 600, height: 750)
+        .background(posterBackground)
+    }
+}
+
 /// Branded poster for a single card.
 struct ShareableCardPoster: View {
     let name: String

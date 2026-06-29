@@ -36,7 +36,7 @@ struct PaywallView: View {
                 .padding()
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
         .overlay(alignment: .topTrailing) {
             Button { dismiss() } label: {
                 Image(systemName: "xmark.circle.fill")
@@ -255,5 +255,5 @@ struct PaywallView: View {
     PaywallView()
         .environment(AppEnvironment(identification: FakeIdentificationService()))
         .environment(SubscriptionStore())
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
 }

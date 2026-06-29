@@ -278,5 +278,5 @@ struct MarketCardView: View {
             .environment(WatchlistStore())
             .environment(MarketStore())
     }
-    .preferredColorScheme(.dark)
+    .preferredColorScheme(Theme.appColorScheme)
 }

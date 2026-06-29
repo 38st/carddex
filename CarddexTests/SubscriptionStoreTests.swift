@@ -42,3 +42,20 @@ import Foundation
         #expect(subs.remainingFreeScans == 0)
     }
 }
+
+@MainActor
+@Suite struct StoreKitEntitlementTests {
+    @Test func noOpStoreKitReturnsNoProductsAndNoEntitlement() async {
+        let service = NoOpStoreKitService()
+        let products = try? await service.fetchProducts()
+        #expect(products?.isEmpty == true)
+        let entitled = await service.verifyEntitlement()
+        #expect(!entitled)
+    }
+
+    @Test func appEnvironmentProvidesStoreKitService() {
+        let env = AppEnvironment(identification: FakeIdentificationService())
+        // Without Secrets.plist, the environment uses NoOpStoreKitService.
+        #expect(env.storeKit is NoOpStoreKitService)
+    }
+}

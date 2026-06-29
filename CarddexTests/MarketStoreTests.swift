@@ -41,7 +41,8 @@ import Foundation
             gradedPrices: [CardBundleDTO.Graded(grade: "PSA 10", price: 99_999)],
             population: 500,
             change30d: 42.0,
-            recentSales: []
+            recentSales: [],
+            history: nil
         )
         let store = MarketStore(service: FakeMarketService(cards: [id: bundle]))
         await store.refresh()
@@ -59,7 +60,8 @@ import Foundation
             gradedPrices: [],
             population: 0,
             change30d: 42.0,
-            recentSales: []
+            recentSales: [],
+            history: nil
         )
         let store = MarketStore(service: FakeMarketService(cards: [id: bundle], failingCardIDs: [id]))
         let sampleChange = store.market[id]?.change30d
@@ -78,7 +80,8 @@ import Foundation
             population: 1234,
             change30d: 3.5,
             recentSales: [CardBundleDTO.SaleDTO(grade: "PSA 9", price: 1600, currency: "USD",
-                                                platform: "eBay", soldAt: "2026-01-15T00:00:00Z")]
+                                                platform: "eBay", soldAt: "2026-01-15T00:00:00Z")],
+            history: nil
         )
         let market = MarketStore.buildMarket(from: bundle)
         #expect(market.cardId == "c1")

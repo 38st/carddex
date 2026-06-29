@@ -14,6 +14,7 @@ struct BulkScanView: View {
     @State private var results: [BulkResult] = []
     @State private var isProcessing = false
     @State private var scanLimitHit = false
+    @State private var showSummary = false
 
     struct BulkResult: Identifiable {
         let id = UUID()
@@ -50,8 +51,15 @@ struct BulkScanView: View {
             .onChange(of: picked) { _, items in
                 Task { await process(items) }
             }
+            // The payoff reveal: "your box is worth $X," shown as soon as the
+            // stack finishes identifying, over the review list behind it.
+            .sheet(isPresented: $showSummary) {
+                BatchValueSummaryView(cards: results.map(\.card)) {
+                    showSummary = false
+                }
+            }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
     }
 
     @ViewBuilder private var content: some View {
@@ -143,5 +151,7 @@ struct BulkScanView: View {
         results = output
         picked = []
         isProcessing = false
+        // Reveal the box's total value before the user curates the list.
+        if !output.isEmpty { showSummary = true }
     }
 }

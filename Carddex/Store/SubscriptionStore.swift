@@ -57,14 +57,6 @@ final class SubscriptionStore {
         save()
     }
 
-    /// Apply remote subscription state from a pull. Does NOT trigger a sync push.
-    func applyRemote(_ state: SubscriptionStateDTO) {
-        isPro = state.isPro
-        scansThisMonth = state.scansThisMonth
-        upsertEntity(state, dirty: false)
-        save()
-    }
-
     /// Clear all local state and persist the empty snapshot. Used after a
     /// successful account deletion so a re-launch doesn't restore wiped data.
     func wipeLocal() {

@@ -144,6 +144,16 @@ final class CollectionStore {
         save()
     }
 
+    /// Update a held card's condition. Marks the row dirty so the SyncEngine
+    /// pushes it; no-op if the item is gone or the condition is unchanged.
+    func setCondition(_ condition: CardCondition, for item: CollectionItem) {
+        guard let index = items.firstIndex(where: { $0.id == item.id }),
+              items[index].condition != condition else { return }
+        items[index].condition = condition
+        upsertEntity(items[index])
+        save()
+    }
+
     func remove(_ item: CollectionItem) {
         items.removeAll { $0.id == item.id }
         // Soft-delete the entity (tombstone) so the SyncEngine can propagate.
@@ -166,21 +176,6 @@ final class CollectionStore {
     func completion(for set: CardSet) -> (owned: Int, total: Int) {
         let owned = set.slots.filter { ownedCard(setName: set.name, number: $0.number) != nil }.count
         return (owned, set.slots.count)
-    }
-
-    // MARK: - Merge
-
-    /// Merge remote items from a pull. Additive: remote items whose id isn't
-    /// already local are appended. Existing local items keep their state (they
-    /// may have unsynced changes). The LWW variant lands in Slice 3 alongside
-    /// the SyncEngine; this keeps first-sync working in the meantime.
-    func mergeRemote(_ remote: [CollectionItem]) {
-        let localIDs = Set(items.map(\.id))
-        for item in remote where !localIDs.contains(item.id) {
-            items.append(item)
-            upsertEntity(item, dirty: false)
-        }
-        save()
     }
 
     /// Clear all local state and persist the empty snapshot. Used after a

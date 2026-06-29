@@ -62,9 +62,17 @@ struct CarddexApp: App {
                     }
                 }
                 .onChange(of: environment.auth.isSignedIn) { _, signedIn in
+                    // A fresh sign-in (new device / reinstall) must do a FULL pull
+                    // to restore the account. Reset the watermark and run the sync
+                    // in one ordered task so the reset is applied before the pull
+                    // reads `lastSyncAt` — otherwise the two actor hops can race and
+                    // the pull goes incremental against a stale watermark, restoring
+                    // nothing.
                     if signedIn {
-                        syncEngine?.resetWatermark()
-                        Task { await runSync() }
+                        Task {
+                            await syncEngine?.resetWatermark()
+                            await runSync()
+                        }
                     }
                 }
                 .fullScreenCover(isPresented: Binding(
@@ -72,6 +80,7 @@ struct CarddexApp: App {
                     set: { presented in if !presented { hasOnboarded = true } }
                 )) {
                     OnboardingView()
+                        .environment(router)
                 }
         }
     }

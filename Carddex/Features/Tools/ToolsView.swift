@@ -35,7 +35,7 @@ struct ToolsView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
         .sheet(isPresented: $showPSA) { PSACalculatorView() }
         .sheet(isPresented: $showInsurance) { InsuranceReportView() }
         .sheet(isPresented: $showCert) { CertLookupView() }

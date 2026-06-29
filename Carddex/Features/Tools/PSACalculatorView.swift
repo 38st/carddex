@@ -111,7 +111,7 @@ struct PSACalculatorView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
         .onChange(of: selectedService) { _, svc in
             estimatedGrade = svc.gradeOptions.last ?? "PSA 10"
         }

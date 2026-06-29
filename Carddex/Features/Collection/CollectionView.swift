@@ -300,5 +300,5 @@ private struct SetRow: View {
         .environment(CollectionStore(items: SampleData.collection))
         .environment(AppRouter())
         .environment(WishlistStore())
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
 }

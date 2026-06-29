@@ -82,6 +82,7 @@ struct PortfolioView: View {
                         depreciationBanner
                     }
                     hero
+                    if !store.items.isEmpty { WeeklyRecapView() }
                     if let top = store.items.max(by: { $0.estimatedValue.amount < $1.estimatedValue.amount }) {
                         NavigationLink(value: top) {
                             FeaturedCard(card: top.card, eyebrow: "Top holding", trailingValue: top.estimatedValue.formatted)
@@ -365,5 +366,5 @@ private struct PricePoint: Identifiable {
         .environment(CollectionStore(items: SampleData.collection))
         .environment(PortfolioHistoryStore())
         .environment(MarketStore())
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
 }

@@ -139,5 +139,5 @@ struct GrailsView: View {
         .environment(CollectionStore(items: SampleData.collection))
         .environment(MarketStore())
         .environment(AppRouter())
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
 }

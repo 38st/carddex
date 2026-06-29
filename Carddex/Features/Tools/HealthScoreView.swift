@@ -43,7 +43,7 @@ struct HealthScoreView: View {
             }
             .onAppear(perform: renderShareImage)
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Theme.appColorScheme)
     }
 
     private var header: some View {

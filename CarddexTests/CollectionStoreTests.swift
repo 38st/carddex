@@ -51,4 +51,36 @@ import Foundation
         #expect(store.totalCost.amount == 200)
         #expect(store.totalGainLoss.amount == 120)
     }
+
+    // MARK: - Condition (#4)
+
+    @Test func conditionMultipliersDiscountValue() {
+        #expect(CardCondition.mint.multiplier == 1.0)
+        #expect(CardCondition.nearMint.multiplier == 0.9)
+        #expect(CardCondition.damaged.multiplier == 0.3)
+    }
+
+    @Test func conditionAdjustedValueAppliesMultiplier() {
+        // Charizard market = 320.
+        let mint = CollectionItem(card: SampleData.charizard, condition: .mint)
+        #expect(mint.conditionAdjustedValue.amount == 320)
+        let lightlyPlayed = CollectionItem(card: SampleData.charizard, condition: .lightlyPlayed)
+        #expect(lightlyPlayed.conditionAdjustedValue.amount == 240)   // 320 × 0.75
+    }
+
+    @Test func setConditionUpdatesItem() {
+        let item = CollectionItem(card: SampleData.charizard, condition: .nearMint)
+        let store = CollectionStore(items: [item])
+        store.setCondition(.heavilyPlayed, for: item)
+        #expect(store.items.first?.condition == .heavilyPlayed)
+        #expect(store.items.first?.conditionAdjustedValue.amount == 144)  // 320 × 0.45
+    }
+
+    @Test func setConditionNoOpForMissingItem() {
+        let store = CollectionStore(items: [CollectionItem(card: SampleData.charizard)])
+        let stranger = CollectionItem(card: SampleData.jordan)
+        store.setCondition(.damaged, for: stranger)
+        #expect(store.items.count == 1)
+        #expect(store.items.first?.condition == .nearMint)  // unchanged
+    }
 }
