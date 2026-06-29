@@ -12,10 +12,11 @@ Read this to understand what's built, the patterns to follow, and what's next.*
 | **UI uplifts** | Done | `DesignSystem/Components/RollingNumber.swift`, `FlipCardView.swift`, `ScanOverlay.swift` |
 | **Auth (Sign in with Apple)** | Done (client-side) | `Services/KeychainStore.swift`, `AuthService.swift`, `Store/AuthSessionStore.swift`, `App/AppEnvironment.swift` |
 | **Sync (PostgREST CRUD)** | Done — bidirectional via `SyncEngine` (push dirty + incremental pull + LWW apply); new-device restore wired | `Services/SyncEngine.swift`, `Services/SyncService.swift`, `App/CarddexApp.swift`, `Store/CollectionStore.swift`, `WatchlistStore.swift`, `WishlistStore.swift`, `SubscriptionStore.swift` |
-| **StoreKit 2** | Stub (`activatePro()` flips a bool) | `Store/SubscriptionStore.swift`, `Features/Paywall/PaywallView.swift` |
-| **Condition tracking** | Read-only display; no editor | `Features/Collection/CardDetailView.swift`, `Models/CollectionItem.swift` |
-| **Account deletion** | Stub (empty button handler) | `Features/Settings/SettingsView.swift` |
-| **Tests** | 71 passing, 11 suites | `CarddexTests/` |
+| **StoreKit 2** | Done — real `Product.purchase()` + verified entitlement; needs App Store Connect products to go live (§4) | `Services/StoreKitService.swift`, `Store/SubscriptionStore.swift`, `Features/Paywall/PaywallView.swift` |
+| **Condition tracking** | Done — editable picker + condition-adjusted value | `Features/Collection/CardDetailView.swift`, `Models/CardCondition.swift`, `Models/CollectionItem.swift` |
+| **Account deletion** | Done — confirm → `account-delete` Edge Function → local wipe + sign-out | `Features/Settings/SettingsView.swift`, `Services/AuthService.swift`, `supabase/functions/account-delete/` |
+| **Weekly Recap / Light mode** | Done — `WeeklyRecapView` on Portfolio; system-following light mode via dynamic `Theme` tokens | `Features/Portfolio/WeeklyRecapView.swift`, `DesignSystem/Theme.swift` |
+| **Tests** | 104 passing, 15 suites | `CarddexTests/` |
 | **Build** | 0 warnings, 0 errors | `bash scripts/dev.sh build` |
 
 ## 2. Architecture patterns (follow these)
@@ -53,7 +54,10 @@ The entire app uses raw `URLSession` for all network calls (Supabase Auth, Postg
 - `Haptics` for all tactile feedback. Gate animations on `@Environment(\.accessibilityReduceMotion)`.
 - Big numbers use `RollingNumber` (count-up with spring). Charts use Swift Charts with hidden axes + drag-to-scrub.
 
-## 3. Remaining work — implementation guides
+## 3. Feature status (all shipped)
+
+> These were the v1.0/v1.1 gaps; all are now implemented. Each note points at the
+> shipped code. The only blockers left are external credentials, not code — see §4.
 
 ### 3.1 Cross-device sync — DONE (via `SyncEngine`, not legacy `pullAll()`)
 
@@ -85,250 +89,59 @@ legacy view-struct `upsert*`/`delete*` `SyncServiceProtocol` methods and their
 `PullMergeTests`) has been deleted. The DTO-based `SyncEngine` path is the only
 sync mechanism now.
 
-### 3.2 StoreKit 2 — replace the paywall stub (HIGH PRIORITY)
+### 3.2 StoreKit 2 purchases — DONE
 
-**What**: Replace `SubscriptionStore.activatePro()` (a bool flip) with real StoreKit 2 `Product.purchase()` + verified `Transaction`.
+**Status**: Real StoreKit 2 purchases are wired; the paywall is no longer a stub.
+- `Services/StoreKitService.swift` — `StoreKitService` implements `fetchProducts()`
+  (`Product.products(for:)`), `purchase()` (`product.purchase()` → verify →
+  `finish()`), and `verifyEntitlement()` (iterates `Transaction.currentEntitlements`).
+  `NoOpStoreKitService` is the fake used without `Secrets.plist`.
+- `App/AppEnvironment.swift` exposes `storeKit: any StoreKitServiceProtocol`.
+- `Features/Paywall/PaywallView.swift` runs `env.storeKit.purchase(_:)` and only
+  flips `SubscriptionStore.activatePro()` on a **verified** transaction.
+- `App/CarddexApp.swift` `verifyEntitlement()` runs on launch to restore Pro after
+  reinstall / on another device.
 
-**Why**: Monetization is the last stubbed loop. Auth + sync are ready; StoreKit is the revenue gate.
+**Still external (not code)**: App Store Connect must define the two auto-renewable
+products (`com.carddex.pro.monthly` / `.annual`) + a subscription group before
+purchases resolve in sandbox/production — see §4.
 
-**How**:
-1. Create `Services/StoreKitService.swift`:
-```swift
-import StoreKit
+### 3.3 Account deletion — DONE
 
-protocol StoreKitServiceProtocol: Sendable {
-    func fetchProducts() async throws -> [Product]
-    func purchase(_ product: Product) async throws -> Transaction?
-    func verifyEntitlement() async -> Bool
-}
+**Status**: In-app account deletion is wired (satisfies App Store 5.1.1(v)).
+- `Features/Settings/SettingsView.swift` — the Delete button shows a confirm
+  alert, then `deleteAccount()` → `auth.deleteAccount()`.
+- `Services/AuthService.swift` — `deleteAccount(accessToken:)` POSTs to the
+  `account-delete` Edge Function with the user's JWT.
+- `supabase/functions/account-delete/index.ts` — deletes the user with the
+  service-role key (cascades the RLS tables); the client then wipes local stores
+  and signs out.
 
-struct StoreKitService: StoreKitServiceProtocol {
-    // Product IDs from App Store Connect (set up there first):
-    // "com.carddex.pro.monthly" and "com.carddex.pro.annual"
-    let productIDs: Set<String> = ["com.carddex.pro.monthly", "com.carddex.pro.annual"]
+### 3.4 Condition editor + condition-adjusted value — DONE
 
-    func fetchProducts() async throws -> [Product] {
-        try await Product.products(for: productIDs).sorted { $0.price < $1.price }
-    }
+**Status**: Condition is editable and feeds a condition-adjusted value.
+- `Models/CardCondition.swift` — `multiplier` (mint 1.0 → damaged 0.3).
+- `Models/CollectionItem.swift` — `conditionAdjustedValue` (= estimatedValue ×
+  multiplier).
+- `Store/CollectionStore.swift` — `setCondition(_:for:)` persists + marks the row
+  dirty so the SyncEngine pushes it.
+- `Features/Collection/CardDetailView.swift` — a menu `Picker` writes via the
+  store; a live "Condition value" row updates as the condition changes.
 
-    func purchase(_ product: Product) async throws -> Transaction? {
-        let result = try await product.purchase()
-        switch result {
-        case .success(let verification):
-            let transaction = try verification.payloadValue
-            await transaction.finish()
-            return transaction
-        case .userCancelled, .pending:
-            return nil
-        @unknown default:
-            return nil
-        }
-    }
+### 3.5 Weekly Recap card — DONE
 
-    func verifyEntitlement() async -> Bool {
-        // Iterate current entitlements — if any active transaction exists, user is Pro.
-        for await result in Transaction.currentEntitlements {
-            if case .verified(let transaction) = result {
-                if transaction.productID == "com.carddex.pro.annual" || transaction.productID == "com.carddex.pro.monthly" {
-                    if transaction.revocationDate == nil && transaction.expirationDate ?? .distantFuture > .now {
-                        return true
-                    }
-                }
-            }
-        }
-        return false
-    }
-}
+**Status**: `Features/Portfolio/WeeklyRecapView.swift` ships at the top of
+`PortfolioView` — net 7-day value change, a "new this week" count, and the top
+mover, derived from `CollectionStore` + `PortfolioHistoryStore`, with a "building
+your first week" empty state until ≥2 days of value history accrue.
 
-struct FakeStoreKitService: StoreKitServiceProtocol {
-    func fetchProducts() async throws -> [Product] { [] } // can't fake Product; tests mock at the store level
-    func purchase(_ product: Product) async throws -> Transaction? { nil }
-    func verifyEntitlement() async -> Bool { false }
-}
-```
-2. Add `storeKit: any StoreKitServiceProtocol` to `AppEnvironment` (same pattern as auth/sync).
-3. Update `PaywallView.swift` — replace the `subs.activatePro()` call:
-```swift
-PrimaryButton(title: "Subscribe", systemImage: "crown") {
-    Task {
-        if let product = selectedProduct {
-            if let transaction = try? await env.storeKit.purchase(product) {
-                subs.activatePro() // flips the local flag + syncs
-            }
-        }
-    }
-}
-```
-4. On app launch (`.task` in `CarddexApp`), verify the entitlement:
-```swift
-if await environment.storeKit.verifyEntitlement() {
-    subscriptions.activatePro()
-}
-```
+### 3.6 Light mode ("daylight case") — DONE
 
-**Prerequisites**: 
-- App Store Connect: create the two auto-renewable subscriptions + a subscription group.
-- Set the product IDs in `StoreKitService`.
-- Test in the sandbox environment (Settings → App Store → Sandbox Account on the simulator).
-- Add the `StoreKit` configuration file to the project for local testing.
-
-**Gotcha**: `Product` and `Transaction` are StoreKit types that can't be easily faked. Tests should mock at the `SubscriptionStore` level (call `activatePro()` directly), not at the StoreKit service level. The `StoreKitServiceProtocol` is for the app's DI seam, not for unit tests.
-
-### 3.3 Account deletion (MEDIUM PRIORITY)
-
-**What**: Wire the Settings "Delete account" button to an Edge Function that revokes tokens + deletes the user's data.
-
-**Why**: App Store requirement (5.1.1(v)). The JWT is already available via `AuthSessionStore`.
-
-**How**:
-1. Deploy a Supabase Edge Function `account-delete` (POST, requires auth):
-```typescript
-// supabase/functions/account-delete/index.ts
-Deno.serve(async (req) => {
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader) return new Response("unauthorized", { status: 401 });
-  // The service-role key can delete the user from auth.users
-  // (cascades to all RLS-protected tables via user_id FK).
-  // Revoke eBay tokens if any. Write an audit row.
-  // Return { ok: true }.
-});
-```
-2. Add a method to `SyncServiceProtocol` (or a new `AccountService`):
-```swift
-func deleteAccount() async throws
-```
-3. In `LiveSyncService` (or the new service):
-```swift
-func deleteAccount() async throws {
-    var req = try await authedRequest(table: "account-delete") // different path — adjust
-    req.httpMethod = "POST"
-    req.url = baseURL.appendingPathComponent("functions/v1/account-delete")
-    try await send(req)
-    // On success: clear local state
-    await MainActor.run {
-        KeychainStore.clearAll()
-        // clear all stores
-    }
-}
-```
-4. In `SettingsView.swift`, replace the empty handler:
-```swift
-Button("Delete", role: .destructive) {
-    Task {
-        try? await environment.sync.deleteAccount()
-        auth.signOut()
-        // clear local stores
-    }
-}
-```
-
-### 3.4 Condition tracking on Card Detail (MEDIUM PRIORITY)
-
-**What**: Let the user edit a card's condition and see a condition-adjusted value estimate.
-
-**Why**: `CollectionItem.condition` exists but Card Detail only displays it read-only. The design spec calls for a condition selector. Condition-adjusted value makes portfolio value honest.
-
-**How**:
-1. Add a condition multiplier to `CardCondition`:
-```swift
-enum CardCondition: String, CaseIterable, Codable, Identifiable, Hashable, Sendable {
-    case mint = "Mint", nearMint = "Near Mint", lightlyPlayed = "Lightly Played",
-         moderatelyPlayed = "Moderately Played", heavilyPlayed = "Heavily Played", damaged = "Damaged"
-
-    var multiplier: Decimal {
-        switch self {
-        case .mint: 1.0
-        case .nearMint: 0.9
-        case .lightlyPlayed: 0.75
-        case .moderatelyPlayed: 0.6
-        case .heavilyPlayed: 0.45
-        case .damaged: 0.3
-        }
-    }
-}
-```
-2. Add to `CollectionItem`:
-```swift
-var conditionAdjustedValue: Money {
-    Money(amount: estimatedValue.amount * condition.multiplier)
-}
-```
-3. In `CardDetailView.swift`, replace the read-only `LabeledContent("Condition", ...)` with an editable `Picker`:
-```swift
-Picker("Condition", selection: Binding(
-    get: { item.condition },
-    set: { newCondition in
-        if let index = store.items.firstIndex(where: { $0.id == item.id }) {
-            store.items[index].condition = newCondition
-            // sync + persist happen in the store if you add a setter method
-        }
-    }
-)) {
-    ForEach(CardCondition.allCases) { Text($0.rawValue).tag($0) }
-}
-.pickerStyle(.menu)
-```
-4. Add a condition-adjusted value `StatTile`:
-```swift
-StatTile(title: "Condition value", value: item.conditionAdjustedValue.formatted, accent: Theme.accent)
-```
-5. Add a `setCondition(_:for:)` method to `CollectionStore` that persists + syncs:
-```swift
-func setCondition(_ condition: CardCondition, for item: CollectionItem) {
-    if let index = items.firstIndex(where: { $0.id == item.id }) {
-        items[index].condition = condition
-        syncUpsert(items[index])
-        persist()
-    }
-}
-```
-
-### 3.5 Weekly Recap card (LOW PRIORITY)
-
-**What**: A "This week" panel on Portfolio: net $ change, biggest gainer/loser, new additions, set progress.
-
-**Why**: The product plan calls it the #1 retention push ("weekly your portfolio moved $X"). Pure client-side derivation from existing stores.
-
-**How**:
-1. Create `Features/Portfolio/WeeklyRecapView.swift`:
-2. Derive everything from `CollectionStore` + `MarketStore`:
-```swift
-struct WeeklyRecapView: View {
-    @Environment(CollectionStore.self) private var store
-    @Environment(MarketStore.self) private var marketStore
-
-    private var newThisWeek: [CollectionItem] {
-        store.items.filter { $0.dateAdded > Date().addingTimeInterval(-7 * 86400) }
-    }
-    private var biggestGainer: CollectionItem? {
-        store.movers.max { ($0.gainPercent ?? 0) < ($1.gainPercent ?? 0) }
-    }
-    private var biggestLoser: CollectionItem? {
-        store.movers.min { ($0.gainPercent ?? 0) < ($1.gainPercent ?? 0) }
-    }
-    // ... render as a glass panel with stat tiles + movers
-}
-```
-3. Insert it at the top of `PortfolioView`'s `VStack` (before the chart).
-
-### 3.6 Light mode ("daylight case") (LOW PRIORITY)
-
-**What**: Implement the spec's light theme with adaptive `Theme` tokens.
-
-**Why**: The design spec defines it fully but the app is dark-only. Some users prefer light mode.
-
-**How**: This is a larger refactor — `Theme` currently uses static `Color(hex:)` values. To support light mode:
-1. Convert `Theme` from an enum with static `let` to use `@Environment(\.colorScheme)` adaptive assets:
-```swift
-static let accent = Color("AccentColor") // in Assets.xcassets with light + dark variants
-```
-2. Or use `Color(light:dark:)` (iOS 18+):
-```swift
-static let accent = Color(light: Color(hex: 0x5A57F0), dark: Color(hex: 0x6E6BFF))
-```
-3. Test every screen in both modes. The vault background gradient needs a light variant.
-
-**Estimate**: Half a day. Not hard, but touches every screen.
+**Status**: System-following light mode ships. `DesignSystem/Theme.swift` tokens
+are dynamic `UIColor`s (warm espresso in dark, warm paper in light);
+`VaultBackground` is scheme-adaptive; and every screen's forced
+`.preferredColorScheme` now routes through the single `Theme.appColorScheme`
+(`nil` = follow system, ready for a future manual toggle).
 
 ## 4. Backend setup checklist (for going live)
 
