@@ -11,6 +11,8 @@ struct SettingsView: View {
     @Environment(WatchlistStore.self) private var watchlist
     @Environment(WishlistStore.self) private var wishlist
     @Environment(AuthSessionStore.self) private var auth
+    @Environment(EbayConnection.self) private var ebay
+    @Environment(\.openURL) private var openURL
     @State private var showPaywall = false
     @State private var showDeleteConfirm = false
     @State private var isDeleting = false
@@ -70,10 +72,20 @@ struct SettingsView: View {
                 }
 
                 Section("Marketplace") {
-                    Label("Connect eBay", systemImage: "tag")
-                    Text("Auto-list cards for sale — coming in Phase 3.")
+                    if ebay.isConnected {
+                        Label("eBay connected", systemImage: "checkmark.seal.fill")
+                            .foregroundStyle(Theme.gain)
+                    } else {
+                        Button { Task { await connectEbay() } } label: {
+                            Label("Connect eBay", systemImage: "tag")
+                        }
+                    }
+                    Text("Connect your seller account to auto-list cards for sale.")
                         .font(.caption)
                         .foregroundStyle(Theme.textSecondary)
+                    if let err = ebay.lastError {
+                        Text(err).font(.caption).foregroundStyle(Theme.loss)
+                    }
                 }
 
                 Section("Tools") {
@@ -154,6 +166,12 @@ struct SettingsView: View {
         }
     }
 
+    /// Open the eBay consent page; the OAuth callback deep-links back and flips
+    /// `EbayConnection.isConnected`.
+    private func connectEbay() async {
+        if let url = try? await env.ebay.connectConsentURL() { openURL(url) }
+    }
+
     /// Delete the account server-side, then wipe all local stores + widgets.
     /// Any failure surfaces as an alert and leaves local state intact (the
     /// server-side delete is the source of truth; local wipe only on success).
@@ -232,5 +250,6 @@ struct SettingsView: View {
         .environment(AuthSessionStore(service: FakeAuthService()))
         .environment(WatchlistStore())
         .environment(WishlistStore())
+        .environment(EbayConnection())
         .preferredColorScheme(Theme.appColorScheme)
 }

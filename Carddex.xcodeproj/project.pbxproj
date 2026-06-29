@@ -20,6 +20,7 @@
 		0F21845C3A975132A40CFC40 /* CameraScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33296CD9469A347C30B77CC2 /* CameraScanView.swift */; };
 		0F5ADA788797CB4111467632 /* PSACalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E003B3EF556E74AB9BAC5F /* PSACalculatorView.swift */; };
 		0FBFEAF00D3690650EF3708D /* Marketplace.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */; };
+		B1B1B1B1B1B1B1B1B1B1B1B1 /* EbayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B2B2B2B2B2B2B2B2B2B2B2 /* EbayService.swift */; };
 		F6F6F6F6F6F6F6F6F6F6F6F6 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F5F5F5F5F5F5F5F5F5F5F5 /* NotificationService.swift */; };
 		105A14F37A4F6759E5C88994 /* CollectionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4A16F993AACB48ADD5A8F8 /* CollectionStoreTests.swift */; };
 		12DE74AF60DE0D5FB57FE783 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = B0DFCF0BFF9C5F57462DA2FA /* OFL.txt */; };
@@ -48,6 +49,7 @@
 		475FB3EA40EC8575AE9720A3 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E61FDB4D59D4C62D3E4F3BC /* Theme.swift */; };
 		4812D16CD99022984D245662 /* StoreKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AC8DC0FE2BF7ED2E1EDCD1E /* StoreKitService.swift */; };
 		4D0B486C9A50F1E162E7B8F7 /* MarketplaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74586863855F53AF06AC29CF /* MarketplaceTests.swift */; };
+		C1C1C1C1C1C1C1C1C1C1C1C1 /* EbayServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C2C2C2C2C2C2C2C2C2C2C2 /* EbayServiceTests.swift */; };
 		4EF66C024416274EA827ECFA /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CD721849A62838D4E72B51B /* Color+Hex.swift */; };
 		4F75270125371C220796258B /* SyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D044749602A869DF642F0F63 /* SyncEngine.swift */; };
 		50CB8020D544B5DF6B9725D0 /* SampleData+Market.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0CA5228B59BAD88970D085 /* SampleData+Market.swift */; };
@@ -242,6 +244,7 @@
 		6FC3794684572890D03F101E /* Carddex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Carddex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		712C3A6F21FC665B0294A90E /* PressableStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressableStyle.swift; sourceTree = "<group>"; };
 		74586863855F53AF06AC29CF /* MarketplaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketplaceTests.swift; sourceTree = "<group>"; };
+		C2C2C2C2C2C2C2C2C2C2C2C2 /* EbayServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EbayServiceTests.swift; sourceTree = "<group>"; };
 		74C8D2528046D25BFBDDCD7C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		7718F1B10971524DBF0D62B8 /* GrailEntryEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrailEntryEntity.swift; sourceTree = "<group>"; };
 		7A3B7B0D7A8C5B47CB112DDC /* PendingScanEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingScanEntity.swift; sourceTree = "<group>"; };
@@ -329,6 +332,7 @@
 		F8A43A7A1CAF3FC080F4F724 /* MarketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketService.swift; sourceTree = "<group>"; };
 		F93ACFB4612F0CBEF2A2DAD9 /* ToolsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
 		FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Marketplace.swift; sourceTree = "<group>"; };
+		B2B2B2B2B2B2B2B2B2B2B2B2 /* EbayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EbayService.swift; sourceTree = "<group>"; };
 		F5F5F5F5F5F5F5F5F5F5F5F5 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FDD9BB8ABB4ABFBBCDF1BA26 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		FE9CC3A66CA9ED81A958412F /* CollectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionStore.swift; sourceTree = "<group>"; };
@@ -378,6 +382,7 @@
 				5D4A16F993AACB48ADD5A8F8 /* CollectionStoreTests.swift */,
 				2E71CFCFD5E72A8222B9C380 /* IdentificationServiceTests.swift */,
 				74586863855F53AF06AC29CF /* MarketplaceTests.swift */,
+				C2C2C2C2C2C2C2C2C2C2C2C2 /* EbayServiceTests.swift */,
 				850A8C3BB8BADA272B1C56F9 /* MarketStoreTests.swift */,
 				D7219A81B93471EC6A676AC5 /* MoneyTests.swift */,
 				C696E523366143606EDD9178 /* SubscriptionStoreTests.swift */,
@@ -581,6 +586,7 @@
 				64F1684A467DD1A178BC7310 /* KeychainStore.swift */,
 				9E614259B52E7A8AE90DDCEA /* LiveIdentificationService.swift */,
 				FDCF3C33E16D085D2109D2A6 /* Marketplace.swift */,
+				B2B2B2B2B2B2B2B2B2B2B2B2 /* EbayService.swift */,
 				A4A4A4A4A4A4A4A4A4A4A4A4 /* PushRegistrationCenter.swift */,
 				F5F5F5F5F5F5F5F5F5F5F5F5 /* NotificationService.swift */,
 				F8A43A7A1CAF3FC080F4F724 /* MarketService.swift */,
@@ -830,6 +836,7 @@
 				6AE064B96DB0B9A31A9BA7BF /* IdentificationServiceTests.swift in Sources */,
 				BFE265BC042139EF5EF13A3F /* MarketStoreTests.swift in Sources */,
 				4D0B486C9A50F1E162E7B8F7 /* MarketplaceTests.swift in Sources */,
+				C1C1C1C1C1C1C1C1C1C1C1C1 /* EbayServiceTests.swift in Sources */,
 				221F2C1FF6A2D3CF05F21CBF /* MoneyTests.swift in Sources */,
 				E7C234D6B393F1860EEFC0A6 /* SubscriptionStoreTests.swift in Sources */,
 				6CD661FF6C5F7CA73B06EA17 /* SwiftDataPersistenceTests.swift in Sources */,
@@ -901,6 +908,7 @@
 				D786440A7204C35A701C2785 /* MarketStore.swift in Sources */,
 				089E477FD84631DCFEE20706 /* MarketView.swift in Sources */,
 				0FBFEAF00D3690650EF3708D /* Marketplace.swift in Sources */,
+				B1B1B1B1B1B1B1B1B1B1B1B1 /* EbayService.swift in Sources */,
 				F6F6F6F6F6F6F6F6F6F6F6F6 /* NotificationService.swift in Sources */,
 				D8A322320269648D53124204 /* MiniAreaChart.swift in Sources */,
 				1961FF26ECB359DE879A8B12 /* Money.swift in Sources */,

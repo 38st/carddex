@@ -9,6 +9,7 @@ struct CarddexApp: App {
     @AppStorage("hasOnboarded") private var hasOnboarded = false
     @State private var environment = AppEnvironment()
     @State private var pushCenter = PushRegistrationCenter.shared
+    @State private var ebayConnection = EbayConnection()
     @State private var persistence = PersistenceController.shared
     @State private var syncEngine: SyncEngine?
     @State private var store = CollectionStore(items: SampleData.collection, persistence: PersistenceController.shared)
@@ -43,6 +44,8 @@ struct CarddexApp: App {
                 .environment(wishlist)
                 .environment(marketStore)
                 .environment(portfolioHistory)
+                .environment(ebayConnection)
+                .onOpenURL { ebayConnection.handle(url: $0) }
                 .task {
                     wireSyncEngine()
                     SpotlightIndexer.index(SampleData.marketCards)

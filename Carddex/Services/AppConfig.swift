@@ -9,6 +9,8 @@ struct SupabaseConfig {
     let marketDataURL: URL
     let accountDeleteURL: URL
     let registerDeviceURL: URL
+    let ebayOAuthURL: URL
+    let ebayListURL: URL
     let anonKey: String
 
     /// Builds the endpoint URLs from a project ref. Returns nil if the ref
@@ -21,7 +23,9 @@ struct SupabaseConfig {
             let catalogSearchURL = URL(string: "https://\(projectRef).functions.supabase.co/catalog-search"),
             let marketDataURL = URL(string: "https://\(projectRef).functions.supabase.co/market-data"),
             let accountDeleteURL = URL(string: "https://\(projectRef).functions.supabase.co/account-delete"),
-            let registerDeviceURL = URL(string: "https://\(projectRef).functions.supabase.co/register-device")
+            let registerDeviceURL = URL(string: "https://\(projectRef).functions.supabase.co/register-device"),
+            let ebayOAuthURL = URL(string: "https://\(projectRef).functions.supabase.co/ebay-oauth"),
+            let ebayListURL = URL(string: "https://\(projectRef).functions.supabase.co/ebay-list")
         else { return nil }
         self.baseURL = baseURL
         self.identifyURL = identifyURL
@@ -29,6 +33,8 @@ struct SupabaseConfig {
         self.marketDataURL = marketDataURL
         self.accountDeleteURL = accountDeleteURL
         self.registerDeviceURL = registerDeviceURL
+        self.ebayOAuthURL = ebayOAuthURL
+        self.ebayListURL = ebayListURL
         self.anonKey = anonKey
     }
 }

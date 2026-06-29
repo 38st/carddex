@@ -12,6 +12,7 @@ final class AppEnvironment {
     let auth: AuthSessionStore
     let sync: any SyncServiceProtocol
     let storeKit: any StoreKitServiceProtocol
+    let ebay: any EbayServiceProtocol
     let isLiveBackend: Bool
 
     init() {
@@ -28,6 +29,14 @@ final class AppEnvironment {
             )
             self.sync = LiveSyncService(config: config, tokenProvider: auth) ?? NoOpSyncService()
             self.storeKit = StoreKitService()
+            self.ebay = LiveEbayService(
+                oauthURL: config.ebayOAuthURL,
+                listURL: config.ebayListURL,
+                tokenProvider: { [auth] in
+                    await auth.refreshIfNeeded()
+                    return await MainActor.run { auth.session?.accessToken }
+                }
+            )
             self.isLiveBackend = true
         } else {
             let auth = AuthSessionStore(service: FakeAuthService())
@@ -35,17 +44,20 @@ final class AppEnvironment {
             self.identification = FakeIdentificationService()
             self.sync = NoOpSyncService()
             self.storeKit = NoOpStoreKitService()
+            self.ebay = FakeEbayService()
             self.isLiveBackend = false
         }
     }
 
     /// For previews and tests.
     init(identification: any IdentificationService, auth: AuthSessionStore? = nil,
-         sync: (any SyncServiceProtocol)? = nil, storeKit: (any StoreKitServiceProtocol)? = nil) {
+         sync: (any SyncServiceProtocol)? = nil, storeKit: (any StoreKitServiceProtocol)? = nil,
+         ebay: (any EbayServiceProtocol)? = nil) {
         self.identification = identification
         self.auth = auth ?? AuthSessionStore(service: FakeAuthService())
         self.sync = sync ?? NoOpSyncService()
         self.storeKit = storeKit ?? NoOpStoreKitService()
+        self.ebay = ebay ?? FakeEbayService()
         self.isLiveBackend = false
     }
 }

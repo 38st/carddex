@@ -6,12 +6,17 @@ import SwiftUI
 struct SellSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+    @Environment(AppEnvironment.self) private var env
+    @Environment(EbayConnection.self) private var ebay
     let item: CollectionItem
 
     @State private var title: String
     @State private var priceText: String
     @State private var condition: CardCondition
     @State private var quantity: Int
+    @State private var isWorking = false
+    @State private var listing: EbayListing?
+    @State private var errorMessage: String?
 
     init(item: CollectionItem) {
         self.item = item
@@ -58,8 +63,24 @@ struct SellSheet: View {
 
                         payoutRow
 
-                        PrimaryButton(title: "List on eBay", systemImage: "tag") {
-                            // Phase 3: ensure eBay is connected (OAuth) then call `ebay-list`.
+                        if let listing {
+                            listedRow(listing)
+                        } else {
+                            PrimaryButton(
+                                title: isWorking ? "Listing…"
+                                    : ebay.isConnected ? "List on eBay" : "Connect eBay & list",
+                                systemImage: ebay.isConnected ? "tag" : "link"
+                            ) {
+                                Task { await listTapped() }
+                            }
+                            .disabled(isWorking || priceDouble <= 0)
+                        }
+
+                        if let errorMessage {
+                            Text(errorMessage)
+                                .font(.caption)
+                                .foregroundStyle(Theme.loss)
+                                .multilineTextAlignment(.center)
                         }
 
                         Button {
@@ -70,10 +91,12 @@ struct SellSheet: View {
                                 .foregroundStyle(Theme.cream)
                         }
 
-                        Text("Connect your eBay account in Settings to publish listings.")
-                            .font(.caption)
-                            .foregroundStyle(Theme.textTertiary)
-                            .multilineTextAlignment(.center)
+                        if !ebay.isConnected {
+                            Text("We'll connect your eBay account the first time you list.")
+                                .font(.caption)
+                                .foregroundStyle(Theme.textTertiary)
+                                .multilineTextAlignment(.center)
+                        }
                     }
                     .padding()
                 }
@@ -85,6 +108,63 @@ struct SellSheet: View {
             }
         }
         .preferredColorScheme(Theme.appColorScheme)
+    }
+
+    /// One tap: connect eBay if needed, otherwise publish the listing.
+    private func listTapped() async {
+        errorMessage = nil
+        guard ebay.isConnected else { await startConnect(); return }
+        isWorking = true
+        defer { isWorking = false }
+        let request = EbayListRequest(
+            collectionItemID: item.id,
+            price: Money(amount: Decimal(priceDouble)),
+            condition: condition,
+            quantity: quantity,
+            title: title
+        )
+        do {
+            listing = try await env.ebay.list(request)
+            Haptics.success()
+        } catch EbayError.notConnected {
+            ebay.isConnected = false
+            await startConnect()
+        } catch EbayError.offline {
+            errorMessage = "You're offline — try again when connected."
+        } catch EbayError.server(let msg) {
+            errorMessage = msg
+        } catch {
+            errorMessage = "Couldn't list right now. Please try again."
+        }
+    }
+
+    /// Open the eBay consent page in Safari. The OAuth callback deep-links back
+    /// as `carddex://ebay/connected`, flipping `EbayConnection.isConnected`.
+    private func startConnect() async {
+        do {
+            let url = try await env.ebay.connectConsentURL()
+            openURL(url)
+        } catch {
+            errorMessage = "Couldn't start the eBay connection."
+        }
+    }
+
+    private func listedRow(_ listing: EbayListing) -> some View {
+        VStack(spacing: Theme.Spacing.sm) {
+            Label("Listed on eBay", systemImage: "checkmark.seal.fill")
+                .font(.headline)
+                .foregroundStyle(Theme.gain)
+            if let url = listing.viewURL {
+                Button { openURL(url) } label: {
+                    Label("View your listing", systemImage: "arrow.up.right.square")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Theme.cream)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(Theme.Spacing.md)
+        .glassPanel(cornerRadius: Theme.Radius.card)
     }
 
     private var header: some View {
@@ -142,4 +222,6 @@ struct SellSheet: View {
 
 #Preview {
     SellSheet(item: SampleData.collection[0])
+        .environment(AppEnvironment(identification: FakeIdentificationService()))
+        .environment(EbayConnection())
 }
